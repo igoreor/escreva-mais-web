@@ -1,19 +1,32 @@
+import React from 'react';
+import '../styles/index.css';
+import '../styles/tailwind.css' 
+
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata = {
-  title: 'Escreva+',
-  description: 'Plataforma de escrita e aprendizado',
+  title: 'Next.js with Tailwind CSS',
+  description: 'A boilerplate project with Next.js and Tailwind CSS',
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' }
+    ],
   },
-}
+};
+
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="pt-BR">
       <body>{children}</body>
     </html>
-  )
-} 
+  );
+}
