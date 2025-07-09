@@ -2,12 +2,14 @@
 import React from 'react';
 import Image from 'next/image';
 import Sidebar from '@/components/common/SideBar';
+
 interface CompetencyCardProps {
   title: string;
   score: number;
   average: number;
   description: string;
 }
+
 const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => {
   return (
     <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
@@ -33,52 +35,26 @@ const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, 
     </div>
   );
 };
+
 const StudentDashboard: React.FC = () => {
   const competencies = [
-    {
-      title: 'Competência 1',
-      score: 200,
-      average: 2.0,
-      description: 'Domínio da norma padrão'
-    },
-    {
-      title: 'Competência 2',
-      score: 160,
-      average: 1.6,
-      description: 'Compreensão da proposta'
-    },
-    {
-      title: 'Competência 3',
-      score: 200,
-      average: 2.0,
-      description: 'Capacidade de argumentação'
-    },
-    {
-      title: 'Competência 4',
-      score: 200,
-      average: 2.0,
-      description: 'Conhecimento dos mecanismos linguísticos'
-    },
-    {
-      title: 'Competência 5',
-      score: 200,
-      average: 2.0,
-      description: 'Proposta de intervenção'
-    }
+    { title: 'Competência 1', score: 200, average: 2.0, description: 'Domínio da norma padrão' },
+    { title: 'Competência 2', score: 160, average: 1.6, description: 'Compreensão da proposta' },
+    { title: 'Competência 3', score: 200, average: 2.0, description: 'Capacidade de argumentação' },
+    { title: 'Competência 4', score: 200, average: 2.0, description: 'Conhecimento dos mecanismos linguísticos' },
+    { title: 'Competência 5', score: 200, average: 2.0, description: 'Proposta de intervenção' }
   ];
+
   return (
-    <div className="flex flex-row justify-start items-center w-full bg-global-2">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-global-2">
       <Sidebar />
-      {/* Main Content */}
-      <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 lg:gap-[52px] justify-start items-start flex-1 px-8 sm:px-12 md:px-16 lg:px-16 py-8 sm:py-12 md:py-16 lg:py-[78px]">
-        {/* Welcome Header */}
-        <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px] text-center w-full">
+
+      <div className="flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-8 sm:py-12 md:py-16 overflow-y-auto">
+        <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px] text-center mb-10">
           Olá, primeiro nome!
         </h1>
-        {/* Performance Cards Section */}
-        <div className="flex flex-col gap-6 sm:gap-8 md:gap-9 justify-start items-center w-full max-w-6xl mx-auto">
-          {/* Overall Average Card */}
+
+        <div className="flex flex-col gap-6 sm:gap-8 md:gap-9 max-w-6xl mx-auto w-full">
           <div className="flex flex-row justify-start items-center w-full bg-global-1 border border-[#7ebcff] rounded-[10px] p-4 sm:p-5 md:p-6">
             <div className="flex flex-col justify-center items-start flex-1 ml-1">
               <h2 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
@@ -109,9 +85,8 @@ const StudentDashboard: React.FC = () => {
               className="w-8 sm:w-10 md:w-[42px] h-8 sm:h-10 md:h-[42px] mr-4 sm:mr-6"
             />
           </div>
-          {/* Best and Worst Performance Cards */}
+
           <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 w-full">
-            {/* Best Performance Card */}
             <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
               <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
                 <h3 className="text-global-3 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
@@ -151,7 +126,6 @@ const StudentDashboard: React.FC = () => {
                 className="w-12 sm:w-16 md:w-[74px] h-12 sm:h-16 md:h-[74px] self-center mr-2.5"
               />
             </div>
-            {/* Worst Performance Card */}
             <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
               <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
                 <h3 className="text-global-6 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
@@ -193,8 +167,7 @@ const StudentDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        {/* Competency Performance Section */}
-        <div className="flex flex-col gap-3 justify-start items-start w-full max-w-6xl mx-auto">
+        <div className="flex flex-col gap-3 justify-start items-start w-full max-w-6xl mx-auto mt-10">
           <h2 className="text-global-2 text-lg sm:text-xl font-semibold leading-6 text-left">
             Desempenho por competência
           </h2>
@@ -214,4 +187,5 @@ const StudentDashboard: React.FC = () => {
     </div>
   );
 };
+
 export default StudentDashboard;
