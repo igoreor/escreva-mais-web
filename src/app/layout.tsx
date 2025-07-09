@@ -9,11 +9,12 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'Next.js with Tailwind CSS',
-  description: 'A boilerplate project with Next.js and Tailwind CSS',
+  title: 'Escreva +',
+  keywords: ['escreva+', 'escreva mais', 'escreva mais', 'escreva mais web app', 'escreva mais app', 'escreva mais web'],
+  description: 'Escreva + é um aplicativo web para correção de redações com inteligência artificial.',
   icons: {
     icon: [
-      { url: '/favicon.ico', type: 'image/x-icon' }
+      { url: '/images/img_logo.svg', type: 'image/x-icon' }
     ],
   },
 };
