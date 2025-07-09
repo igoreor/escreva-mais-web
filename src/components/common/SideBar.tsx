@@ -39,7 +39,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
 
   return (
     <div className={`w-full lg:w-[18%] bg-global-3 shadow-[0px_4px_4px_#0000003f] flex flex-col pt-[30px] gap-12 ${className}`}>
-      {/* Logo */}
       <div className="flex justify-center px-4">
         <Image
           src="/images/img_logo.svg"
@@ -50,7 +49,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
         />
       </div>
 
-      {/* Menu Items */}
       <div className="flex flex-col justify-between flex-1">
         <div className="flex flex-col items-center">
           {menuItems.map((item) => (
@@ -76,7 +74,6 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
           ))}
         </div>
 
-        {/* Logout */}
         <div className="flex flex-row justify-start items-center w-full">
           <button className="flex flex-row justify-start items-center w-full p-1.5 transition-all duration-200 hover:bg-gray-50">
             <Image
