@@ -9,6 +9,7 @@
     --global-bg-2: #f8f8f8;
     --global-bg-3: #ffffff;
     --global-bg-4: #121212;
+    --global-bg-5: #0057b8;
     --global-text-1: #002450;
     --global-text-2: #0057b8;
     --global-text-3: #07ab39;
@@ -17,6 +18,7 @@
     --global-text-6: #ec5c52;
     --global-text-7: #c1c1c1;
 
+
     /* Dropdown Colors */
     --dropdown-bg-1: #121212;
     --dropdown-text-1: #c1c1c1;
@@ -24,6 +26,9 @@
     /* Button Colors */
     --button-bg-1: #0057b8;
     --button-text-1: #f8f8f8;
+    --button-bg-light: #D0E7FF;
+    --button-bg-light-hover: #B8DCFF;
+    --button-text-dark: #002450;
   }
 }
 
@@ -40,6 +45,9 @@
   }
   .bg-global-4 {
     background-color: var(--global-bg-4);
+  }
+  .bg-global-5 {
+    background-color: var(--global-bg-5);
   }
   .text-global-1 {
     color: var(--global-text-1);
