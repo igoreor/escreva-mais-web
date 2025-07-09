@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Global Colors */
+    --global-bg-1: #ebf4ff;
+    --global-bg-2: #f8f8f8;
+    --global-bg-3: #ffffff;
+    --global-bg-4: #121212;
+    --global-text-1: #002450;
+    --global-text-2: #0057b8;
+    --global-text-3: #07ab39;
+    --global-text-4: #121212;
+    --global-text-5: #888888;
+    --global-text-6: #ec5c52;
+    --global-text-7: #c1c1c1;
+
+    /* Dropdown Colors */
+    --dropdown-bg-1: #121212;
+    --dropdown-text-1: #c1c1c1;
+
+    /* Button Colors */
+    --button-bg-1: #0057b8;
+    --button-text-1: #f8f8f8;
+  }
+}
+
+@layer utilities {
+  /* Global */
+  .bg-global-1 {
+    background-color: var(--global-bg-1);
+  }
+  .bg-global-2 {
+    background-color: var(--global-bg-2);
+  }
+  .bg-global-3 {
+    background-color: var(--global-bg-3);
+  }
+  .bg-global-4 {
+    background-color: var(--global-bg-4);
+  }
+  .text-global-1 {
+    color: var(--global-text-1);
+  }
+  .text-global-2 {
+    color: var(--global-text-2);
+  }
+  .text-global-3 {
+    color: var(--global-text-3);
+  }
+  .text-global-4 {
+    color: var(--global-text-4);
+  }
+  .text-global-5 {
+    color: var(--global-text-5);
+  }
+  .text-global-6 {
+    color: var(--global-text-6);
+  }
+  .text-global-7 {
+    color: var(--global-text-7);
+  }
+
+  /* Dropdown */
+  .bg-dropdown-1 {
+    background-color: var(--dropdown-bg-1);
+  }
+  .text-dropdown-1 {
+    color: var(--dropdown-text-1);
+  }
+
+  /* Button */
+  .bg-button-1 {
+    background-color: var(--button-bg-1);
+  }
+  .text-button-1 {
+    color: var(--button-text-1);
+  }
+}
