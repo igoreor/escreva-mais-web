@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
+import { MdCalendarToday, MdTimer, MdDone } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
@@ -97,15 +97,9 @@ const MyEssaysPage: React.FC = () => {
                   <span className="font-normal text-[#121212]">{essay.topic}</span>
                 </p>
 
-                <div className="flex gap-2 items-center">
-                  <Image
-                    src="/images/img_calendar_today.svg"
-                    alt="Calendar"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                  <span className="text-sm sm:text-base text-[#888888]">
+                <div className="flex gap-2 items-center text-[#888888]">
+                  <MdCalendarToday className="w-5 h-5" size={20} />
+                  <span className="text-sm sm:text-base">
                     Enviada em: {essay.submittedDate}
                   </span>
                 </div>
@@ -120,7 +114,7 @@ const MyEssaysPage: React.FC = () => {
                     className="bg-[#88888830] text-[#888888] border-none rounded-[25px] px-6 py-3 flex items-center gap-3 w-full lg:w-auto justify-center hover:bg-[#88888840]"
                     disabled
                   >
-                    <Image src="/images/img_timer.svg" alt="Timer" width={24} height={24} />
+                    <MdTimer size={24} />
                     <span>Aguardando correção</span>
                   </Button>
                 ) : (
@@ -130,7 +124,7 @@ const MyEssaysPage: React.FC = () => {
                     className="bg-[#07ab3930] text-[#07ab39] border-none rounded-[25px] px-6 py-3 flex items-center gap-3 w-full lg:w-auto justify-center hover:bg-[#07ab3940] cursor-pointer"
                     onClick={() => handleCorrectedEssayClick(essay.id)}
                   >
-                    <Image src="/images/img_done.svg" alt="Done" width={24} height={24} />
+                    <MdDone size={24} />
                     <span>Corrigida</span>
                   </Button>
                 )}
@@ -155,15 +149,9 @@ const MyEssaysPage: React.FC = () => {
                 <span className="font-normal text-[#121212]">{draft.topic}</span>
               </p>
 
-              <div className="flex gap-2 items-center">
-                <Image
-                  src="/images/img_calendar_today.svg"
-                  alt="Calendar"
-                  width={20}
-                  height={20}
-                  className="w-5 h-5"
-                />
-                <span className="text-sm sm:text-base text-[#888888]">
+              <div className="flex gap-2 items-center text-[#888888]">
+                <MdCalendarToday className="w-5 h-5" size={20} />
+                <span className="text-sm sm:text-base">
                   Salvo em: {draft.savedDate}
                 </span>
               </div>
