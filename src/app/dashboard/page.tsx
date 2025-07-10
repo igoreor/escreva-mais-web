@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
 import Sidebar from '@/components/common/SideBar';
+import { FiCheckCircle, FiAlertCircle, FiBarChart2, FiFileText } from 'react-icons/fi';
 
 interface CompetencyCardProps {
   title: string;
@@ -11,12 +11,12 @@ interface CompetencyCardProps {
 }
 
 const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => (
-  <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
-    <h3 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 text-center mb-4 sm:mb-5">
+  <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6 flex flex-col items-center text-center">
+    <h3 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 mb-4 sm:mb-5">
       {title}
     </h3>
-    <div className="flex flex-col gap-2">
-      <div className="flex items-end gap-1 sm:gap-2">
+    <div className="flex flex-col gap-2 items-center">
+      <div className="flex items-end gap-1 sm:gap-2 justify-center">
         <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px]">
           {score}
         </span>
@@ -27,7 +27,7 @@ const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, 
           / {average.toFixed(1)} <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
         </span>
       </div>
-      <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px]">
+      <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px] max-w-xs">
         {description}
       </p>
     </div>
@@ -43,6 +43,8 @@ const StudentDashboard: React.FC = () => {
     { title: 'Competência 5', score: 200, average: 2.0, description: 'Proposta de intervenção' }
   ];
 
+  const cardSizeClasses = 'w-full max-w-[470px]'; // tamanho fixo igual para os cards de melhor/pior e para competências
+
   return (
     <div className="flex w-full bg-global-2">
       {/* Sidebar fixa */}
@@ -54,140 +56,115 @@ const StudentDashboard: React.FC = () => {
           Olá, primeiro nome!
         </h1>
 
-        {/* MÉDIA GERAL */}
-        <div className="flex flex-col gap-6 sm:gap-8 md:gap-9 max-w-6xl mx-auto w-full">
-          <div className="flex flex-row justify-start items-center w-full bg-global-1 border border-[#7ebcff] rounded-[10px] p-4 sm:p-5 md:p-6">
-            <div className="flex flex-col justify-center items-start flex-1 ml-1">
-              <h2 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
-                Média geral
-              </h2>
-              <div className="relative w-full">
-                <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px] text-center absolute bottom-0">
-                  Baseado em todas as redações corrigidas
-                </p>
-                <div className="flex flex-row justify-start items-start w-full p-1.5">
-                  <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px] mb-3">
-                    920
-                  </span>
-                  <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] self-end mb-4 ml-1">
-                    pontos
-                  </span>
-                  <span className="text-global-4 text-base sm:text-xl font-normal leading-6 self-center ml-6">
-                    / 9.2 <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
-                  </span>
-                </div>
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-10">
+
+          {/* MÉDIA GERAL */}
+          <div className="w-full bg-blue-100 border border-blue-400 rounded-lg p-6 flex justify-between items-center">
+            <div>
+              <h2 className="font-semibold text-blue-800 mb-2">Média geral</h2>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-normal text-blue-900">920</span>
+                <span className="text-gray-500">pontos</span>
+                <span className="text-lg text-gray-700">/ 9.2 em média</span>
               </div>
+              <p className="text-sm text-gray-700 mt-1">Baseado em todas as redações corrigidas</p>
             </div>
-            <Image
-              src="/images/img_vector.svg"
-              alt="Chart icon"
-              width={42}
-              height={42}
-              className="w-8 sm:w-10 md:w-[42px] h-8 sm:h-10 md:h-[42px] mr-4 sm:mr-6"
-            />
+            <FiBarChart2 size={32} className="text-black" />
           </div>
 
-          {/* MELHOR E PIOR */}
-          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 w-full">
+          {/* MELHOR E PIOR REDAÇÃO */}
+          <div className="flex gap-8 w-full">
             {/* Melhor Redação */}
-            <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
-              <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
-                <h3 className="text-global-3 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
-                  Melhor redação
-                </h3>
-                <div className="flex flex-col gap-0.5 justify-start items-center w-full pr-1.5 pl-1.5 -mt-0.5">
-                  <div className="flex flex-row justify-start items-end w-full mt-1.5">
-                    <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px] self-center">
-                      980
-                    </span>
-                    <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] mb-1.5 ml-1">
-                      pontos
-                    </span>
-                    <span className="text-global-4 text-base sm:text-xl font-normal leading-6 mb-1 ml-6">
-                      / 9.8 <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
-                    </span>
-                  </div>
-                  <div className="flex flex-row justify-start items-center w-full">
-                    <Image
-                      src="/images/img_group_gray_900.svg"
-                      alt="Subject icon"
-                      width={24}
-                      height={24}
-                      className="w-6 h-6"
-                    />
-                    <span className="text-global-4 text-sm sm:text-base font-normal leading-[19px] text-center ml-1">
-                      Tecnologia e sociedade
-                    </span>
-                  </div>
+            <div className="flex-1 bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-green-600 font-semibold mb-1 text-center">Melhor redação</h3>
+                <div className="flex items-baseline gap-2 justify-center mb-1">
+                  <span className="text-2xl font-normal text-blue-900">980</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 9.8 em média</span>
+                </div>
+                <div className="flex items-center gap-1 justify-center">
+                  <FiFileText size={18} className="text-gray-800" />
+                  <span className="text-gray-800 text-sm">Tecnologia e sociedade</span>
                 </div>
               </div>
-              <Image
-                src="/images/img_done.svg"
-                alt="Success icon"
-                width={74}
-                height={74}
-                className="w-12 sm:w-16 md:w-[74px] h-12 sm:h-16 md:h-[74px] self-center mr-2.5"
-              />
+              <FiCheckCircle size={48} className="text-green-500" />
             </div>
 
             {/* Pior Redação */}
-            <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
-              <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
-                <h3 className="text-global-6 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
-                  Pior redação
-                </h3>
-                <div className="flex flex-col gap-0.5 justify-start items-center w-full pr-1.5 pl-1.5 -mt-0.5">
-                  <div className="flex flex-row justify-start items-end w-full mt-1.5">
-                    <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px] self-center">
-                      840
-                    </span>
-                    <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] mb-1.5 ml-1">
-                      pontos
-                    </span>
-                    <span className="text-global-4 text-base sm:text-xl font-normal leading-6 mb-1 ml-6">
-                      / 8.4 <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
-                    </span>
-                  </div>
-                  <div className="flex flex-row justify-start items-center w-full">
-                    <Image
-                      src="/images/img_group_gray_900.svg"
-                      alt="Subject icon"
-                      width={24}
-                      height={24}
-                      className="w-6 h-6"
-                    />
-                    <span className="text-global-4 text-sm sm:text-base font-normal leading-[19px] text-center ml-1">
-                      Mobilidade urbana
-                    </span>
-                  </div>
+            <div className="flex-1 bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-red-500 font-semibold mb-1 text-center">Pior redação</h3>
+                <div className="flex items-baseline gap-2 justify-center mb-1">
+                  <span className="text-2xl font-normal text-blue-900">840</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 8.4 em média</span>
+                </div>
+                <div className="flex items-center gap-1 justify-center">
+                  <FiFileText size={18} className="text-gray-800" />
+                  <span className="text-gray-800 text-sm">Mobilidade urbana</span>
                 </div>
               </div>
-              <Image
-                src="/images/img_error_outline.svg"
-                alt="Error icon"
-                width={74}
-                height={74}
-                className="w-12 sm:w-16 md:w-[74px] h-12 sm:h-16 md:h-[74px] self-center mr-2.5"
-              />
+              <FiAlertCircle size={48} className="text-yellow-500" />
             </div>
           </div>
-        </div>
 
-        {/* COMPETÊNCIAS */}
-        <div className="flex flex-col gap-3 justify-start items-start w-full max-w-6xl mx-auto mt-10">
-          <h2 className="text-global-2 text-lg sm:text-xl font-semibold leading-6 text-left">
-            Desempenho por competência
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full">
-            {competencies.map((competency, index) => (
-              <CompetencyCard
-                key={index}
-                title={competency.title}
-                score={competency.score}
-                average={competency.average}
-                description={competency.description}
-              />
-            ))}
+          {/* DESEMPENHO POR COMPETÊNCIA */}
+          <div className="w-full">
+            <h2 className="text-blue-700 font-semibold mb-4 text-center">Desempenho por competência</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <h3 className="font-semibold text-blue-900 mb-2">Competência 1</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-2xl font-normal text-blue-900">200</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 2.0 em média</span>
+                </div>
+                <p className="text-gray-800">Domínio da norma padrão</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <h3 className="font-semibold text-blue-900 mb-2">Competência 2</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-2xl font-normal text-blue-900">160</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 1.6 em média</span>
+                </div>
+                <p className="text-gray-800">Compreensão da proposta</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <h3 className="font-semibold text-blue-900 mb-2">Competência 3</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-2xl font-normal text-blue-900">200</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 2.0 em média</span>
+                </div>
+                <p className="text-gray-800">Capacidade de argumentação</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <h3 className="font-semibold text-blue-900 mb-2">Competência 4</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-2xl font-normal text-blue-900">200</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 2.0 em média</span>
+                </div>
+                <p className="text-gray-800">Conhecimento dos mecanismos linguísticos</p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                <h3 className="font-semibold text-blue-900 mb-2">Competência 5</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-2">
+                  <span className="text-2xl font-normal text-blue-900">200</span>
+                  <span className="text-gray-500">pontos</span>
+                  <span className="text-lg text-gray-700">/ 2.0 em média</span>
+                </div>
+                <p className="text-gray-800">Proposta de intervenção</p>
+
+              </div>
+            </div>
           </div>
         </div>
       </main>
