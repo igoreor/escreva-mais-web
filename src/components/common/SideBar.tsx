@@ -1,50 +1,54 @@
 'use client';
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+// Importando ícones do react-icons (Feather Icons)
+import { FiHome, FiUpload, FiFileText, FiUser } from 'react-icons/fi';
 
 interface SidebarProps {
   className?: string;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
-  const [activeItem, setActiveItem] = useState('dashboard');
+  const pathname = usePathname();
 
   const menuItems = [
     {
       id: 'dashboard',
       label: 'Início',
-      icon: '/images/img_home.svg',
+      icon: <FiHome size={34} />,
       href: '/dashboard'
     },
     {
       id: 'submit',
       label: 'Enviar Nova Redação',
-      icon: '/images/img_file_upload.svg',
+      icon: <FiUpload size={34} />,
       href: '/submit-essay'
     },
     {
       id: 'essays',
       label: 'Minhas Redações',
-      icon: '/images/img_group.svg',
+      icon: <FiFileText size={34} />,
       href: '/essays'
     },
     {
       id: 'profile',
       label: 'Meu perfil',
-      icon: '/images/img_person.svg',
+      icon: <FiUser size={34} />,
       href: '/profile'
     }
   ];
 
+  const activeItem = menuItems.find(item => pathname.startsWith(item.href))?.id || '';
+
   return (
-    <div className={`w-full lg:w-[18%] bg-global-3 shadow-[0px_4px_4px_#0000003f] flex flex-col pt-[30px] gap-12 ${className}`}>
+    <div className={`fixed top-0 left-0 h-screen w-full lg:w-[270px] bg-global-3 shadow-[0px_4px_4px_#0000003f] flex flex-col pt-[30px] gap-12 ${className}`}>
       <div className="flex justify-center px-4">
-        <Image
+        {/* Pode continuar usando a imagem do logo */}
+        <img
           src="/images/img_logo.svg"
           alt="Logo"
-          width={118}
-          height={96}
           className="w-[44%] h-auto"
         />
       </div>
@@ -58,16 +62,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
               className={`flex flex-row justify-start items-center w-full p-1.5 transition-all duration-200 hover:bg-gray-50 ${
                 activeItem === item.id ? 'bg-blue-50' : ''
               }`}
-              onClick={() => setActiveItem(item.id)}
             >
-              <Image
-                src={item.icon}
-                alt={item.label}
-                width={34}
-                height={34}
-                className="w-[34px] h-[34px] ml-6"
-              />
-              <span className="text-global-2 text-base font-normal leading-[19px] text-left ml-3.5">
+              <div className="ml-6 text-global-2">
+                {item.icon}
+              </div>
+              <span className="text-global-2 text-base font-normal leading-[50px] text-left ml-3.5">
                 {item.label}
               </span>
             </Link>
@@ -76,13 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
 
         <div className="flex flex-row justify-start items-center w-full">
           <button className="flex flex-row justify-start items-center w-full p-1.5 transition-all duration-200 hover:bg-gray-50">
-            <Image
-              src="/images/img_logout.svg"
-              alt="Logout"
-              width={34}
-              height={34}
-              className="w-[34px] h-[34px] ml-5"
-            />
+            {/* Ícone de logout pode ser importado também */}
+            <FiUser size={34} className="ml-5 text-global-2" />
             <span className="text-global-2 text-base font-normal leading-[19px] text-left ml-3.5">
               Sair
             </span>

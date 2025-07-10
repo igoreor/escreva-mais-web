@@ -10,31 +10,29 @@ interface CompetencyCardProps {
   description: string;
 }
 
-const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => {
-  return (
-    <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
-      <h3 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 text-center mb-4 sm:mb-5">
-        {title}
-      </h3>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-end gap-1 sm:gap-2">
-          <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px]">
-            {score}
-          </span>
-          <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] mb-1.5">
-            pontos
-          </span>
-          <span className="text-global-4 text-base sm:text-xl font-normal leading-6 ml-4 sm:ml-6 mb-1">
-            / {average.toFixed(1)} <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
-          </span>
-        </div>
-        <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px]">
-          {description}
-        </p>
+const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => (
+  <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
+    <h3 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 text-center mb-4 sm:mb-5">
+      {title}
+    </h3>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-end gap-1 sm:gap-2">
+        <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px]">
+          {score}
+        </span>
+        <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] mb-1.5">
+          pontos
+        </span>
+        <span className="text-global-4 text-base sm:text-xl font-normal leading-6 ml-4 sm:ml-6 mb-1">
+          / {average.toFixed(1)} <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
+        </span>
       </div>
+      <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px]">
+        {description}
+      </p>
     </div>
-  );
-};
+  </div>
+);
 
 const StudentDashboard: React.FC = () => {
   const competencies = [
@@ -46,14 +44,17 @@ const StudentDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-global-2">
-      <Sidebar />
+    <div className="flex w-full bg-global-2">
+      {/* Sidebar fixa */}
+      <Sidebar className="z-10" />
 
-      <div className="flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-8 sm:py-12 md:py-16 overflow-y-auto">
+      {/* Conteúdo com scroll independente */}
+      <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto py-6 sm:py-8 lg:py-16 px-4 sm:px-6 lg:px-16">
         <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px] text-center mb-10">
           Olá, primeiro nome!
         </h1>
 
+        {/* MÉDIA GERAL */}
         <div className="flex flex-col gap-6 sm:gap-8 md:gap-9 max-w-6xl mx-auto w-full">
           <div className="flex flex-row justify-start items-center w-full bg-global-1 border border-[#7ebcff] rounded-[10px] p-4 sm:p-5 md:p-6">
             <div className="flex flex-col justify-center items-start flex-1 ml-1">
@@ -86,7 +87,9 @@ const StudentDashboard: React.FC = () => {
             />
           </div>
 
+          {/* MELHOR E PIOR */}
           <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 w-full">
+            {/* Melhor Redação */}
             <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
               <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
                 <h3 className="text-global-3 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
@@ -126,6 +129,8 @@ const StudentDashboard: React.FC = () => {
                 className="w-12 sm:w-16 md:w-[74px] h-12 sm:h-16 md:h-[74px] self-center mr-2.5"
               />
             </div>
+
+            {/* Pior Redação */}
             <div className="flex flex-row justify-start items-start w-full lg:w-[470px] bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6">
               <div className="flex flex-col justify-center items-start flex-1 mb-3 ml-1">
                 <h3 className="text-global-6 text-lg sm:text-xl font-semibold leading-6 text-center mb-2">
@@ -167,6 +172,8 @@ const StudentDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* COMPETÊNCIAS */}
         <div className="flex flex-col gap-3 justify-start items-start w-full max-w-6xl mx-auto mt-10">
           <h2 className="text-global-2 text-lg sm:text-xl font-semibold leading-6 text-left">
             Desempenho por competência
@@ -183,7 +190,7 @@ const StudentDashboard: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
