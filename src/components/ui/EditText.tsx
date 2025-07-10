@@ -35,9 +35,9 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(({
   const [isFocused, setIsFocused] = useState(false);
 
   const variants = {
-    outlined: 'border border-gray-600 bg-global-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500',
-    filled: 'bg-gray-100 border-b-2 border-gray-300 focus:border-blue-500 focus:bg-white',
-    standard: 'border-b border-gray-300 bg-transparent focus:border-blue-500'
+    outlined: 'border border-gray-600 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500',
+    filled: 'bg-white text-black border-b-2 border-gray-300 placeholder-gray-500 focus:border-blue-500',
+    standard: 'border-b border-gray-300 bg-transparent text-black placeholder-gray-500 focus:border-blue-500'
   };
 
   const sizes = {

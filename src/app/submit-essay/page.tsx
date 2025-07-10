@@ -40,7 +40,8 @@ const SubmitEssayPage: React.FC = () => {
     <div className="flex min-h-screen bg-global-2">
       <Sidebar />
 
-      <div className="flex flex-col flex-1 px-4 sm:px-8 md:px-12 lg:px-16 py-10 sm:py-12 md:py-16 lg:py-20 overflow-y-auto">
+      {/* Adicionando margin-left para compensar a Sidebar fixa (w-64 = 256px) */}
+      <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
         <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
           Enviar nova redação
         </h1>

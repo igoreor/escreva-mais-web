@@ -65,13 +65,14 @@ const Dropdown: React.FC<DropdownProps> = ({
         disabled={disabled}
         className={`
           w-full flex items-center justify-between
-          bg-dropdown-1 text-dropdown-1
+          bg-white text-black
+          border border-black rounded-md
           px-4 sm:px-5 md:px-6 py-3 sm:py-4 md:py-4.5
           text-sm sm:text-base md:text-base
           font-normal leading-[19px] text-left
           transition-all duration-200 ease-in-out
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-800'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100'}
           ${isOpen ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
         `}
         aria-haspopup="listbox"
@@ -90,9 +91,9 @@ const Dropdown: React.FC<DropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-dropdown-1 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-black rounded-md shadow-lg max-h-60 overflow-auto">
           {options.length === 0 ? (
-            <div className="px-4 py-3 text-dropdown-1 text-sm">
+            <div className="px-4 py-3 text-black text-sm">
               No options available
             </div>
           ) : (
@@ -104,8 +105,8 @@ const Dropdown: React.FC<DropdownProps> = ({
                 className={`
                   w-full px-4 py-3 text-left text-sm
                   transition-colors duration-150
-                  hover:bg-gray-700 focus:bg-gray-700 focus:outline-none
-                  ${selectedValue === option.value ? 'bg-gray-700 text-white' : 'text-dropdown-1'}
+                  hover:bg-gray-100 focus:bg-gray-100 focus:outline-none
+                  ${selectedValue === option.value ? 'bg-gray-100 font-medium text-black' : 'text-black'}
                 `}
                 role="option"
                 aria-selected={selectedValue === option.value}
