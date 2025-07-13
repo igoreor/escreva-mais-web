@@ -93,9 +93,10 @@ const EscrevaLandingPage: React.FC = () => {
             <div className="flex-1 text-center lg:text-left">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-white leading-tight mb-8 lg:mb-12">
                 <span className="font-normal">Utilizamos </span>
-                <span className="font-semibold">inteligência artificial para facilitar a correção de redações</span>
+                <span className="font-semibold">inteligência artificial</span>
+                <span> para facilitar a correção de redações</span>
               </h1>
-              <div className="flex justify-center lg:justify-start">
+              <div className="flex w-full justify-center mt-4">
                 <a
                   href="#segunda-secao"
                   className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-200"
@@ -112,7 +113,7 @@ const EscrevaLandingPage: React.FC = () => {
             </div>
 
             {/* Hero Image */}
-            <div className="flex-shrink-0">
+            <div className="flex justify-center">
               <div className="w-[280px] sm:w-[350px] lg:w-[482px] h-[280px] sm:h-[350px] lg:h-[482px] rounded-[40px] sm:rounded-[50px] lg:rounded-[68px] overflow-hidden">
                 <Image
                   src="/images/img_8804071_1.png"
@@ -146,11 +147,12 @@ const EscrevaLandingPage: React.FC = () => {
 
             {/* Text Content */}
             <div className="flex-1 text-center lg:text-right order-1 lg:order-2">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-global-2 leading-tight mb-8 lg:mb-12">
+              <h2 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-global-2 leading-tight mb-8 lg:mb-12">
                 <span className="font-normal">Dando mais </span>
-                <span className="font-semibold">tempo para o professor focar no desenvolvimento do alunos</span>
+                <span className="font-semibold">tempo</span>
+                <span> para o professor focar no desenvolvimento do alunos</span>
               </h2>
-              <div className="flex justify-center lg:justify-end">
+              <div className="flex w-full justify-center mt-4">
                 <a
                   href="#terceira-secao"
                   className="w-12 h-12 sm:w-14 sm:h-14 bg-button-1 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-200"
