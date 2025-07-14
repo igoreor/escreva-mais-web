@@ -172,18 +172,20 @@ const EscrevaLandingPage: React.FC = () => {
       </section>
 
       {/* Third Section */}
-      <section id="terceira-secao" className="bg-global-5 py-12 sm:py-16 lg:py-20">
-        <div className="max-w-[1166px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 mb-12 lg:mb-16">
+      <section id="terceira-secao" className="bg-global-5 w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1166px] mx-auto py-6 sm:py-8 lg:py-10">
+          <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12">
             {/* Text Content */}
             <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-white leading-tight mb-6 lg:mb-8">
+              <h2 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-white leading-tight mb-8 lg:mb-12">
                 Facilitando a correção e aprimorando o ensino.
               </h2>
-              <p className="text-base sm:text-lg lg:text-xl text-white leading-relaxed">
+              <br />
+              <p className="text-base sm:text-lg lg:text-xl text-white leading-relaxed text-justify">
+                
                 Nosso modelo proporciona resultados precisos e confiáveis de forma eficiente.
                 <br /><br />
-                Disponível tanto para iOS quanto para Android, nossa solução inovadora permite que você capture uma foto de uma redação e receba o resultado imediatamente.
+                Disponível tanto para iOS quanto para Android, nossa solução inovadora permite que você capture uma foto de uma redação e receba o resultado imediatamente.  Um processo ágil, prático e totalmente seguro, garantindo que você tenha a resposta que precisa no momento em que mais importa.
               </p>
             </div>
 
@@ -202,12 +204,17 @@ const EscrevaLandingPage: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mt-12">
             <Button
               variant="secondary"
               size="md"
               onClick={handleDownloadSheet}
-              className="bg-[#90c2ff] text-[#002450] rounded-full px-6 py-4 font-medium hover:bg-[#78b4fc] transition-colors"
+              style={{
+                backgroundColor: '#90c2ff',
+                color: '#002450',
+                borderRadius: '50px / 100%',
+              }}
+              
             >
               Baixar folha de redação
             </Button>
@@ -215,26 +222,30 @@ const EscrevaLandingPage: React.FC = () => {
               variant="secondary"
               size="md"
               onClick={handleLogin}
-              className="bg-[#90c2ff] text-[#002450] rounded-full px-6 py-4 font-medium hover:bg-[#78b4fc] transition-colors"
+              style={{
+                backgroundColor: '#90c2ff',
+                color: '#002450',
+                borderRadius: '50px / 100%',
+              }}
             >
               Fazer login
             </Button>
           </div>
         </div>
-      </section>
+      </section><br />
       {/* Login Section */}
-      <section className="bg-white py-12 sm:py-16 lg:py-20">
+      <section className="bg-white pt-12 pb-4 sm:pt-16 sm:pb-6 lg:pt-20 lg:pb-8">
         <div className="max-w-[570px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <div className="text-center mb-12 lg:mb-16">
             <Image
-              src="/images/img_logo.svg"
+              src="/images/img_logo-copy.svg"
               alt="Escreva+ Logo"
               width={350}
               height={48}
               className="mx-auto w-[250px] sm:w-[300px] lg:w-[350px] h-auto"
             />
-          </div>
+          </div><br />
           {/* Role Selection */}
           <div className="mb-6">
             <div className="bg-global-2 rounded p-1.5 flex">
@@ -298,18 +309,18 @@ const EscrevaLandingPage: React.FC = () => {
             </Button>
           </div>
           {/* Additional Links */}
-          <div className="text-center mt-8 space-y-2">
+          <div className="text-center pt-20 space-y-2">
             <button
               onClick={handleForgotPassword}
-              className="text-global-1 text-sm sm:text-base hover:underline"
+              className="text-global-2 text-sm sm:text-base hover:underline"
             >
               Esqueci a senha
             </button>
-            <p className="text-global-2 text-sm sm:text-base">
+            <p className="text-global-1 text-sm sm:text-base">
               Ainda não tem uma conta?{' '}
               <button
                 onClick={handleRegister}
-                className="text-global-1 hover:underline"
+                className="text-global-2 hover:underline"
               >
                 Cadastre-se.
               </button>
@@ -319,8 +330,8 @@ const EscrevaLandingPage: React.FC = () => {
       </section>
       {/* Partner Logos */}
       <section className="bg-white py-8 sm:py-12">
-        <div className="max-w-[630px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 lg:gap-12">
+        <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-2 lg:gap-4">
             <Image
               src="/images/img_nees_01_1.png"
               alt="NEES Partner"
