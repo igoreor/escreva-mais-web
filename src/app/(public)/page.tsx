@@ -70,7 +70,25 @@ const EscrevaLandingPage: React.FC = () => {
     setSelectedRole(role);
   };
   const handleLogin = () => {
-    console.log('Login attempt:', { role: selectedRole, email, password });
+  // Validação de campos obrigatórios
+    if (!email || !password) {
+      alert('Por favor, preencha todos os campos.');
+      return;
+  }
+
+  // Simulação de login válido (substitua por chamada real à API depois)
+    const isStudentValid = selectedRole === 'student' && email === 'aluno@teste.com' && password === '123456';
+    const isTeacherValid = selectedRole === 'teacher' && email === 'professor@teste.com' && password === '123456';
+
+    if (isStudentValid) {
+      window.location.href = '/dashboard-student'; // substitua pela rota real do aluno
+    } else if (isTeacherValid) {
+      window.location.href = '/dashboard-teacher'; // substitua pela rota real do professor
+    } else {
+      alert('E-mail ou senha incorretos. Verifique seus dados e tente novamente.');
+    }
+  
+  
   };
   const handleDownloadSheet = () => {
     console.log('Download sheet clicked');
@@ -213,6 +231,7 @@ const EscrevaLandingPage: React.FC = () => {
                 backgroundColor: '#90c2ff',
                 color: '#002450',
                 borderRadius: '50px / 100%',
+                
               }}
               
             >
@@ -226,6 +245,7 @@ const EscrevaLandingPage: React.FC = () => {
                 backgroundColor: '#90c2ff',
                 color: '#002450',
                 borderRadius: '50px / 100%',
+                
               }}
             >
               Fazer login
