@@ -76,14 +76,14 @@ const EscrevaLandingPage: React.FC = () => {
       return;
   }
 
-  // Simulação de login válido (substitua por chamada real à API depois)
+  //(substitua por chamada real à API depois)
     const isStudentValid = selectedRole === 'student' && email === 'aluno@teste.com' && password === '123456';
     const isTeacherValid = selectedRole === 'teacher' && email === 'professor@teste.com' && password === '123456';
 
     if (isStudentValid) {
-      window.location.href = '/dashboard-student'; // substitua pela rota real do aluno
+      window.location.href = '/dashboard'; 
     } else if (isTeacherValid) {
-      window.location.href = '/dashboard-teacher'; // substitua pela rota real do professor
+      window.location.href = '/profile_professor'; 
     } else {
       alert('E-mail ou senha incorretos. Verifique seus dados e tente novamente.');
     }
@@ -325,7 +325,7 @@ const EscrevaLandingPage: React.FC = () => {
               fullWidth
               className="font-semibold"
             >
-              Entrar como aluno
+              {selectedRole === 'student' ? 'Entrar como aluno' : 'Entrar como professor'}
             </Button>
           </div>
           {/* Additional Links */}
