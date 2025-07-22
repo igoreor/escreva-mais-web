@@ -33,29 +33,29 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className="w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base text-global-2 bg-transparent border-2 border-global-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
+        className="w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-200"
         placeholder=" "
       />
       <label
         className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none ${
           isFocused || value
-            ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-1' :'top-3 sm:top-4 text-sm sm:text-base text-global-3'
+            ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2' :'top-3 sm:top-4 text-sm sm:text-base text-global-1'
         }`}
       >
         {placeholder}
       </label>
-      {rightIcon && type === 'password' && (
+      {rightIcon && type === 'password' && value &&(
         <button
           type="button"
           onClick={handleTogglePassword}
-          className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2"
+          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-1"
         >
           <Image
-            src={rightIcon}
+            src="/images/img_trailing_icon.svg"
             alt="Toggle password visibility"
-            width={20}
-            height={20}
-            className="w-5 h-5 sm:w-6 sm:h-6"
+            width={24}
+            height={24}
+            className="w-6 h-6"
           />
         </button>
       )}
@@ -64,8 +64,8 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
 };
 const EscrevaLandingPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'teacher'>('student');
-  const [email, setEmail] = useState('exemplo@gmail.com');
-  const [password, setPassword] = useState('Senha');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const handleRoleChange = (role: 'student' | 'teacher') => {
     setSelectedRole(role);
   };
@@ -168,7 +168,7 @@ const EscrevaLandingPage: React.FC = () => {
               <h2 className="text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal text-global-2 leading-tight mb-8 lg:mb-12">
                 <span className="font-normal">Dando mais </span>
                 <span className="font-semibold">tempo</span>
-                <span> para o professor focar no desenvolvimento do alunos</span>
+                <span> para o professor focar no desenvolvimento do aluno</span>
               </h2>
               <div className="flex w-full justify-center mt-4">
                 <a
@@ -240,7 +240,7 @@ const EscrevaLandingPage: React.FC = () => {
             <Button
               variant="secondary"
               size="md"
-              onClick={handleLogin}
+              
               style={{
                 backgroundColor: '#90c2ff',
                 color: '#002450',
@@ -254,13 +254,15 @@ const EscrevaLandingPage: React.FC = () => {
         </div>
       </section><br />
       {/* Login Section */}
-      <section className="bg-white pt-12 pb-4 sm:pt-16 sm:pb-6 lg:pt-20 lg:pb-8">
+      <section 
+      id="login-section"
+      className="bg-white pt-12 pb-4 sm:pt-16 sm:pb-6 lg:pt-20 lg:pb-8">
         <div className="max-w-[570px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <div className="text-center mb-12 lg:mb-16">
             <Image
               src="/images/img_logo-copy.svg"
-              alt="Escreva+ Logo"
+              alt="Escreva+ Logo-txt"
               width={350}
               height={48}
               className="mx-auto w-[250px] sm:w-[300px] lg:w-[350px] h-auto"
@@ -272,7 +274,7 @@ const EscrevaLandingPage: React.FC = () => {
               <button
                 onClick={() => handleRoleChange('student')}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 ${
-                  selectedRole === 'student' ?'bg-button-2 text-global-2 shadow-md' :'text-global-2 hover:bg-gray-200'
+                  selectedRole === 'student' ?'bg-button-2 text-global-1 shadow-md' :'text-global-1 hover:bg-gray-200'
                 }`}
               >
                 <Image
@@ -287,7 +289,7 @@ const EscrevaLandingPage: React.FC = () => {
               <button
                 onClick={() => handleRoleChange('teacher')}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 ${
-                  selectedRole === 'teacher' ?'bg-button-2 text-global-2 shadow-md' :'text-global-2 hover:bg-gray-200'
+                  selectedRole === 'teacher' ?'bg-button-2 text-global-1 shadow-md' :'text-global-1 hover:bg-gray-200'
                 }`}
               >
                 <Image
@@ -349,7 +351,7 @@ const EscrevaLandingPage: React.FC = () => {
         </div>
       </section>
       {/* Partner Logos */}
-      <section className="bg-white py-8 sm:py-12">
+      <section className="bg-white py-20 sm:py-22">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-2 lg:gap-4">
             <Image
@@ -379,13 +381,7 @@ const EscrevaLandingPage: React.FC = () => {
               width={35}
               height={46}
               className="h-10 sm:h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
-            />
-            <Image
-              src="/images/img_screenshot_2024_12_03_74x124.png"
-              alt="Partner Logo"
-              width={99}
-              height={59}
-              className="h-10 sm:h-12 w-auto opacity-70 hover:opacity-100 transition-opacity"
+            
             />
           </div>
         </div>

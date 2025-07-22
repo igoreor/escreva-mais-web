@@ -10,7 +10,10 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   const handleLoginClick = () => {
     // Handle login navigation
-    console.log('Login clicked');
+    const loginSection = document.getElementById('login-section');
+    if (loginSection) {
+      loginSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleRegisterClick = () => {
