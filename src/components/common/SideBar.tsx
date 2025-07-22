@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
       id: 'profile',
       label: 'Meu perfil',
       icon: <FiUser size={34} />,
-      href: '/profile'
+      href: '/profile_aluno'
     }
   ];
 
