@@ -15,10 +15,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
 
   const menuItems = [
     {
-      id: 'dashboard',
+      id: 'student',
       label: 'Início',
       icon: <FiHome size={34} />,
-      href: '/dashboard'
+      href: '/student'
     },
     {
       id: 'submit',
