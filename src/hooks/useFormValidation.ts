@@ -12,7 +12,13 @@ export const useFormValidation = () => {
   });
 
   const validateField = useCallback((field: keyof FormData, value: string, formData?: FormData) => {
+    // CORREÇÃO: Adicionei esta verificação para ignorar a validação do 'userType'.
+    if (field === 'userType') {
+      return; 
+    }
+
     let hasError = false;
+    let errorKey: keyof ValidationErrors = field;
 
     switch (field) {
       case 'fullName':
@@ -27,7 +33,7 @@ export const useFormValidation = () => {
         break;
       
       case 'password':
-        // New password validation: uppercase, number, special character (no minimum length)
+        errorKey = 'passwordStrength'; 
         const hasUppercase = /[A-Z]/.test(value);
         const hasNumber = /\d/.test(value);
         const hasSpecialChar = /[\W_]/.test(value);
@@ -41,8 +47,8 @@ export const useFormValidation = () => {
         break;
     }
 
-    setErrors(prev => ({ ...prev, [field]: hasError }));
-    return hasError;
+    setErrors(prev => ({ ...prev, [errorKey]: hasError }));
+    
   }, []);
 
   const getPasswordValidationMessages = useCallback((password: string) => {
