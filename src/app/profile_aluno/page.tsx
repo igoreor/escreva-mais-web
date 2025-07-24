@@ -1,148 +1,151 @@
 "use client";
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  FormLabel,
-  Heading,
-  HStack,
-  IconButton,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { FiCamera } from "react-icons/fi";
-import { useState } from "react";
+
+import React, { useState } from "react";
+import { FiCamera, FiEye, FiEyeOff } from "react-icons/fi";
 import Sidebar from "@/components/common/SideBar";
-import RouteGuard from "@/components/auth/RouterGuard";
 
 const ProfilePage = () => {
   const [form, setForm] = useState({
-    name: "Exemplo exemplo exemplo",
+    firstName: "Renata",
+    lastName: "Nogueira",
     email: "exemplo@gmail.com",
     password: "",
     confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
   return (
-    <RouteGuard allowedRoles={["student"]}>
-      <Flex minH="100vh" bg="#f8f8f8">
-        <Sidebar />
+    <div className="flex min-h-screen bg-[#f8f8f8]">
+      <Sidebar />
 
-        <Box
-          flex="1"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          p={8}
-        >
-          <Box bg="white" borderRadius="md" w="full" maxW="500px" p={8}>
-            <VStack spacing={6} w="100%" align="center">
-              <Heading as="h1" fontSize="2xl" color="#002450">
-                Meu perfil
-              </Heading>
+      <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 py-10">
+        <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">
+          Meu perfil
+        </h1>
 
-              <Box position="relative">
-                <Avatar
-                  size="2xl"
-                  name="Foto"
-                  src="https://via.placeholder.com/120x120.png?text=Foto"
-                  border="3px solid #0057b8"
+        {/* Avatar */}
+        <div className="relative mb-8">
+          <img
+            src="/images/image_2.png"
+            alt="Foto de perfil"
+            className="w-32 h-32 rounded-full border-4 border-white object-cover"
+          />
+          <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow cursor-pointer">
+            <FiCamera className="text-gray-700" />
+            <input type="file" className="hidden" />
+          </label>
+        </div>
+
+        {/* Formulário */}
+        <form className="w-full max-w-xl mx-auto flex flex-col gap-4">
+          {/* Nome e sobrenome */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <label className="text-sm text-global-1">Nome</label>
+              <input
+                type="text"
+                value={form.firstName}
+                onChange={(e) => handleChange("firstName", e.target.value)}
+                className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-sm text-global-1">Sobrenome</label>
+              <input
+                type="text"
+                value={form.lastName}
+                onChange={(e) => handleChange("lastName", e.target.value)}
+                className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="text-sm text-global-1">E-mail</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+            />
+          </div>
+
+          {/* Senha e confirmar senha */}
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+            {/* Campo de senha */}
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex-1">
+                <label className="text-sm text-global-1">Senha</label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  placeholder="Digite sua senha"
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
                 />
-                <IconButton
-                  icon={<FiCamera />}
-                  size="sm"
-                  position="absolute"
-                  bottom="0"
-                  right="0"
-                  aria-label="Alterar foto"
-                  borderRadius="full"
-                  bg="white"
-                  shadow="md"
-                  as="label"
-                  htmlFor="file-upload"
-                />
-                <Input id="file-upload" type="file" display="none" />
-              </Box>
-
-              <Box w="100%">
-                <FormLabel fontSize="sm" color="#0057b8">
-                  Nome completo
-                </FormLabel>
-                <Input
-                  value={form.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  borderColor="#0057b8"
-                  focusBorderColor="#0057b8"
-                />
-              </Box>
-
-              <Box w="100%">
-                <FormLabel fontSize="sm" color="#0057b8">
-                  E-mail
-                </FormLabel>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  borderColor="#0057b8"
-                  focusBorderColor="#0057b8"
-                />
-              </Box>
-
-              <HStack w="100%" spacing={4}>
-                <Box flex="1">
-                  <FormLabel fontSize="sm" color="#0057b8">
-                    Senha
-                  </FormLabel>
-                  <Input
-                    type="password"
-                    placeholder="Insira sua nova senha"
-                    value={form.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    borderColor="#0057b8"
-                    focusBorderColor="#0057b8"
-                  />
-                </Box>
-                <Box flex="1">
-                  <FormLabel fontSize="sm" color="#0057b8">
-                    Confirmar senha
-                  </FormLabel>
-                  <Input
-                    type="password"
-                    placeholder="Insira sua nova senha"
-                    value={form.confirmPassword}
-                    onChange={(e) =>
-                      handleChange("confirmPassword", e.target.value)
-                    }
-                    borderColor="#0057b8"
-                    focusBorderColor="#0057b8"
-                  />
-                </Box>
-              </HStack>
-
-              <Button
-                w="100%"
-                bg="#0057b8"
-                color="white"
-                _hover={{ bg: "#00489e" }}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500 hover:text-gray-700"
               >
-                Salvar alterações
-              </Button>
+                {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </div>
 
-              <Button variant="link" color="#ec5c52" fontSize="sm">
-                Excluir dados da conta
-              </Button>
-            </VStack>
-          </Box>
-        </Box>
-      </Flex>
-    </RouteGuard>
+            {/* Campo de confirmação de senha */}
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex-1">
+                <label className="text-sm text-global-1">Confirmar senha</label>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={form.confirmPassword}
+                  placeholder="Confirme sua senha"
+                  onChange={(e) =>
+                    handleChange("confirmPassword", e.target.value)
+                  }
+                  className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                {showConfirmPassword ? (
+                  <FiEyeOff size={20} />
+                ) : (
+                  <FiEye size={20} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Botão salvar */}
+          <button
+            type="submit"
+            className="bg-blue-700 hover:bg-blue-800 text-white py-3 px-6 rounded-md mt-6 w-full"
+          >
+            Salvar alterações
+          </button>
+
+          {/* Excluir conta */}
+          <button
+            type="button"
+            className="text-red-500 text-sm mt-2 text-center"
+          >
+            Excluir dados da conta
+          </button>
+        </form>
+      </main>
+    </div>
   );
 };
 
