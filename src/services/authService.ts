@@ -92,7 +92,7 @@ class AuthService {
   }
 
   static getRedirectPath(role: 'teacher' | 'student'): string {
-    return role === 'teacher' ? '/teacher' : '/student';
+    return role === 'teacher' ? '/teacher/schools' : '/student/classes';
   }
 }
 
