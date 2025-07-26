@@ -3,49 +3,26 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// Importando ícones do react-icons (Feather Icons)
-import { FiHome, FiUpload, FiFileText, FiUser } from 'react-icons/fi';
+export interface SidebarItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+}
 
 interface SidebarProps {
   className?: string;
+  menuItems: SidebarItem[];
+  onLogout?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }) => {
   const pathname = usePathname();
-
-  const menuItems = [
-    {
-      id: 'student',
-      label: 'Início',
-      icon: <FiHome size={34} />,
-      href: '/student'
-    },
-    {
-      id: 'submit',
-      label: 'Enviar Nova Redação',
-      icon: <FiUpload size={34} />,
-      href: '/submit-essay'
-    },
-    {
-      id: 'essays',
-      label: 'Minhas Redações',
-      icon: <FiFileText size={34} />,
-      href: '/essays'
-    },
-    {
-      id: 'profile',
-      label: 'Meu perfil',
-      icon: <FiUser size={34} />,
-      href: '/profile_aluno'
-    }
-  ];
-
   const activeItem = menuItems.find(item => pathname.startsWith(item.href))?.id || '';
 
   return (
     <div className={`fixed top-0 left-0 h-screen w-full lg:w-[270px] bg-global-3 shadow-[0px_4px_4px_#0000003f] flex flex-col pt-[30px] gap-12 ${className}`}>
       <div className="flex justify-center px-4">
-        {/* Pode continuar usando a imagem do logo */}
         <img
           src="/images/img_logo.svg"
           alt="Logo"
@@ -74,9 +51,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
         </div>
 
         <div className="flex flex-row justify-start items-center w-full">
-          <button className="flex flex-row justify-start items-center w-full p-1.5 transition-all duration-200 hover:bg-gray-50">
-            {/* Ícone de logout pode ser importado também */}
-            <FiUser size={34} className="ml-5 text-global-2" />
+          <button
+            onClick={onLogout}
+            className="flex flex-row justify-start items-center w-full p-1.5 transition-all duration-200 hover:bg-gray-50"
+          >
+            <div className="ml-5 text-global-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-[34px] w-[34px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+              </svg>
+            </div>
             <span className="text-global-2 text-base font-normal leading-[19px] text-left ml-3.5">
               Sair
             </span>
