@@ -22,7 +22,7 @@ export function VerifyEmailForm() {
 
       <Button
         type="button"
-        onClick={() => router.push("/registration")}
+        onClick={() => router.push("/")}
         variant="primary"
         size="lg"
         fullWidth
