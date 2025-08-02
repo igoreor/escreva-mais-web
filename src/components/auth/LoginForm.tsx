@@ -125,6 +125,7 @@ const LoginForm: React.FC = () => {
         {/* Login Form */}
         <div className="space-y-6">
           <FloatingTextField
+            name="email"
             placeholder="E-mail"
             value={email}
             onChange={setEmail}
@@ -133,6 +134,7 @@ const LoginForm: React.FC = () => {
             error={errors.email}
           />
           <FloatingTextField
+            name="password"
             placeholder="Senha"
             value={password}
             onChange={setPassword}

@@ -1,10 +1,11 @@
 // components/ui/FloatingTextField.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface FloatingTextFieldProps {
   placeholder: string;
+  name: string;
   value: string;
   onChange: (value: string) => void;
   type?: 'text' | 'email' | 'password';
@@ -15,6 +16,7 @@ interface FloatingTextFieldProps {
 
 const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   placeholder,
+  name,    
   value,
   onChange,
   type = 'text',
@@ -25,6 +27,14 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const [hasValue, setHasValue] = useState(false);
+
+  useEffect(() => {
+    setHasValue(Boolean(value)); 
+  }, [value]);
+
+  const labelIsUp = isFocused || hasValue;
+
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -34,6 +44,8 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   return (
     <div className={`relative ${className}`}>
       <input
+        id={name}
+        name={name}        
         type={inputType}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -45,10 +57,12 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
             : 'border-gray-300 focus:ring-blue-300'
         }`}
         placeholder=" "
+        autoComplete={name} 
       />
       <label
+        htmlFor={name}      
         className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none ${
-          isFocused || value
+          labelIsUp
             ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
             : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
         }`}

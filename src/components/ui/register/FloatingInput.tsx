@@ -41,7 +41,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder=" "
+          placeholder={focused ? placeholder : ''}
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete={autoComplete}
@@ -56,11 +56,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
         `}>
           {label}
         </label>
-        {focused && value === '' && placeholder && (
-          <div className="absolute left-5 top-4 text-sm text-gray-400 pointer-events-none select-none">
-            {placeholder}
-          </div>
-        )}
+        
         {showToggle && value && (
           <button
             type="button"
