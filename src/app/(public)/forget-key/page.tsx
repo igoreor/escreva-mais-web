@@ -41,7 +41,7 @@ export default function ForgetKeyPage() {
             <EmailForm />
             <button
               type="button"
-              onClick={() => router.push("/registration")}
+              onClick={() => router.push("/")}
               className="mt-4 px-4 py-2 text-global-2 rounded hover:bg-blue-300 transition"
             >
               Voltar para tela de login
