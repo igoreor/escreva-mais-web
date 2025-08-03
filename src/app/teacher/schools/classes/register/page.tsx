@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiArrowLeft } from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 
@@ -44,6 +44,7 @@ export default function CreateClassPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Lógica de envio aqui
   };
 
   const handleCancel = () => {
@@ -52,72 +53,71 @@ export default function CreateClassPage() {
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
-      <div className="flex min-h-screen bg-[#f8f8f8]">
+      <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-       <main className="flex-1 lg:ml-[270px] flex items-center justify-center p-10">
-          <div className="w-full max-w-xl">
-            <button onClick={handleCancel} className="text-blue-700 text-sm mb-6">
-              &larr; Voltar
-            </button>
+        <main className="flex-1 lg:ml-[270px] p-10">
+          <button
+            onClick={handleCancel}
+            className="flex items-center text-blue-700 hover:underline mb-4"
+          >
+            <FiArrowLeft className="mr-1" /> Voltar
+          </button>
 
-            <h1 className="text-3xl font-bold text-blue-900 mb-10">
-              Cadastrar turma
-            </h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-8">Cadastrar turma</h1>
 
-           <form onSubmit={handleSubmit} className="max-w-3xl space-y-6 mx-auto">
-              <div>
-                <label className="block text-sm text-blue-900 mb-1">Nome</label>
-                <input
-                  type="text"
-                  value={form.nome}
-                  onChange={(e) => handleChange('nome', e.target.value)}
-                  placeholder="Insira o nome da turma aqui"
-                  className="w-full border border-blue-500 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="max-w-3xl space-y-6 mx-auto">
+            <div>
+              <label className="block text-sm font-medium text-blue-700 mb-1">Nome</label>
+              <input
+                type="text"
+                value={form.nome}
+                onChange={(e) => handleChange('nome', e.target.value)}
+                placeholder="Insira o nome da turma aqui"
+                className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm text-blue-900 mb-1">Descrição</label>
-                <textarea
-                  value={form.descricao}
-                  onChange={(e) => handleChange('descricao', e.target.value)}
-                  placeholder="Insira uma descrição para a turma aqui"
-                  rows={4}
-                  className="w-full border border-blue-500 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-blue-700 mb-1">Descrição</label>
+              <textarea
+                value={form.descricao}
+                onChange={(e) => handleChange('descricao', e.target.value)}
+                placeholder="Insira uma descrição para a turma aqui"
+                rows={4}
+                className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm text-blue-900 mb-1">Turno</label>
-                <select
-                  value={form.turno}
-                  onChange={(e) => handleChange('turno', e.target.value)}
-                  className="w-full border border-blue-500 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option>Matutino</option>
-                  <option>Vespertino</option>
-                  <option>Noturno</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-blue-700 mb-1">Turno</label>
+              <select
+                value={form.turno}
+                onChange={(e) => handleChange('turno', e.target.value)}
+                className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                <option>Matutino</option>
+                <option>Vespertino</option>
+                <option>Noturno</option>
+              </select>
+            </div>
 
-              <div className="flex gap-4 justify-end mt-4">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="border border-blue-600 text-blue-600 px-6 py-2 rounded-md hover:bg-blue-50 transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-700 text-white px-6 py-2 rounded-md hover:bg-blue-800 transition"
-                >
-                  Confirmar cadastro
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-6 py-2 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-50 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition"
+              >
+                Confirmar cadastro
+              </button>
+            </div>
+          </form>
         </main>
       </div>
     </RouteGuard>
