@@ -1,18 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiUser, FiPlus } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 
 const menuItems: SidebarItem[] = [
-  {
-    id: 'home',
-    label: 'Início',
-    icon: <FiHome size={34} />,
-    href: '/student/home',
-  },
   {
     id: 'classes',
     label: 'Minhas Turmas',
@@ -33,23 +28,54 @@ const mockTurmas = [
     nome: 'Turma A - 9º Ano',
     alunos: 32,
     imagem: 'https://www.shutterstock.com/shutterstock/photos/2525595687/display_1500/stock-photo-admont-library-austria-july-a-grand-baroque-library-with-ornate-bookshelves-filled-with-2525595687.jpg',
+    mediaGeral: 885,
+    melhorRedacao: { titulo: 'Sustentabilidade Ambiental', nota: 940 },
+    piorRedacao: { titulo: 'Educação no Brasil', nota: 780 },
+    competencias: [
+      { nome: 'Competência 1', pontos: 180, media: 1.8 },
+      { nome: 'Competência 2', pontos: 170, media: 1.7 },
+      { nome: 'Competência 3', pontos: 185, media: 1.85 },
+      { nome: 'Competência 4', pontos: 175, media: 1.75 },
+      { nome: 'Competência 5', pontos: 175, media: 1.75 },
+    ]
   },
   {
     id: 2,
     nome: 'Turma B - 8º Ano',
     alunos: 28,
     imagem: 'https://www.shutterstock.com/shutterstock/photos/1076952215/display_1500/stock-photo-mother-of-pearl-texture-seashell-1076952215.jpg',
+    mediaGeral: 920,
+    melhorRedacao: { titulo: 'Tecnologia e Sociedade', nota: 980 },
+    piorRedacao: { titulo: 'Mobilidade Urbana', nota: 840 },
+    competencias: [
+      { nome: 'Competência 1', pontos: 200, media: 2.0 },
+      { nome: 'Competência 2', pontos: 160, media: 1.6 },
+      { nome: 'Competência 3', pontos: 200, media: 2.0 },
+      { nome: 'Competência 4', pontos: 200, media: 2.0 },
+      { nome: 'Competência 5', pontos: 200, media: 2.0 },
+    ]
   },
   {
     id: 3,
     nome: 'Turma C - 7º Ano',
     alunos: 25,
     imagem: 'https://www.shutterstock.com/shutterstock/photos/512244589/display_1500/stock-photo-the-texture-of-black-gold-512244589.jpg',
+    mediaGeral: 845,
+    melhorRedacao: { titulo: 'Cidadania Digital', nota: 920 },
+    piorRedacao: { titulo: 'Meio Ambiente', nota: 740 },
+    competencias: [
+      { nome: 'Competência 1', pontos: 170, media: 1.7 },
+      { nome: 'Competência 2', pontos: 160, media: 1.6 },
+      { nome: 'Competência 3', pontos: 165, media: 1.65 },
+      { nome: 'Competência 4', pontos: 175, media: 1.75 },
+      { nome: 'Competência 5', pontos: 175, media: 1.75 },
+    ]
   },
 ];
 
 export default function TeacherClassesPage() {
   const { logout } = useAuth();
+  const router = useRouter();
 
   const [showModal, setShowModal] = useState(false);
   const [codigoTurma, setCodigoTurma] = useState('');
@@ -66,6 +92,13 @@ export default function TeacherClassesPage() {
     fecharModal();
   };
 
+  const selecionarTurma = (turma: { id: number; nome: string; alunos: number; imagem: string; mediaGeral: number; melhorRedacao: { titulo: string; nota: number; }; piorRedacao: { titulo: string; nota: number; }; competencias: { nome: string; pontos: number; media: number; }[]; }) => {
+    // Salva os dados da turma no localStorage ou context
+    localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
+    // Redireciona para a home
+    router.push('/student/home');
+  };
+
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex min-h-screen bg-gray-50">
@@ -78,6 +111,7 @@ export default function TeacherClassesPage() {
             {mockTurmas.map((turma) => (
               <div
                 key={turma.id}
+                onClick={() => selecionarTurma(turma)}
                 className="bg-white rounded-lg shadow hover:shadow-md transition cursor-pointer overflow-hidden"
               >
                 <img

@@ -20,6 +20,30 @@ interface Draft {
   topic: string;
   savedDate: string;
 }
+
+
+const menuItems = [
+  {
+    id: 'student',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: '/student/submit-essay'
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: '/student/essays'
+  }
+];
+
+
 const MyEssaysPage: React.FC = () => {
   const router = useRouter();
 
@@ -67,44 +91,14 @@ const MyEssaysPage: React.FC = () => {
     router.push(`/correction-details?essayId=${essayId}`);
   };
 
+  const { logout } = useAuth();
+
   return (
     <RouteGuard allowedRoles={["student"]}>
       <div className="flex w-full bg-[#f8f8f8]">
         {/* Sidebar fixa */}
-        <Sidebar
-          menuItems={[
-             {
-                  id: 'student',
-                  label: 'Início',
-                  icon: <FiHome size={34} />,
-                  href: '/student/home'
-                },
-                {
-                  id: 'submit',
-                  label: 'Enviar Nova Redação',
-                  icon: <FiUpload size={34} />,
-                  href: '/student/submit-essay'
-                },
-                {
-                  id: 'essays',
-                  label: 'Minhas Redações',
-                  icon: <FiFileText size={34} />,
-                  href: '/student/essays'
-                },
-                  {
-                    id: 'classes',
-                    label: 'Minhas Turmas',
-                    icon: <FiBookOpen size={34} />,
-                    href: '/student/classes'
-                  },
-                {
-                  id: 'profile',
-                  label: 'Meu perfil',
-                  icon: <FiUser size={34} />,
-                  href: '/student/profile'
-                }
-          ]}
-        />
+        <Sidebar menuItems={menuItems} onLogout={logout} />
+
 
         {/* Conteúdo com scroll independente */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto py-6 sm:py-8 lg:py-16 px-4 sm:px-6 lg:px-16">

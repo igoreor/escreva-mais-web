@@ -1,5 +1,4 @@
-// services/authService.ts
-import { LoginRequest, LoginResponse, DecodedToken } from '@/types/auth';
+import { LoginRequest, LoginResponse, DecodedToken, User } from '@/types/auth';
 
 class AuthService {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -49,7 +48,7 @@ class AuthService {
     return authData?.tokens?.token || null;
   }
 
-  static getUser() {
+  static getUser(): User | null {
     const authData = this.getAuthData();
     return authData?.user || null;
   }
@@ -57,6 +56,33 @@ class AuthService {
   static getUserRole(): 'teacher' | 'student' | null {
     const user = this.getUser();
     return user?.role || null;
+  }
+
+  // Métodos específicos para dados do usuário
+  static getUserId(): string | null {
+    const user = this.getUser();
+    return user?.id || null;
+  }
+
+  static getUserFirstName(): string | null {
+    const user = this.getUser();
+    return user?.first_name || null;
+  }
+
+  static getUserLastName(): string | null {
+    const user = this.getUser();
+    return user?.last_name || null;
+  }
+
+  static getUserFullName(): string | null {
+    const user = this.getUser();
+    if (!user) return null;
+    return `${user.first_name} ${user.last_name}`.trim();
+  }
+
+  static getUserEmail(): string | null {
+    const user = this.getUser();
+    return user?.email || null;
   }
 
   static isAuthenticated(): boolean {
@@ -93,6 +119,20 @@ class AuthService {
 
   static getRedirectPath(role: 'teacher' | 'student'): string {
     return role === 'teacher' ? '/teacher/schools' : '/student/classes';
+  }
+
+  static updateUserData(updatedUser: Partial<User>): void {
+    const authData = this.getAuthData();
+    if (authData) {
+      const newAuthData = {
+        ...authData,
+        user: {
+          ...authData.user,
+          ...updatedUser
+        }
+      };
+      this.saveAuthData(newAuthData);
+    }
   }
 }
 

@@ -6,6 +6,8 @@ import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { createSchool } from '@/services/TeacherServices';
+import { Toast } from '@/components/common/ToastAlert';
 
 const menuItems: SidebarItem[] = [
   {
@@ -30,6 +32,7 @@ const menuItems: SidebarItem[] = [
 
 export default function CreateSchoolPage() {
   const { logout } = useAuth();
+  const [toast, setToast] = useState<{ title: string; description: string } | null>(null);
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -54,10 +57,36 @@ export default function CreateSchoolPage() {
     router.back();
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    console.log('Dados enviados:', form);
-  }
+  async function handleSubmit(e: React.FormEvent) {
+      e.preventDefault();
+
+      try {
+        if (!form.nome.trim()) {
+          setToast({ title: 'Erro', description: 'O nome da escola é obrigatório.' });
+          return;
+        }
+
+        const created = await createSchool(form.nome);
+        console.log('Escola criada:', created);
+
+        setToast({
+          title: 'Escola cadastrada com sucesso!',
+          description: 'A escola foi criada e está disponível para uso.',
+        });
+
+        // Redirecionar após o toast sumir (exemplo: 3 segundos)
+        setTimeout(() => {
+          router.push('/teacher/schools');
+        }, 3000);
+
+      } catch (error: any) {
+        console.error(error);
+        setToast({
+          title: 'Erro ao criar escola',
+          description: error.message || 'Erro inesperado.',
+        });
+      }
+    }
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
@@ -101,42 +130,7 @@ export default function CreateSchoolPage() {
                   className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-blue-700 mb-1">CNPJ</label>
-                <input
-                  type="text"
-                  name="cnpj"
-                  placeholder="00.000.000/0000-00"
-                  value={form.cnpj}
-                  onChange={handleInputChange}
-                  className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                />
-              </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-blue-700 mb-1">Endereço</label>
-              <input
-                type="text"
-                name="endereco"
-                placeholder="Insira o endereço da instituição aqui"
-                value={form.endereco}
-                onChange={handleInputChange}
-                className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-blue-700 mb-1">Complemento</label>
-              <input
-                type="text"
-                name="complemento"
-                placeholder="Insira um complemento ao endereço aqui"
-                value={form.complemento}
-                onChange={handleInputChange}
-                className="w-full border border-blue-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
-
             <div className="flex justify-end gap-4">
               <button
                 type="button"
@@ -151,9 +145,18 @@ export default function CreateSchoolPage() {
               >
                 Confirmar cadastro
               </button>
-            </div>
+            </div>  
           </form>
         </main>
+
+        {/* Renderizar o Toast quando existe */}
+        {toast && (
+          <Toast
+            title={toast.title}
+            description={toast.description}
+            onClose={() => setToast(null)}
+          />
+        )}
       </div>
     </RouteGuard>
   );

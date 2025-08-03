@@ -1,9 +1,9 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import RouteGuard from "@/components/auth/RouterGuard";
 import { useAuth } from "@/hooks/userAuth";
 import Sidebar from '@/components/common/SideBar';
-import { FiCheckCircle, FiAlertCircle, FiBarChart2, FiFileText, FiHome, FiUpload, FiBookOpen, FiUser } from 'react-icons/fi';
+import { FiCheckCircle, FiAlertCircle, FiBarChart2, FiFileText, FiHome, FiUpload, FiBookOpen, FiUser, FiArrowLeft } from 'react-icons/fi';
 
 interface CompetencyCardProps {
   title: string;
@@ -11,6 +11,51 @@ interface CompetencyCardProps {
   average: number;
   description: string;
 }
+
+interface Competencia {
+  nome: string;
+  pontos: number;
+  media: number;
+}
+
+interface Redacao {
+  titulo: string;
+  nota: number;
+}
+
+interface Turma {
+  id: number;
+  nome: string;
+  alunos: number;
+  imagem: string;
+  mediaGeral: number;
+  melhorRedacao: Redacao;
+  piorRedacao: Redacao;
+  competencias: Competencia[];
+}
+
+
+const menuItems = [
+  {
+    id: 'student',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: '/student/submit-essay'
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: '/student/essays'
+  }
+];
+
 
 const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => (
   <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6 flex flex-col items-center text-center">
@@ -38,67 +83,70 @@ const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, 
 
 const StudentDashboard: React.FC = () => {
   const { user, logout } = useAuth();
+  const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
 
-  const competencies = [
-    { title: 'Competência 1', score: 200, average: 2.0, description: 'Domínio da norma padrão' },
-    { title: 'Competência 2', score: 160, average: 1.6, description: 'Compreensão da proposta' },
-    { title: 'Competência 3', score: 200, average: 2.0, description: 'Capacidade de argumentação' },
-    { title: 'Competência 4', score: 200, average: 2.0, description: 'Conhecimento dos mecanismos linguísticos' },
-    { title: 'Competência 5', score: 200, average: 2.0, description: 'Proposta de intervenção' }
-  ];
+  // Dados padrão caso nenhuma turma seja selecionada
+  const dadosPadrao = {
+    mediaGeral: 920,
+    melhorRedacao: { titulo: 'Tecnologia e sociedade', nota: 980 },
+    piorRedacao: { titulo: 'Mobilidade urbana', nota: 840 },
+    competencias: [
+      { nome: 'Competência 1', pontos: 200, media: 2.0 },
+      { nome: 'Competência 2', pontos: 160, media: 1.6 },
+      { nome: 'Competência 3', pontos: 200, media: 2.0 },
+      { nome: 'Competência 4', pontos: 200, media: 2.0 },
+      { nome: 'Competência 5', pontos: 200, media: 2.0 },
+    ]
+  };
+
+  useEffect(() => {
+    // Verifica se há uma turma selecionada no localStorage
+    const turmaSalva = localStorage.getItem('turmaSelecionada');
+    if (turmaSalva) {
+      setTurmaSelecionada(JSON.parse(turmaSalva));
+    }
+  }, []);
+
+  const voltarParaTurmas = () => {
+    localStorage.removeItem('turmaSelecionada');
+    setTurmaSelecionada(null);
+    window.location.href = '/student/classes';
+  };
+
+  // Usa os dados da turma selecionada ou os dados padrão
+  const dados = turmaSelecionada || dadosPadrao;
 
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-global-2">
         {/* Sidebar fixa */}
-        <Sidebar
-          menuItems={[
-             {
-                  id: 'student',
-                  label: 'Início',
-                  icon: <FiHome size={34} />,
-                  href: '/student/home'
-                },
-                {
-                  id: 'submit',
-                  label: 'Enviar Nova Redação',
-                  icon: <FiUpload size={34} />,
-                  href: '/student/submit-essay'
-                },
-                {
-                  id: 'essays',
-                  label: 'Minhas Redações',
-                  icon: <FiFileText size={34} />,
-                  href: '/student/essays'
-                },
-                  {
-                    id: 'classes',
-                    label: 'Minhas Turmas',
-                    icon: <FiBookOpen size={34} />,
-                    href: '/student/classes'
-                  },
-                {
-                  id: 'profile',
-                  label: 'Meu perfil',
-                  icon: <FiUser size={34} />,
-                  href: '/student/profile'
-                }
-          ]}
-          onLogout={logout}
-        />
+        <Sidebar menuItems={menuItems} onLogout={logout} />
+
 
         {/* Conteúdo com scroll independente */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto py-6 sm:py-8 lg:py-16 px-4 sm:px-6 lg:px-16">
           <div className="flex justify-between items-center mb-10">
-            <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px]">
-              Olá, {user?.first_name || 'Estudante'}!
-            </h1>
-            <button
-              onClick={logout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
-            >
-              Sair
-            </button>
+            <div className="flex items-center gap-4">
+              {turmaSelecionada && (
+                <button
+                  onClick={voltarParaTurmas}
+                  className="p-2 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Voltar para turmas"
+                >
+                  <FiArrowLeft size={24} />
+                </button>
+              )}
+              <div>
+                <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px]">
+                  Olá, {user?.first_name || 'Estudante'}!
+                </h1>
+                {turmaSelecionada && (
+                  <p className="text-blue-700 text-lg font-medium mt-2">
+                    {turmaSelecionada.nome} - {turmaSelecionada.alunos} alunos
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="max-w-6xl mx-auto w-full flex flex-col gap-10">
@@ -108,11 +156,16 @@ const StudentDashboard: React.FC = () => {
               <div>
                 <h2 className="font-semibold text-blue-800 mb-2">Média geral</h2>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-normal text-blue-900">920</span>
+                  <span className="text-3xl font-normal text-blue-900">{dados.mediaGeral}</span>
                   <span className="text-gray-500">pontos</span>
-                  <span className="text-lg text-gray-700">/ 9.2 em média</span>
+                  <span className="text-lg text-gray-700">/ {(dados.mediaGeral / 100).toFixed(1)} em média</span>
                 </div>
-                <p className="text-sm text-gray-700 mt-1">Baseado em todas as redações corrigidas</p>
+                <p className="text-sm text-gray-700 mt-1">
+                  {turmaSelecionada 
+                    ? `Baseado no desempenho da ${turmaSelecionada.nome}` 
+                    : 'Baseado em todas as redações corrigidas'
+                  }
+                </p>
               </div>
               <FiBarChart2 size={32} className="text-black" />
             </div>
@@ -124,13 +177,13 @@ const StudentDashboard: React.FC = () => {
                 <div>
                   <h3 className="text-green-600 font-semibold mb-1 text-center">Melhor redação</h3>
                   <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">980</span>
+                    <span className="text-2xl font-normal text-blue-900">{dados.melhorRedacao.nota}</span>
                     <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 9.8 em média</span>
+                    <span className="text-lg text-gray-700">/ {(dados.melhorRedacao.nota / 100).toFixed(1)} em média</span>
                   </div>
                   <div className="flex items-center gap-1 justify-center">
                     <FiFileText size={18} className="text-gray-800" />
-                    <span className="text-gray-800 text-sm">Tecnologia e sociedade</span>
+                    <span className="text-gray-800 text-sm">{dados.melhorRedacao.titulo}</span>
                   </div>
                 </div>
                 <FiCheckCircle size={48} className="text-green-500" />
@@ -141,13 +194,13 @@ const StudentDashboard: React.FC = () => {
                 <div>
                   <h3 className="text-red-500 font-semibold mb-1 text-center">Pior redação</h3>
                   <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">840</span>
+                    <span className="text-2xl font-normal text-blue-900">{dados.piorRedacao.nota}</span>
                     <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 8.4 em média</span>
+                    <span className="text-lg text-gray-700">/ {(dados.piorRedacao.nota / 100).toFixed(1)} em média</span>
                   </div>
                   <div className="flex items-center gap-1 justify-center">
                     <FiFileText size={18} className="text-gray-800" />
-                    <span className="text-gray-800 text-sm">Mobilidade urbana</span>
+                    <span className="text-gray-800 text-sm">{dados.piorRedacao.titulo}</span>
                   </div>
                 </div>
                 <FiAlertCircle size={48} className="text-yellow-500" />
@@ -156,58 +209,32 @@ const StudentDashboard: React.FC = () => {
 
             {/* DESEMPENHO POR COMPETÊNCIA */}
             <div className="w-full">
-              <h2 className="text-blue-700 font-semibold mb-4 text-center">Desempenho por competência</h2>
+              <h2 className="text-blue-700 font-semibold mb-4 text-center">
+                Desempenho por competência
+                {turmaSelecionada && (
+                  <span className="block text-sm text-gray-600 font-normal mt-1">
+                    {turmaSelecionada.nome}
+                  </span>
+                )}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                  <h3 className="font-semibold text-blue-900 mb-2">Competência 1</h3>
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-2xl font-normal text-blue-900">200</span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 2.0 em média</span>
+                {dados.competencias.map((competencia, index) => (
+                  <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                    <h3 className="font-semibold text-blue-900 mb-2">{competencia.nome}</h3>
+                    <div className="flex items-baseline justify-center gap-2 mb-2">
+                      <span className="text-2xl font-normal text-blue-900">{competencia.pontos}</span>
+                      <span className="text-gray-500">pontos</span>
+                      <span className="text-lg text-gray-700">/ {competencia.media.toFixed(1)} em média</span>
+                    </div>
+                    <p className="text-gray-800">
+                      {index === 0 && 'Domínio da norma padrão'}
+                      {index === 1 && 'Compreensão da proposta'}
+                      {index === 2 && 'Capacidade de argumentação'}
+                      {index === 3 && 'Conhecimento dos mecanismos linguísticos'}
+                      {index === 4 && 'Proposta de intervenção'}
+                    </p>
                   </div>
-                  <p className="text-gray-800">Domínio da norma padrão</p>
-                </div>
-
-                <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                  <h3 className="font-semibold text-blue-900 mb-2">Competência 2</h3>
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-2xl font-normal text-blue-900">160</span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 1.6 em média</span>
-                  </div>
-                  <p className="text-gray-800">Compreensão da proposta</p>
-                </div>
-
-                <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                  <h3 className="font-semibold text-blue-900 mb-2">Competência 3</h3>
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-2xl font-normal text-blue-900">200</span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 2.0 em média</span>
-                  </div>
-                  <p className="text-gray-800">Capacidade de argumentação</p>
-                </div>
-
-                <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                  <h3 className="font-semibold text-blue-900 mb-2">Competência 4</h3>
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-2xl font-normal text-blue-900">200</span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 2.0 em média</span>
-                  </div>
-                  <p className="text-gray-800">Conhecimento dos mecanismos linguísticos</p>
-                </div>
-
-                <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-                  <h3 className="font-semibold text-blue-900 mb-2">Competência 5</h3>
-                  <div className="flex items-baseline justify-center gap-2 mb-2">
-                    <span className="text-2xl font-normal text-blue-900">200</span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ 2.0 em média</span>
-                  </div>
-                  <p className="text-gray-800">Proposta de intervenção</p>
-                </div>
+                ))}
               </div>
             </div>
           </div>

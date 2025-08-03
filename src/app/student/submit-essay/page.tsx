@@ -7,11 +7,34 @@ import EditText from "@/components/ui/EditText";
 import TextArea from "@/components/ui/TextArea";
 import RouteGuard from "@/components/auth/RouterGuard";
 import { FiHome, FiUpload, FiFileText, FiBookOpen, FiUser } from "react-icons/fi";
+import { useAuth } from "@/hooks/userAuth";
 
 interface DropdownOption {
   value: string;
   label: string;
 }
+
+
+const menuItems = [
+  {
+    id: 'student',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: '/student/submit-essay'
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: '/student/essays'
+  }
+];
 
 const SubmitEssayPage: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState("");
@@ -37,45 +60,12 @@ const SubmitEssayPage: React.FC = () => {
     }
     alert("Redação enviada com sucesso!");
   };
+  const { logout } = useAuth();
 
   return (
     <RouteGuard allowedRoles={["student"]}>
       <div className="flex min-h-screen bg-global-2">
-                <Sidebar
-          menuItems={[
-             {
-                  id: 'student',
-                  label: 'Início',
-                  icon: <FiHome size={34} />,
-                  href: '/student/home'
-                },
-                {
-                  id: 'submit',
-                  label: 'Enviar Nova Redação',
-                  icon: <FiUpload size={34} />,
-                  href: '/student/submit-essay'
-                },
-                {
-                  id: 'essays',
-                  label: 'Minhas Redações',
-                  icon: <FiFileText size={34} />,
-                  href: '/student/essays'
-                },
-                  {
-                    id: 'classes',
-                    label: 'Minhas Turmas',
-                    icon: <FiBookOpen size={34} />,
-                    href: '/student/classes'
-                  },
-                {
-                  id: 'profile',
-                  label: 'Meu perfil',
-                  icon: <FiUser size={34} />,
-                  href: '/student/profile'
-                }
-          ]}
-        />
-
+        <Sidebar menuItems={menuItems} onLogout={logout} />
 
         {/* Adicionando margin-left para compensar a Sidebar fixa (w-64 = 256px) */}
         <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
