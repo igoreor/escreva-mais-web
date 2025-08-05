@@ -72,7 +72,7 @@ export default function EscolaDetalhePage() {
                 </div>
               ))}
 
-              <Link href="/teacher/schools/classesregister" className="no-underline">
+              <Link href="/teacher/schools/classes/register" className="no-underline">
                 <div className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition py-8">
                     <FiPlus size={32} />
                     <span className="mt-2 font-medium">Cadastrar turma</span>

@@ -123,8 +123,7 @@ export default function ProfilePage() {
   // Gerar iniciais para o avatar
   const getInitials = () => {
     const firstInitial = form.firstName.charAt(0).toUpperCase();
-    const lastInitial = form.lastName.charAt(0).toUpperCase();
-    return `${firstInitial}${lastInitial}`;
+    return `${firstInitial}`;
   };
 
   return (
