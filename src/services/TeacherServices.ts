@@ -6,11 +6,13 @@ export async function createSchool(name: string) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
 
-  const response = await fetch(`${API_BASE_URL}/schools?name=${encodeURIComponent(name)}`, {
+  const response = await fetch(`${API_BASE_URL}/schools`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ name }),
   });
 
   if (!response.ok) {
