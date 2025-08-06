@@ -63,7 +63,7 @@ export default function TeacherClassesPage() {
   }, []);
 
   const handleCardClick = (id: string) => {
-    router.push(`/schools-teacher/classes-teacher`);
+    router.push(`/teacher/schools/${id}`);
   };
 
   const handleDeleteClick = (schoolId: string, e: React.MouseEvent) => {
@@ -207,17 +207,6 @@ export default function TeacherClassesPage() {
                   </button>
                 </div>
               </div>
-            </div>
-          )}
-
-          {schools.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">Você ainda não tem escolas cadastradas.</p>
-              <Link href="/teacher/schools/register">
-                <button className="px-6 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
-                  Cadastrar primeira escola
-                </button>
-              </Link>
             </div>
           )}
         </main>
