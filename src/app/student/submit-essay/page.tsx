@@ -7,6 +7,7 @@ import EditText from "@/components/ui/EditText";
 import RouteGuard from "@/components/auth/RouterGuard";
 import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip } from "react-icons/fi";
 import { useAuth } from "@/hooks/userAuth";
+import Popup from "@/components/ui/Popup";
 
 interface DropdownOption {
   value: string;
@@ -34,7 +35,6 @@ const menuItems = [
   }
 ];
 
-// Componente para o upload de arquivo
 const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -105,7 +105,6 @@ const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSe
   );
 };
 
-// Componente de TextArea com contador de linhas (LÓGICA CORRIGIDA)
 const TextAreaWithLineNumbers: React.FC<{
     value: string;
     onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -194,6 +193,12 @@ const SubmitEssayPage: React.FC = () => {
   const [essayText, setEssayText] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
+  const [popupConfig, setPopupConfig] = useState<{
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  } | null>(null);
+
   const themeOptions: DropdownOption[] = [
     { value: "education", label: "Educação no Brasil" },
     { value: "environment", label: "Meio Ambiente" },
@@ -206,13 +211,40 @@ const SubmitEssayPage: React.FC = () => {
   ];
 
   const handleSaveDraft = () => alert("Rascunho salvo com sucesso!");
-  const handleSubmit = () => {
-    if (!selectedTheme && !essayText && !file) {
-      alert("Por favor, preencha o tema e o texto da redação ou anexe um arquivo.");
+  
+  const handleSubmit = async () => {
+    if (!selectedTheme || (!essayText && !file)) {
+      setPopupConfig({
+        type: 'error',
+        title: 'Campos Incompletos',
+        message: 'Por favor, selecione um tema e digite sua redação ou anexe um arquivo para continuar.',
+      });
       return;
     }
-    console.log({ selectedTheme, title, essayText, file });
-    alert("Redação enviada com sucesso!");
+
+    try {
+      // Simulação de chamada ao back-end (sempre com sucesso por enquanto)
+      // TODO: Substitua este bloco pela sua chamada de API real (ex: usando fetch ou axios)
+      console.log("Enviando dados:", { selectedTheme, title, essayText, file });
+      // const response = await api.post('/essays', formData);
+      
+      // Simulação de sucesso (status 200)
+      setPopupConfig({
+        type: 'success',
+        title: 'Redação Enviada!',
+        message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
+      });
+
+    } catch (error) {
+      // Simulação de erro (status 400 ou outro)
+      // Quando tiver o back-end, este bloco tratará os erros da API
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro no Envio',
+        message: 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
+      });
+      console.error("Erro ao enviar redação:", error);
+    }
   };
 
   const { logout } = useAuth();
@@ -280,6 +312,14 @@ const SubmitEssayPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {popupConfig && (
+        <Popup
+          type={popupConfig.type}
+          title={popupConfig.title}
+          message={popupConfig.message}
+          onClose={() => setPopupConfig(null)}
+        />
+      )}
     </RouteGuard>
   );
 };
