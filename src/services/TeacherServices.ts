@@ -6,7 +6,7 @@ export async function createSchool(name: string) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
 
-  const response = await fetch(`${API_BASE_URL}/schools`, {
+  const response = await fetch(`${API_BASE_URL}/classroom/schools`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -27,7 +27,7 @@ export async function listSchools() {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
 
-  const response = await fetch(`${API_BASE_URL}/schools`, {
+  const response = await fetch(`${API_BASE_URL}/classroom/schools`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ export async function deleteSchool(schoolId: string) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
 
-  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}`, {
+  const response = await fetch(`${API_BASE_URL}/classroom/schools/${schoolId}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -66,15 +66,18 @@ export async function deleteSchool(schoolId: string) {
 
 
 
-export async function createClassroom(schoolId: string, data: {
-  name: string;
-  description: string;
-  shift: string;
-}) {
+export async function createClassroom(
+  schoolId: string,
+  data: {
+    name: string;
+    description: string;
+    shift: string;
+  }
+) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
 
-  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/classrooms`, {
+  const response = await fetch(`${API_BASE_URL}/classroom/schools/${schoolId}/classrooms`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -89,4 +92,23 @@ export async function createClassroom(schoolId: string, data: {
   }
 
   return response.json();
+}
+
+export async function getSchoolWithClassroomsById(schoolId: string) {
+  const token = AuthService.getToken();
+  if (!token) throw new Error('Token não encontrado');
+
+  const response = await fetch(`${API_BASE_URL}/classroom/schools/${schoolId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Erro ao buscar escola e turmas: ${error}`);
+  }
+
+  return response.json(); 
 }

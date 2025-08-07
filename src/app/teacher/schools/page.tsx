@@ -67,7 +67,7 @@ export default function TeacherClassesPage() {
   };
 
   const handleDeleteClick = (schoolId: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que o clique no card seja acionado
+    e.stopPropagation();
     setShowDeleteModal(schoolId);
     setOpenMenuId(null);
   };
