@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiUser, FiPlus } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
+import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
 
 const menuItems: SidebarItem[] = [
   {
@@ -22,63 +23,70 @@ const menuItems: SidebarItem[] = [
   },
 ];
 
-const mockTurmas = [
-  {
-    id: 1,
-    nome: 'Turma A - 9º Ano',
-    alunos: 32,
-    imagem: 'https://www.shutterstock.com/shutterstock/photos/2525595687/display_1500/stock-photo-admont-library-austria-july-a-grand-baroque-library-with-ornate-bookshelves-filled-with-2525595687.jpg',
-    mediaGeral: 885,
-    melhorRedacao: { titulo: 'Sustentabilidade Ambiental', nota: 940 },
-    piorRedacao: { titulo: 'Educação no Brasil', nota: 780 },
-    competencias: [
-      { nome: 'Competência 1', pontos: 180, media: 1.8 },
-      { nome: 'Competência 2', pontos: 170, media: 1.7 },
-      { nome: 'Competência 3', pontos: 185, media: 1.85 },
-      { nome: 'Competência 4', pontos: 175, media: 1.75 },
-      { nome: 'Competência 5', pontos: 175, media: 1.75 },
-    ]
-  },
-  {
-    id: 2,
-    nome: 'Turma B - 8º Ano',
-    alunos: 28,
-    imagem: 'https://www.shutterstock.com/shutterstock/photos/1076952215/display_1500/stock-photo-mother-of-pearl-texture-seashell-1076952215.jpg',
-    mediaGeral: 920,
-    melhorRedacao: { titulo: 'Tecnologia e Sociedade', nota: 980 },
-    piorRedacao: { titulo: 'Mobilidade Urbana', nota: 840 },
-    competencias: [
-      { nome: 'Competência 1', pontos: 200, media: 2.0 },
-      { nome: 'Competência 2', pontos: 160, media: 1.6 },
-      { nome: 'Competência 3', pontos: 200, media: 2.0 },
-      { nome: 'Competência 4', pontos: 200, media: 2.0 },
-      { nome: 'Competência 5', pontos: 200, media: 2.0 },
-    ]
-  },
-  {
-    id: 3,
-    nome: 'Turma C - 7º Ano',
-    alunos: 25,
-    imagem: 'https://www.shutterstock.com/shutterstock/photos/512244589/display_1500/stock-photo-the-texture-of-black-gold-512244589.jpg',
-    mediaGeral: 845,
-    melhorRedacao: { titulo: 'Cidadania Digital', nota: 920 },
-    piorRedacao: { titulo: 'Meio Ambiente', nota: 740 },
-    competencias: [
-      { nome: 'Competência 1', pontos: 170, media: 1.7 },
-      { nome: 'Competência 2', pontos: 160, media: 1.6 },
-      { nome: 'Competência 3', pontos: 165, media: 1.65 },
-      { nome: 'Competência 4', pontos: 175, media: 1.75 },
-      { nome: 'Competência 5', pontos: 175, media: 1.75 },
-    ]
-  },
-];
+interface Classroom {
+  id: string;
+  name: string;
+  description: string;
+  shift: string;
+  join_code: string;
+  school_id: string;
+  teacher_id: string;
+}
 
-export default function TeacherClassesPage() {
-  const { logout } = useAuth();
+export default function StudentClassesPage() {
+  const { logout, user } = useAuth();
   const router = useRouter();
 
   const [showModal, setShowModal] = useState(false);
   const [codigoTurma, setCodigoTurma] = useState('');
+  const [classrooms, setClassrooms] = useState<Classroom[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [joiningClassroom, setJoiningClassroom] = useState(false);
+
+  // Buscar turmas do aluno ao carregar a página
+  useEffect(() => {
+    fetchClassrooms();
+  }, [user?.id]);
+
+  const fetchClassrooms = async () => {
+    if (!user?.id) return;
+
+    try {
+      setLoading(true);
+      setError(null); // Limpa erros anteriores
+      
+      const data = await getStudentClassrooms();
+      
+      // Verifica se data existe e é um array
+      if (Array.isArray(data)) {
+        setClassrooms(data);
+      } else {
+        // Se não for array, considera como lista vazia
+        setClassrooms([]);
+      }
+    } catch (err) {
+      console.error('Erro ao buscar turmas:', err);
+      
+      // Só mostra erro se for realmente um erro de requisição
+      if (err instanceof Error) {
+        // Verifica se é erro de autenticação ou erro real da API
+        if (err.message.includes('Token não encontrado') || err.message.includes('não autenticado')) {
+          setError('Erro de autenticação. Faça login novamente.');
+        } else if (err.message.includes('404') || err.message.includes('Not Found')) {
+          // 404 pode significar que o estudante não tem turmas ainda
+          setClassrooms([]);
+        } else if (!err.message.includes('200')) {
+          // Só mostra erro se não for status 200
+          setError('Erro ao carregar suas turmas. Tente novamente.');
+        }
+      } else {
+        setError('Erro inesperado. Tente novamente.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const abrirModal = () => setShowModal(true);
   const fecharModal = () => {
@@ -86,18 +94,76 @@ export default function TeacherClassesPage() {
     setCodigoTurma('');
   };
 
-  const entrarNaTurma = () => {
-    console.log('Código da turma:', codigoTurma);
-    // Aqui vai chamar uma API para entrar na turma
-    fecharModal();
+  const entrarNaTurma = async () => {
+    if (!codigoTurma.trim()) return;
+
+    try {
+      setJoiningClassroom(true);
+      
+      const response = await joinClassroom(codigoTurma.trim());
+      
+      if (response.status) {
+        // Sucesso - fecha o modal e recarrega as turmas
+        fecharModal();
+        
+        // Recarrega a lista de turmas
+        await fetchClassrooms();
+        
+        // Mostra mensagem de sucesso (opcional)
+        console.log('Entrada na turma realizada com sucesso!');
+      }
+    } catch (err) {
+      console.error('Erro ao entrar na turma:', err);
+      
+      // Mostra erro específico
+      if (err instanceof Error) {
+        if (err.message.includes('404') || err.message.includes('Not Found')) {
+          alert('Código da turma não encontrado. Verifique o código e tente novamente.');
+        } else if (err.message.includes('already')) {
+          alert('Você já está matriculado nesta turma.');
+        } else {
+          alert('Erro ao entrar na turma. Tente novamente.');
+        }
+      } else {
+        alert('Erro inesperado. Tente novamente.');
+      }
+    } finally {
+      setJoiningClassroom(false);
+    }
   };
 
-  const selecionarTurma = (turma: { id: number; nome: string; alunos: number; imagem: string; mediaGeral: number; melhorRedacao: { titulo: string; nota: number; }; piorRedacao: { titulo: string; nota: number; }; competencias: { nome: string; pontos: number; media: number; }[]; }) => {
-    // Salva os dados da turma no localStorage ou context
+  const selecionarTurma = (turma: Classroom) => {
+    // Salva os dados da turma no localStorage
     localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
     // Redireciona para a home
     router.push('/student/home');
   };
+
+  const getShiftLabel = (shift: string) => {
+    const shifts: { [key: string]: string } = {
+      'morning': 'Manhã',
+      'afternoon': 'Tarde',
+      'night': 'Noite',
+      'full': 'Integral'
+    };
+    return shifts[shift.toLowerCase()] || shift;
+  };
+
+  if (loading) {
+    return (
+      <RouteGuard allowedRoles={['student']}>
+        <div className="flex min-h-screen bg-gray-50">
+          <Sidebar menuItems={menuItems} onLogout={logout} />
+          <main className="flex-1 lg:ml-[270px] p-10 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto mb-4"></div>
+              <p className="text-gray-600">Carregando suas turmas...</p>
+            </div>
+          </main>
+        </div>
+      </RouteGuard>
+    );
+  }
 
   return (
     <RouteGuard allowedRoles={['student']}>
@@ -107,34 +173,57 @@ export default function TeacherClassesPage() {
         <main className="flex-1 lg:ml-[270px] p-10 relative">
           <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas turmas</h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockTurmas.map((turma) => (
-              <div
-                key={turma.id}
-                onClick={() => selecionarTurma(turma)}
-                className="bg-white rounded-lg shadow hover:shadow-md transition cursor-pointer overflow-hidden"
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+              <p className="text-red-700">{error}</p>
+              <button 
+                onClick={fetchClassrooms} 
+                className="mt-2 text-red-600 hover:text-red-800 underline text-sm"
               >
-                <img
-                  src={turma.imagem}
-                  alt={turma.nome}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-800">{turma.nome}</h2>
-                  <p className="text-gray-500 text-sm">{turma.alunos} alunos</p>
+                Tentar novamente
+              </button>
+            </div>
+          )}
+
+          {/* Só mostra o grid se tiver turmas ou se não estiver carregando e não tiver erro */}
+          {!error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {classrooms.map((turma) => (
+                <div
+                  key={turma.id}
+                  onClick={() => selecionarTurma(turma)}
+                  className="bg-white rounded-lg shadow hover:shadow-md transition cursor-pointer overflow-hidden border border-gray-200"
+                >
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-32 flex items-center justify-center">
+                    <FiBookOpen size={48} className="text-white" />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{turma.name}</h2>
+                    <p className="text-gray-600 text-sm mb-2">{turma.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {getShiftLabel(turma.shift)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Código: {turma.join_code}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            <button
-              onClick={abrirModal}
-              className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition p-6"
-            >
-              <FiPlus size={32} />
-              <span className="mt-2 font-medium">Entrar em uma nova turma</span>
-            </button>
-          </div>
+              {/* Botão para adicionar nova turma */}
+              <button
+                onClick={abrirModal}
+                className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition p-6 min-h-[200px]"
+              >
+                <FiPlus size={32} />
+                <span className="mt-2 font-medium">Entrar em uma nova turma</span>
+              </button>
+            </div>
+          )}
 
+          {/* Modal para entrar em turma */}
           {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-8 shadow-lg w-full max-w-md mx-auto">
@@ -155,9 +244,10 @@ export default function TeacherClassesPage() {
                   </button>
                   <button
                     onClick={entrarNaTurma}
-                    className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 transition"
+                    className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    disabled={!codigoTurma.trim() || joiningClassroom}
                   >
-                    Entrar
+                    {joiningClassroom ? 'Entrando...' : 'Entrar'}
                   </button>
                 </div>
               </div>

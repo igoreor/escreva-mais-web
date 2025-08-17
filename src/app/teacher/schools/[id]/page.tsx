@@ -2,20 +2,28 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FiArrowLeft, FiUser, FiBookOpen, FiHome, FiPlus } from 'react-icons/fi';
+import {
+  FiArrowLeft,
+  FiUser,
+  FiBookOpen,
+  FiHome,
+  FiPlus,
+  FiEye,
+  FiEyeOff,
+} from 'react-icons/fi';
 import { FaGraduationCap } from 'react-icons/fa';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Link from 'next/link';
 import { getSchoolWithClassroomsById } from '@/services/TeacherServices';
+import Popup from '@/components/ui/Popup';
 
 const menuItems: SidebarItem[] = [
   { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
   { id: 'classes', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/teacher/schools' },
   { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
 ];
-
 
 interface Classroom {
   id: string;
@@ -27,6 +35,58 @@ interface Classroom {
   teacher_id?: string;
 }
 
+/**
+ * Card de Turma
+ */
+function ClassroomCard({
+  turma,
+  onCopied,
+}: {
+  turma: Classroom;
+  onCopied: () => void;
+}) {
+  const [showCode, setShowCode] = useState(false);
+
+  const copiarCodigo = () => {
+    navigator.clipboard.writeText(turma.join_code);
+    onCopied();
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+      <div className="flex items-center gap-2 text-blue-800 mb-2">
+        <FaGraduationCap size={24} />
+        <h3 className="text-md font-semibold">{turma.name}</h3>
+      </div>
+      <p className="text-gray-700 text-sm mb-1">
+        <strong>Descrição:</strong> {turma.description}
+      </p>
+      <p className="text-gray-700 text-sm mb-1">
+        <strong>Turno:</strong> {turma.shift}
+      </p>
+
+      <div className="flex items-center gap-2 mt-2">
+        <strong className="text-sm text-gray-700">Código da Turma:</strong>
+        <span
+          className={`font-mono bg-gray-100 px-2 py-0.5 rounded cursor-pointer select-none transition ${
+            showCode ? 'blur-0' : 'blur-sm'
+          }`}
+          onClick={copiarCodigo}
+        >
+          {turma.join_code}
+        </span>
+
+        <button
+          onClick={() => setShowCode(!showCode)}
+          className="text-gray-600 hover:text-gray-800 transition"
+        >
+          {showCode ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function SchoolDetailsPage() {
   const { id } = useParams();
   const { logout } = useAuth();
@@ -34,6 +94,9 @@ export default function SchoolDetailsPage() {
 
   const [school, setSchool] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // estado para popup
+  const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -59,11 +122,11 @@ export default function SchoolDetailsPage() {
         <Sidebar menuItems={menuItems} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
           <div className="relative">
-          <img
-            src="/images/escola.png"
-            alt="Imagem da escola"
-            className="w-full h-64 object-cover"
-          />
+            <img
+              src="/images/escola.png"
+              alt="Imagem da escola"
+              className="w-full h-64 object-cover"
+            />
 
             <button
               onClick={() => router.back()}
@@ -82,25 +145,11 @@ export default function SchoolDetailsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {school.classrooms?.map((turma: Classroom) => (
-                <div
+                <ClassroomCard
                   key={turma.id}
-                  className="bg-white p-6 rounded-lg shadow hover:shadow-md transition cursor-pointer"
-                >
-                  <div className="flex items-center gap-2 text-blue-800 mb-2">
-                    <FaGraduationCap size={24} />
-                    <h3 className="text-md font-semibold">{turma.name}</h3>
-                  </div>
-                  <p className="text-gray-700 text-sm mb-1">
-                    <strong>Descrição:</strong> {turma.description}
-                  </p>
-                  <p className="text-gray-700 text-sm mb-1">
-                    <strong>Turno:</strong> {turma.shift}
-                  </p>
-                  <p className="text-gray-700 text-sm">
-                    <strong>Código da Turma:</strong>{' '}
-                    <span className="font-mono bg-gray-100 px-2 py-0.5 rounded">{turma.join_code}</span>
-                  </p>
-                </div>
+                  turma={turma}
+                  onCopied={() => setPopupOpen(true)}
+                />
               ))}
 
               <Link href={`/teacher/schools/${id}/register`} className="no-underline">
@@ -113,6 +162,15 @@ export default function SchoolDetailsPage() {
           </section>
         </main>
       </div>
+
+      {popupOpen && (
+        <Popup
+          type="success"
+          title="Código copiado!"
+          message="O código da turma foi copiado para a área de transferência."
+          onClose={() => setPopupOpen(false)}
+        />
+      )}
     </RouteGuard>
   );
 }
