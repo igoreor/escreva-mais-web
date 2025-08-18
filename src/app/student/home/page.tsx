@@ -53,7 +53,19 @@ const menuItems = [
     label: 'Minhas Redações',
     icon: <FiFileText size={34} />,
     href: '/student/essays'
-  }
+  },
+  {
+    id: 'classes',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/student/classes',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={34} />,
+    href: '/student/profile',
+  },
 ];
 
 
@@ -114,7 +126,8 @@ const StudentDashboard: React.FC = () => {
   };
 
   // Usa os dados da turma selecionada ou os dados padrão
-  const dados = turmaSelecionada || dadosPadrao;
+  //turmaSelecionada || - dps ajeitar 
+  const dados = dadosPadrao;
 
   return (
     <RouteGuard allowedRoles={['student']}>
