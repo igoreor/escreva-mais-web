@@ -8,23 +8,11 @@ import { useAuth } from "@/hooks/userAuth";
 import AuthService from "@/services/authService";
 
 const menuItems = [
-  {
-    id: 'student',
+    {
+    id: 'home',
     label: 'Início',
     icon: <FiHome size={34} />,
     href: '/student/home'
-  },
-  {
-    id: 'submit',
-    label: 'Enviar Nova Redação',
-    icon: <FiUpload size={34} />,
-    href: '/student/submit-essay'
-  },
-  {
-    id: 'essays',
-    label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
-    href: '/student/essays'
   },
   {
     id: 'classes',
@@ -39,6 +27,7 @@ const menuItems = [
     href: '/student/profile',
   },
 ];
+
 
 const ProfilePage = () => {
   const [form, setForm] = useState({
@@ -55,7 +44,6 @@ const ProfilePage = () => {
 
   const { logout } = useAuth();
 
-  // Carregar dados do usuário quando o componente montar
   useEffect(() => {
     const user = AuthService.getUser();
     if (user) {
@@ -75,7 +63,6 @@ const ProfilePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validações básicas
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
@@ -129,7 +116,6 @@ const ProfilePage = () => {
     }
   };
 
-  // Gerar iniciais para o avatar
   const getInitials = () => {
     const firstInitial = form.firstName.charAt(0).toUpperCase();
     const lastInitial = form.lastName.charAt(0).toUpperCase();
