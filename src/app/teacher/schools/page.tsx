@@ -2,30 +2,38 @@
 
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiPlus, FiMoreVertical, FiTrash2 } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiPlus, FiMoreVertical, FiTrash2, FiGrid, FiPlusSquare } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { listSchools, deleteSchool } from '@/services/TeacherServices';
 
+
 const menuItems: SidebarItem[] = [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <FiHome size={28} />,
     href: '/teacher/home',
   },
   {
-    id: 'classes',
+    id: 'management',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
-    href: '/teacher/schools',
+    icon: <FiBookOpen size={28} />,
+    children: [
+      {
+        id: 'schools',
+        label: 'Listar Escolas',
+        icon: <FiGrid size={20} />,
+        href: '/teacher/schools',
+      },
+    ],
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <FiUser size={28} />,
     href: '/teacher/profile',
   },
 ];
@@ -77,12 +85,10 @@ export default function TeacherClassesPage() {
 
     try {
       await deleteSchool(showDeleteModal);
-      // Remove a escola da lista local
       setSchools(schools.filter(school => school.id !== showDeleteModal));
       setShowDeleteModal(null);
     } catch (err: any) {
       console.error('Erro ao deletar escola:', err);
-      // Você pode adicionar um toast de erro aqui
     }
   };
 
