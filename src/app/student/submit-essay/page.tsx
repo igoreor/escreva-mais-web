@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import EditText from "@/components/ui/EditText";
 import RouteGuard from "@/components/auth/RouterGuard";
-import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip } from "react-icons/fi";
+import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from "react-icons/fi";
 import { useAuth } from "@/hooks/userAuth";
 import Popup from "@/components/ui/Popup";
 
@@ -32,7 +32,19 @@ const menuItems = [
     label: 'Minhas Redações',
     icon: <FiFileText size={34} />,
     href: '/student/essays'
-  }
+  },
+  {
+    id: 'classes',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/student/classes',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={34} />,
+    href: '/student/profile',
+  },
 ];
 
 const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
