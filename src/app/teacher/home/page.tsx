@@ -3,32 +3,31 @@
 import RouteGuard from "@/components/auth/RouterGuard";
 import { useAuth } from "@/hooks/userAuth";
 import Sidebar, { SidebarItem } from "@/components/common/SideBar";
-import { FiHome, FiBookOpen, FiUser } from "react-icons/fi";
+import { FiHome, FiBookOpen, FiUser, FiGrid, FiPlusSquare } from "react-icons/fi";
 
 export default function TeacherPage() {
   const { user, logout } = useAuth();
 
-  const menuItems: SidebarItem[] = [
-    {
-      id: 'home',
-      label: 'Início',
-      icon: <FiHome size={34} />,
-      href: '/teacher/home',
-    },
-    {
-      id: 'classes',
-      label: 'Minhas Turmas',
-      icon: <FiBookOpen size={34} />,
-      href: '/teacher/schools',
-    },
-    {
-      id: 'profile',
-      label: 'Meu Perfil',
-      icon: <FiUser size={34} />,
-      href: '/teacher/profile',
-    },
-  ];
-
+const menuItems: SidebarItem[] = [
+  {
+    id: 'home',
+    label: 'Início',
+    icon: <FiHome size={28} />,
+    href: '/teacher/home',
+  },
+  {
+    id: 'management',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={28} />,
+    href: '/teacher/schools',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={28} />,
+    href: '/teacher/profile',
+  },
+];
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-gray-50">
