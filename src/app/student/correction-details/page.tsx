@@ -3,6 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import { FiHome, FiUpload, FiFileText, FiBookOpen, FiUser } from 'react-icons/fi';
 interface CompetencyScore {
   id: number;
   title: string;
@@ -18,6 +19,38 @@ interface TeacherComment {
   comment: string;
   fullComment: string;
 }
+const menuItems = [
+  {
+    id: 'student',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: '/student/submit-essay'
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: '/student/essays'
+  },
+  {
+    id: 'classes',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/student/classes',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={34} />,
+    href: '/student/profile',
+  },
+];
 const CorrectionDetailsPage: React.FC = () => {
   const overallScore = {
     score: 960,
