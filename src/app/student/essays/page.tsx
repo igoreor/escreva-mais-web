@@ -40,7 +40,19 @@ const menuItems = [
     label: 'Minhas Redações',
     icon: <FiFileText size={34} />,
     href: '/student/essays'
-  }
+  },
+  {
+    id: 'classes',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/student/classes',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={34} />,
+    href: '/student/profile',
+  },
 ];
 
 
