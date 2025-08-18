@@ -110,7 +110,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Third Section */}
-      <section id="terceira-secao" className="bg-global-5 w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+      <section className="bg-global-5 w-full py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1166px] mx-auto py-6 sm:py-8 lg:py-10">
           <div className="flex flex-col lg:flex-row items-start justify-center gap-8 lg:gap-12">
             {/* Text Content */}
@@ -175,7 +175,7 @@ const LandingPage: React.FC = () => {
       <LoginForm />
       
       {/* Partner Logos */}
-      <section className="bg-white py-20 sm:py-22">
+      <section id="terceira-secao" className="bg-white py-20 sm:py-22">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-2 lg:gap-4">
             <Image
