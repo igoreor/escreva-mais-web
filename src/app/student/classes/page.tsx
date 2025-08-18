@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiPlus } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiPlus, FiFileText, FiUpload } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
 
-const menuItems: SidebarItem[] = [
+const menuItems = [
   {
     id: 'classes',
     label: 'Minhas Turmas',
@@ -44,7 +44,6 @@ export default function StudentClassesPage() {
   const [error, setError] = useState<string | null>(null);
   const [joiningClassroom, setJoiningClassroom] = useState(false);
 
-  // Buscar turmas do aluno ao carregar a página
   useEffect(() => {
     fetchClassrooms();
   }, [user?.id]);
@@ -54,34 +53,20 @@ export default function StudentClassesPage() {
 
     try {
       setLoading(true);
-      setError(null); // Limpa erros anteriores
-      
+      setError(null);
+
       const data = await getStudentClassrooms();
-      
-      // Verifica se data existe e é um array
-      if (Array.isArray(data)) {
-        setClassrooms(data);
-      } else {
-        // Se não for array, considera como lista vazia
-        setClassrooms([]);
-      }
+      setClassrooms(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Erro ao buscar turmas:', err);
-      
-      // Só mostra erro se for realmente um erro de requisição
       if (err instanceof Error) {
-        // Verifica se é erro de autenticação ou erro real da API
         if (err.message.includes('Token não encontrado') || err.message.includes('não autenticado')) {
           setError('Erro de autenticação. Faça login novamente.');
-        } else if (err.message.includes('404') || err.message.includes('Not Found')) {
-          // 404 pode significar que o estudante não tem turmas ainda
+        } else if (err.message.includes('404')) {
           setClassrooms([]);
-        } else if (!err.message.includes('200')) {
-          // Só mostra erro se não for status 200
+        } else {
           setError('Erro ao carregar suas turmas. Tente novamente.');
         }
-      } else {
-        setError('Erro inesperado. Tente novamente.');
       }
     } finally {
       setLoading(false);
@@ -99,33 +84,24 @@ export default function StudentClassesPage() {
 
     try {
       setJoiningClassroom(true);
-      
+
       const response = await joinClassroom(codigoTurma.trim());
-      
+
       if (response.status) {
-        // Sucesso - fecha o modal e recarrega as turmas
         fecharModal();
-        
-        // Recarrega a lista de turmas
         await fetchClassrooms();
-        
-        // Mostra mensagem de sucesso (opcional)
         console.log('Entrada na turma realizada com sucesso!');
       }
     } catch (err) {
       console.error('Erro ao entrar na turma:', err);
-      
-      // Mostra erro específico
       if (err instanceof Error) {
-        if (err.message.includes('404') || err.message.includes('Not Found')) {
-          alert('Código da turma não encontrado. Verifique o código e tente novamente.');
+        if (err.message.includes('404')) {
+          alert('Código da turma não encontrado.');
         } else if (err.message.includes('already')) {
           alert('Você já está matriculado nesta turma.');
         } else {
           alert('Erro ao entrar na turma. Tente novamente.');
         }
-      } else {
-        alert('Erro inesperado. Tente novamente.');
       }
     } finally {
       setJoiningClassroom(false);
@@ -133,18 +109,21 @@ export default function StudentClassesPage() {
   };
 
   const selecionarTurma = (turma: Classroom) => {
-    // Salva os dados da turma no localStorage
     localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
-    // Redireciona para a home
+    router.push('/student/home');
+  };
+
+  const entrarSemTurma = () => {
+    localStorage.removeItem('turmaSelecionada');
     router.push('/student/home');
   };
 
   const getShiftLabel = (shift: string) => {
     const shifts: { [key: string]: string } = {
-      'morning': 'Manhã',
-      'afternoon': 'Tarde',
-      'night': 'Noite',
-      'full': 'Integral'
+      morning: 'Manhã',
+      afternoon: 'Tarde',
+      night: 'Noite',
+      full: 'Integral',
     };
     return shifts[shift.toLowerCase()] || shift;
   };
@@ -176,8 +155,8 @@ export default function StudentClassesPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
               <p className="text-red-700">{error}</p>
-              <button 
-                onClick={fetchClassrooms} 
+              <button
+                onClick={fetchClassrooms}
                 className="mt-2 text-red-600 hover:text-red-800 underline text-sm"
               >
                 Tentar novamente
@@ -185,7 +164,6 @@ export default function StudentClassesPage() {
             </div>
           )}
 
-          {/* Só mostra o grid se tiver turmas ou se não estiver carregando e não tiver erro */}
           {!error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {classrooms.map((turma) => (
@@ -212,22 +190,34 @@ export default function StudentClassesPage() {
                 </div>
               ))}
 
-              {/* Botão para adicionar nova turma */}
-              <button
-                onClick={abrirModal}
-                className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition p-6 min-h-[200px]"
-              >
-                <FiPlus size={32} />
-                <span className="mt-2 font-medium">Entrar em uma nova turma</span>
-              </button>
+              {/* BOTÕES LADO A LADO */}
+              <div className="col-span-1 sm:col-span-2 flex gap-6">
+                <button
+                  onClick={abrirModal}
+                  className="flex-1 border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 transition p-6 min-h-[200px]"
+                >
+                  <FiPlus size={32} />
+                  <span className="mt-2 font-medium">Entrar em uma nova turma</span>
+                </button>
+
+                <button
+                  onClick={entrarSemTurma}
+                  className="flex-1 bg-blue-700 rounded-lg flex flex-col items-center justify-center text-white hover:bg-blue-800 shadow transition p-6 min-h-[200px]"
+                >
+                  <FiHome size={32} />
+                  <span className="mt-2 font-medium">Entrar sem turma</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Modal para entrar em turma */}
+          {/* Modal */}
           {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-8 shadow-lg w-full max-w-md mx-auto">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Digite o código da turma</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+                  Digite o código da turma
+                </h2>
                 <input
                   type="text"
                   value={codigoTurma}
