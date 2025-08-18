@@ -9,6 +9,12 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
 
 const menuItems = [
+    {
+    id: 'home',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
   {
     id: 'classes',
     label: 'Minhas Turmas',
@@ -108,14 +114,14 @@ export default function StudentClassesPage() {
     }
   };
 
-  const selecionarTurma = (turma: Classroom) => {
-    localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
-    router.push('/student/home');
-  };
+const selecionarTurma = (turma: Classroom) => {
+  localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
+  router.push(`/student/classes/${turma.id}/dashboard`);
+};
 
   const entrarSemTurma = () => {
     localStorage.removeItem('turmaSelecionada');
-    router.push('/student/home');
+    router.push(`/student/classes`);
   };
 
   const getShiftLabel = (shift: string) => {
