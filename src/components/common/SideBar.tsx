@@ -22,71 +22,85 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }) => {
   const pathname = usePathname();
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
 
-  useEffect(() => {
-    const activeParent = menuItems.find(item =>
-      item.children?.some(child => child.href && isPathActive(pathname, child.href))
-    );
-    if (activeParent) {
-      setOpenMenu(activeParent.id);
-    }
-  }, [pathname, menuItems]);
-
-  const handleMenuClick = (id: string, hasChildren: boolean) => {
-    if (hasChildren) {
-      setOpenMenu(openMenu === id ? null : id);
-    }
+  const isPathActive = (currentPath: string, href?: string) => {
+    if (!href) return false;
+    return currentPath === href || currentPath.startsWith(href + '/');
   };
 
-  const isPathActive = (pathname: string, href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  useEffect(() => {
+    const getActiveBranchIds = (items: SidebarItem[], currentPath: string): string[] => {
+      const branchIds: string[] = [];
+
+      function findPath(items: SidebarItem[]): boolean {
+        for (const item of items) {
+          if (isPathActive(currentPath, item.href)) {
+            return true;
+          }
+          if (item.children) {
+            if (findPath(item.children)) {
+              branchIds.unshift(item.id); 
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      findPath(items);
+      return branchIds;
+    };
+
+    setOpenMenus(getActiveBranchIds(menuItems, pathname));
+  }, [pathname, menuItems]);
+
+  const handleMenuClick = (id: string) => {
+    setOpenMenus(prevOpenMenus => {
+      if (prevOpenMenus.includes(id)) {
+        return prevOpenMenus.filter(menuId => !menuId.startsWith(id));
+      } else {
+        return [...prevOpenMenus, id];
+      }
+    });
+  };
 
   const renderMenuItem = (item: SidebarItem, isSubItem: boolean = false) => {
     const hasChildren = !!item.children && item.children.length > 0;
-    const isParentActive = openMenu === item.id;
+    const isMenuOpen = openMenus.includes(item.id);
 
-    const isActive = hasChildren
-      ? item.children?.some(child => child.href && isPathActive(pathname, child.href))
-      : item.href
-        ? isPathActive(pathname, item.href)
-        : false;
+    const isAnyDescendantActive = (item: SidebarItem): boolean => {
+      if (isPathActive(pathname, item.href)) {
+        return true;
+      }
+      if (item.children) {
+        return item.children.some(isAnyDescendantActive);
+      }
+      return false;
+    };
+
+    const isActive = isAnyDescendantActive(item);
 
     const baseItemClasses =
-      "flex items-center w-full text-left p-3 transition-all duration-200 rounded-md";
-    const hoverClasses = "hover:bg-gray-100";
-    const padding = isSubItem ? "pl-10" : "pl-5";
+      'flex items-center w-full text-left p-3 transition-all duration-200 rounded-md';
+    const hoverClasses = 'hover:bg-gray-100';
+    const padding = isSubItem ? 'pl-10' : 'pl-5';
     const activeClasses = isActive
-      ? "bg-blue-100 text-blue-700 font-semibold"
-      : "text-gray-800";
+      ? 'bg-blue-100 text-blue-700 font-semibold'
+      : 'text-gray-800';
 
     const itemContent = (
       <>
-        {/* Ícone */}
-        <div
-          className={clsx(
-            "transition-colors",
-            isActive ? "text-blue-600" : "text-gray-600"
-          )}
-        >
+        <div className={clsx('transition-colors', isActive ? 'text-blue-600' : 'text-gray-600')}>
           {item.icon}
         </div>
-
-        {/* Label */}
-        <span
-          className={clsx(
-            "flex-1 ml-4 text-base font-normal transition-colors",
-            isActive ? "text-blue-700 font-semibold" : "text-gray-800"
-          )}
-        >
+        <span className={clsx('flex-1 ml-4 text-base font-normal transition-colors', isActive ? 'text-blue-700 font-semibold' : 'text-gray-800')}>
           {item.label}
         </span>
-
-        {/* Seta */}
         {hasChildren && (
           <FiChevronDown
-            className={clsx("transition-transform duration-300", {
-              "rotate-180": isParentActive,
+            className={clsx('transition-transform duration-300', {
+              'rotate-180': isMenuOpen,
             })}
             size={20}
           />
@@ -98,25 +112,16 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
       return (
         <div key={item.id}>
           <button
-            onClick={() => handleMenuClick(item.id, true)}
-            className={clsx(
-              baseItemClasses,
-              hoverClasses,
-              padding,
-              isActive && "bg-blue-50"
-            )}
+            onClick={() => handleMenuClick(item.id)}
+            className={clsx(baseItemClasses, hoverClasses, padding, isActive && 'bg-blue-50')}
           >
             {itemContent}
           </button>
-
           <div
-            className={clsx(
-              "overflow-hidden transition-all duration-300 ease-in-out",
-              {
-                "max-h-[1000px]": isParentActive,
-                "max-h-0": !isParentActive,
-              }
-            )}
+            className={clsx('overflow-hidden transition-all duration-300 ease-in-out', {
+              'max-h-[1000px]': isMenuOpen, 
+              'max-h-0': !isMenuOpen,
+            })}
           >
             <div className="pt-2 pl-2 ml-[10px] border-l-2 border-gray-200 flex flex-col gap-y-1">
               {item.children?.map(child => renderMenuItem(child, true))}
@@ -127,11 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
     }
 
     return (
-      <Link
-        key={item.id}
-        href={item.href || "#"}
-        className={clsx(baseItemClasses, hoverClasses, padding, activeClasses)}
-      >
+      <Link key={item.id} href={item.href || '#'} className={clsx(baseItemClasses, hoverClasses, padding, activeClasses)}>
         {itemContent}
       </Link>
     );
@@ -147,12 +148,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
       <div className="flex justify-center p-4 border-b">
         <img src="/images/img_logo.svg" alt="Logo" className="h-10" />
       </div>
-
       <div className="flex flex-col justify-between flex-1">
         <nav className="p-3 flex flex-col gap-y-1">
           {menuItems.map(item => renderMenuItem(item))}
         </nav>
-
         <div className="p-3 border-t">
           <button
             onClick={onLogout}
