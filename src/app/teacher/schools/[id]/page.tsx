@@ -10,6 +10,8 @@ import {
   FiPlus,
   FiEye,
   FiEyeOff,
+  FiGrid,
+  FiPlusSquare,
 } from 'react-icons/fi';
 import { FaGraduationCap } from 'react-icons/fa';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
@@ -19,12 +21,48 @@ import Link from 'next/link';
 import { getSchoolWithClassroomsById } from '@/services/TeacherServices';
 import Popup from '@/components/ui/Popup';
 
-const menuItems: SidebarItem[] = [
-  { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
-  { id: 'classes', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/teacher/schools' },
-  { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
+const getMenuItems = (id?: string): SidebarItem[] => [
+  {
+    id: 'home',
+    label: 'Início',
+    icon: <FiHome size={28} />,
+    href: '/teacher/home',
+  },
+  {
+    id: 'management',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={28} />,
+    children: [
+      {
+        id: 'schools',
+        label: 'Listar Escolas',
+        icon: <FiGrid size={20} />,
+        href: '/teacher/schools',
+        children: [
+          {
+            id: 'cadastro',
+            label: 'Cadastrar Escola',
+            icon: <FiGrid size={20} />,
+            href: id ? `/teacher/schools/${id}/register` : '/teacher/schools/register',
+          },
+        ],
+      },
+      { 
+        id: 'classes',
+        label: 'Minhas Turmas',
+        icon: <FiPlusSquare size={20} />,
+        href: id ? `/teacher/schools/${id}` : '/teacher/schools',
+      },
+      
+    ],
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={28} />,
+    href: '/teacher/profile',
+  },
 ];
-
 interface Classroom {
   id: string;
   name: string;
@@ -119,7 +157,7 @@ export default function SchoolDetailsPage() {
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar menuItems={menuItems} onLogout={logout} />
+        <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
           <div className="relative">
             <img
@@ -145,13 +183,16 @@ export default function SchoolDetailsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {school.classrooms?.map((turma: Classroom) => (
-                <ClassroomCard
+                <Link
                   key={turma.id}
-                  turma={turma}
-                  onCopied={() => setPopupOpen(true)}
-                />
+                  href={`/teacher/schools/${id}/${turma.id}/dashboard`} // 👈 nova rota para detalhes da turma
+                  className="no-underline"
+                >
+                  <ClassroomCard turma={turma} onCopied={() => setPopupOpen(true)} />
+                </Link>
               ))}
 
+              {/* Botão para cadastrar nova turma */}
               <Link href={`/teacher/schools/${id}/register`} className="no-underline">
                 <div className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition py-8">
                   <FiPlus size={32} />
