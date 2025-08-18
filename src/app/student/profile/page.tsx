@@ -1,13 +1,31 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiUser } from "react-icons/fi";
+import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiFileText, FiHome, FiUpload, FiUser } from "react-icons/fi";
 import Sidebar, { SidebarItem } from "@/components/common/SideBar";
 import RouteGuard from "@/components/auth/RouterGuard";
 import { useAuth } from "@/hooks/userAuth";
 import AuthService from "@/services/authService";
 
-const menuItems: SidebarItem[] = [
+const menuItems = [
+  {
+    id: 'student',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/student/home'
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: '/student/submit-essay'
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: '/student/essays'
+  },
   {
     id: 'classes',
     label: 'Minhas Turmas',
