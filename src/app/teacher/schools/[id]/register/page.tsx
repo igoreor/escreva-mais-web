@@ -3,17 +3,53 @@
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiArrowLeft } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiArrowLeft, FiGrid, FiPlusSquare } from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import { createClassroom } from '@/services/TeacherServices'; // função que criamos
 
-const menuItems: SidebarItem[] = [
-  { id: 'home', label: 'Início', icon: <FiHome size={24} />, href: '/teacher/home' },
-  { id: 'classes', label: 'Minhas Turmas', icon: <FiBookOpen size={24} />, href: '/teacher/schools' },
-  { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={24} />, href: '/teacher/profile' },
+const getMenuItems = (id?: string): SidebarItem[] => [
+  {
+    id: 'home',
+    label: 'Início',
+    icon: <FiHome size={28} />,
+    href: '/teacher/home',
+  },
+  {
+    id: 'management',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={28} />,
+    children: [
+      {
+        id: 'schools',
+        label: 'Listar Escolas',
+        icon: <FiGrid size={20} />,
+        href: '/teacher/schools',
+        children: [
+          {
+            id: 'cadastro',
+            label: 'Cadastrar Escola',
+            icon: <FiGrid size={20} />,
+            href: id ? `/teacher/schools/${id}/register` : '/teacher/schools/register',
+          },
+        ],
+      },
+      { 
+        id: 'classes',
+        label: 'Minhas Turmas',
+        icon: <FiPlusSquare size={20} />,
+        href: id ? `/teacher/schools/${id}` : '/teacher/schools',
+      },
+      
+    ],
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={28} />,
+    href: '/teacher/profile',
+  },
 ];
-
 export default function CreateClassPage() {
   const router = useRouter();
   const { id: schoolId } = useParams();
@@ -54,7 +90,7 @@ export default function CreateClassPage() {
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar menuItems={menuItems} onLogout={logout} />
+        <Sidebar menuItems={getMenuItems(schoolId as string)} onLogout={logout} />
 
         <main className="flex-1 lg:ml-[270px] p-10">
           <button
