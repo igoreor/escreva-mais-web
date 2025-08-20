@@ -107,7 +107,7 @@ function ClassroomCard({
         <button
             onClick={(e) => {
               e.preventDefault(); 
-              e.stopPropagation(); // 🚫 evita que o clique entre no Link
+              e.stopPropagation(); 
               setShowCode(!showCode);
             }}
           className="text-gray-600 hover:text-gray-800 transition"
@@ -179,7 +179,7 @@ export default function SchoolDetailsPage() {
               {school.classrooms?.map((turma: Classroom) => (
                 <Link
                   key={turma.id}
-                  href={`/teacher/schools/${id}/${turma.id}/dashboard`} // 👈 nova rota para detalhes da turma
+                  href={`/teacher/schools/${id}/${turma.id}/painel`} 
                   className="no-underline"
                 >
                   <ClassroomCard turma={turma} onCopied={() => setPopupOpen(true)} />
