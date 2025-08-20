@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiChevronDown } from 'react-icons/fi';
-import { clsx } from 'clsx';
+import clsx from "clsx";
 
 export interface SidebarItem {
   id: string;
