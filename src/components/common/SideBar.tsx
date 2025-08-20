@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiChevronDown } from 'react-icons/fi';
-import { clsx } from 'clsx';
+import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi';
+import clsx from "clsx";
 
 export interface SidebarItem {
   id: string;
@@ -23,6 +23,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }) => {
   const pathname = usePathname();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const isPathActive = (currentPath: string, href?: string) => {
     if (!href) return false;
@@ -132,54 +133,72 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
     }
 
     return (
-      <Link key={item.id} href={item.href || '#'} className={clsx(baseItemClasses, hoverClasses, padding, activeClasses)}>
+      <Link
+        key={item.id}
+        href={item.href || '#'}
+        className={clsx(baseItemClasses, hoverClasses, padding, activeClasses)}
+        onClick={() => setIsMobileOpen(false)}
+      >
         {itemContent}
       </Link>
     );
   };
 
   return (
-    <aside
-      className={clsx(
-        "fixed top-0 left-0 h-screen w-full lg:w-[270px] bg-white shadow-lg flex flex-col",
-        className
-      )}
-    >
-      <div className="flex justify-center p-4 border-b">
-        <img src="/images/img_logo.svg" alt="Logo" className="h-10" />
-      </div>
-      <div className="flex flex-col justify-between flex-1">
-        <nav className="p-3 flex flex-col gap-y-1">
-          {menuItems.map(item => renderMenuItem(item))}
-        </nav>
-        <div className="p-3 border-t">
-          <button
-            onClick={onLogout}
-            className="flex flex-row items-center w-full p-3 transition-all duration-200 rounded-md hover:bg-gray-100"
-          >
-            <div className="text-gray-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
-                />
-              </svg>
-            </div>
-            <span className="ml-4 text-base font-normal text-left text-gray-800">
-              Sair
-            </span>
-          </button>
+    <>
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white shadow-md rounded-md"
+        onClick={() => setIsMobileOpen(prev => !prev)}
+      >
+        {isMobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      </button>
+
+      <aside
+        className={clsx(
+          "fixed top-0 left-0 h-screen w-[270px] bg-white shadow-lg flex flex-col transform transition-transform duration-300 z-40",
+          {
+            "-translate-x-full lg:translate-x-0": !isMobileOpen, 
+            "translate-x-0": isMobileOpen,
+          },
+          className
+        )}
+      >
+        <div className="flex justify-center p-4 border-b">
+          <img src="/images/img_logo.svg" alt="Logo" className="h-10" />
         </div>
-      </div>
-    </aside>
+        <div className="flex flex-col justify-between flex-1">
+          <nav className="p-3 flex flex-col gap-y-1">
+            {menuItems.map(item => renderMenuItem(item))}
+          </nav>
+          <div className="p-3 border-t">
+            <button
+              onClick={onLogout}
+              className="flex flex-row items-center w-full p-3 transition-all duration-200 rounded-md hover:bg-gray-100"
+            >
+              <div className="text-gray-600">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
+                  />
+                </svg>
+              </div>
+              <span className="ml-4 text-base font-normal text-left text-gray-800">
+                Sair
+              </span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 };
 
