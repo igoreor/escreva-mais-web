@@ -20,14 +20,8 @@ const menuItems: SidebarItem[] = [
     id: 'management',
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
-    children: [
-      {
-        id: 'schools',
-        label: 'Listar Escolas',
-        icon: <FiGrid size={20} />,
-        href: '/teacher/schools',
-      },
-    ],
+    href: '/teacher/schools',
+
   },
   {
     id: 'profile',
