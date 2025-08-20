@@ -8,8 +8,8 @@ import {
   FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiUsers,
   FiCalendar, FiEye, FiPlusSquare, FiEdit2
 } from 'react-icons/fi';
+import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
 
-// Interfaces
 interface Tema {
   id: number;
   titulo: string;
@@ -17,7 +17,6 @@ interface Tema {
   entregas: number;
 }
 
-// Menu dinâmico
 const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'home',
@@ -34,19 +33,19 @@ const getMenuItems = (id?: string): SidebarItem[] => [
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
-        href: '/teacher/schools/${id}', // 👈 depois substituímos com o id certo
+        href: '/teacher/schools/${id}', 
         children: [
           {
             id: 'class-details',
             label: 'dashboard',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/dashboard', // 👈 depois substituímos com o id certo
+            href: '/teacher/schools/${id}/${classId}/dashboard', 
           },
           {
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/painel', // 👈 depois substituímos com o id certo
+            href: '/teacher/schools/${id}/${classId}/painel',
           },
         ],
       },
@@ -60,7 +59,6 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     href: '/teacher/profile',
   },
 ];
-
 const TeacherClassPage: React.FC = () => {
   const { user, logout } = useAuth();
   const params = useParams();
@@ -71,6 +69,7 @@ const TeacherClassPage: React.FC = () => {
   );
   const [editando, setEditando] = useState<boolean>(false);
   const [fraseTemp, setFraseTemp] = useState<string>(frase);
+  const [abrirModal, setAbrirModal] = useState(false);
 
   useEffect(() => {
     // mock — futuramente substituir por API
@@ -96,7 +95,7 @@ const TeacherClassPage: React.FC = () => {
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => (window.location.href = '/teacher/classes')}
+                onClick={() => (window.location.href = '/teacher/schools')}
                 className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg"
               >
                 <FiArrowLeft size={20} />
@@ -168,9 +167,17 @@ const TeacherClassPage: React.FC = () => {
                 <div className="flex gap-3 items-start">
                   <FiFileText size={28} className="text-blue-600 mt-1" />
                 </div>
-                <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                <button
+                  onClick={() => setAbrirModal(true)}
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
                   <FiPlusSquare /> Publicar atividade
                 </button>
+
+                <PublicarAtividadeModal
+                  isOpen={abrirModal}
+                  onClose={() => setAbrirModal(false)}
+                />
               </div>
           </div>
           <div className="flex flex-col gap-4 pt-4">
@@ -192,7 +199,7 @@ const TeacherClassPage: React.FC = () => {
                   </div>
                 </div>
                 <a
-                  href={`/teacher/classes/${classId}/tema/${tema.id}`}
+                   href={`/teacher/schools/${params.id}/${classId}/painel/${tema.id}`}
                   className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
                   <FiEye size={18} /> Ver redações
