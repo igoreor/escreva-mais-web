@@ -118,7 +118,7 @@ class AuthService {
   }
 
   static getRedirectPath(role: 'teacher' | 'student'): string {
-    return role === 'teacher' ? '/teacher/schools' : '/student/classes';
+    return role === 'teacher' ? '/teacher/schools' : '/student/home';
   }
 
   static updateUserData(updatedUser: Partial<User>): void {
