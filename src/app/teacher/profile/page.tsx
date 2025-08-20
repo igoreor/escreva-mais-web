@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiHome, FiUser } from 'react-icons/fi';
+import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiFileMinus, FiHome, FiUser } from 'react-icons/fi';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
@@ -19,6 +19,12 @@ const menuItems: SidebarItem[] = [
     label: 'Minhas Turmas',
     href: '/teacher/schools',
     icon: <FiBookOpen size={34} />,
+  },
+  {
+      id: 'temas',
+      label: 'Meus Temas',
+      icon: <FiFileMinus size={34} />,
+      href: '/teacher/themes',
   },
   {
     id: 'profile',
