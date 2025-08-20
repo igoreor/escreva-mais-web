@@ -33,27 +33,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
     children: [
-      {
-        id: 'schools',
-        label: 'Listar Escolas',
-        icon: <FiGrid size={20} />,
-        href: '/teacher/schools',
-        children: [
-          {
-            id: 'cadastro',
-            label: 'Cadastrar Escola',
-            icon: <FiGrid size={20} />,
-            href: id ? `/teacher/schools/${id}/register` : '/teacher/schools/register',
-          },
-        ],
-      },
       { 
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: id ? `/teacher/schools/${id}` : '/teacher/schools',
       },
-      
+
     ],
   },
   {
@@ -109,13 +95,21 @@ function ClassroomCard({
           className={`font-mono bg-gray-100 px-2 py-0.5 rounded cursor-pointer select-none transition ${
             showCode ? 'blur-0' : 'blur-sm'
           }`}
-          onClick={copiarCodigo}
+          onClick={(e) => {
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            copiarCodigo();
+          }}
         >
           {turma.join_code}
         </span>
 
         <button
-          onClick={() => setShowCode(!showCode)}
+            onClick={(e) => {
+              e.preventDefault(); 
+              e.stopPropagation(); // 🚫 evita que o clique entre no Link
+              setShowCode(!showCode);
+            }}
           className="text-gray-600 hover:text-gray-800 transition"
         >
           {showCode ? <FiEyeOff size={18} /> : <FiEye size={18} />}
