@@ -1,19 +1,33 @@
+import React from 'react';
+import '../styles/index.css';
+import '../styles/tailwind.css' 
+
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata = {
-  title: 'Escreva+',
-  description: 'Plataforma de escrita e aprendizado',
+  title: 'Escreva +',
+  keywords: ['escreva+', 'escreva mais', 'escreva mais', 'escreva mais web app', 'escreva mais app', 'escreva mais web'],
+  description: 'Escreva + é um aplicativo web para correção de redações com inteligência artificial.',
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/images/img_logo.svg', type: 'image/x-icon' }
+    ],
   },
-}
+};
+
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="pt-BR">
       <body>{children}</body>
     </html>
-  )
-} 
+  );
+}
