@@ -197,23 +197,14 @@ const selecionarTurma = (turma: Classroom) => {
               ))}
 
               {/* BOTÕES LADO A LADO */}
-              <div className="col-span-1 sm:col-span-2 flex gap-6">
-                <button
-                  onClick={abrirModal}
-                  className="flex-1 border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 transition p-6 min-h-[200px]"
-                >
-                  <FiPlus size={32} />
-                  <span className="mt-2 font-medium">Entrar em uma nova turma</span>
-                </button>
+              <button
+                onClick={abrirModal}
+                className="border-2 border-dashed border-blue-300 rounded-lg flex flex-col items-center justify-center text-blue-700 hover:bg-blue-50 cursor-pointer transition p-6 min-h-[200px]"
+              >
+                <FiPlus size={32} />
+                <span className="mt-2 font-medium">Entrar em uma nova turma</span>
+              </button>
 
-                <button
-                  onClick={entrarSemTurma}
-                  className="flex-1 bg-blue-700 rounded-lg flex flex-col items-center justify-center text-white hover:bg-blue-800 shadow transition p-6 min-h-[200px]"
-                >
-                  <FiHome size={32} />
-                  <span className="mt-2 font-medium">Entrar sem turma</span>
-                </button>
-              </div>
             </div>
           )}
 
