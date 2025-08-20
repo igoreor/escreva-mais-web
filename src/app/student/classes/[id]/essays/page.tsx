@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link'; 
-import { FiHome, FiUpload, FiFileText, FiBookOpen, FiUser, FiCheckCircle, FiClock } from 'react-icons/fi';
+import { FiHome, FiUpload, FiFileText, FiBookOpen, FiUser, FiCheckCircle, FiClock, FiTrello } from 'react-icons/fi';
 import Sidebar from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
@@ -33,19 +33,13 @@ const getMenuItems = (id: string) => [
       {
         id: 'dashboard',
         label: 'Painel',
-        icon: <FiFileText size={24} />,
+        icon: <FiTrello  size={24} />,
         href: `/student/classes/${id}/dashboard`
-      },
-      {
-        id: 'submit',
-        label: 'Enviar Nova Redação',
-        icon: <FiUpload size={34} />,
-        href: `/student/classes/${id}/submit-essay`
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
-        icon: <FiFileText size={34} />,
+        icon: <FiFileText size={24} />,
         href: `/student/classes/${id}/essays`
       }
     ]
