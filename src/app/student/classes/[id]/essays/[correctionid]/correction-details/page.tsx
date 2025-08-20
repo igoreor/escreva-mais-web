@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
@@ -11,7 +11,9 @@ interface CompetencyScore {
   maxScore: number;
   average: number;
   description: string;
+  aiComment?: string;
 }
+
 interface TeacherComment {
   id: number;
   teacherName: string;
@@ -21,26 +23,69 @@ interface TeacherComment {
 }
 
 const CorrectionDetailsPage: React.FC = () => {
-  // dados (mantive os seus)
-  const overallScore = { score: 960, average: 9.6, totalCompetencies: 5 };
+  // estados de modal
+  const [openModal, setOpenModal] = useState<null | { title: string; aiComment?: string; teacherComment?: string }>(null);
+
+  // dados
+  const overallScore = { score: 560, average: 5.6, totalCompetencies: 5 };
   const bestCompetency = {
     title: 'Melhor competência',
-    score: 200,
-    average: 2.0,
+    score: 160,
+    average: 1.6,
     competencyNumber: 5,
   };
   const worstCompetency = {
     title: 'Pior competência',
-    score: 160,
-    average: 1.6,
+    score: 100,
+    average: 1.0,
     competencyNumber: 2,
   };
   const competencyScores: CompetencyScore[] = [
-    { id: 1, title: 'Competência 1', score: 200, maxScore: 200, average: 2.0, description: 'Domínio da norma padrão' },
-    { id: 2, title: 'Competência 2', score: 160, maxScore: 200, average: 1.6, description: 'Compreensão da proposta' },
-    { id: 3, title: 'Competência 3', score: 200, maxScore: 200, average: 2.0, description: 'Capacidade de argumentação' },
-    { id: 4, title: 'Competência 4', score: 200, maxScore: 200, average: 2.0, description: 'Conhecimento dos mecanismos linguísticos' },
-    { id: 5, title: 'Competência 5', score: 200, maxScore: 200, average: 2.0, description: 'Proposta de intervenção' },
+    {
+      id: 1,
+      title: 'Competência 1',
+      score: 160,
+      maxScore: 200,
+      average: 1.6,
+      description: 'Domínio da norma padrão',
+      aiComment: 'Você precisa melhorar nos seguintes tópicos: ...',
+    },
+    {
+      id: 2,
+      title: 'Competência 2',
+      score: 100,
+      maxScore: 200,
+      average: 1.0,
+      description: 'Compreensão da proposta',
+      aiComment: 'Seria interessante se você modificasse a forma de abordar...',
+    },
+    {
+      id: 3,
+      title: 'Competência 3',
+      score: 100,
+      maxScore: 200,
+      average: 1.0,
+      description: 'Capacidade de argumentação',
+      aiComment: 'É necessário que haja mais exemplos concretos...',
+    },
+    {
+      id: 4,
+      title: 'Competência 4',
+      score: 100,
+      maxScore: 200,
+      average: 1.0,
+      description: 'Conhecimento dos mecanismos linguísticos',
+      aiComment: 'Modifique os erros que você cometeu em...',
+    },
+    {
+      id: 5,
+      title: 'Competência 5',
+      score: 160,
+      maxScore: 200,
+      average: 1.6,
+      description: 'Proposta de intervenção',
+      aiComment: 'Sua proposta não foi tão clara, veja mais...',
+    },
   ];
   const teacherComment: TeacherComment = {
     id: 1,
@@ -48,19 +93,17 @@ const CorrectionDetailsPage: React.FC = () => {
     teacherAvatar: '/images/image_2.png',
     comment: 'Você precisa melhorar nos ...',
     fullComment:
-      'Você precisa melhorar nos aspectos de coesão e coerência textual, além de trabalhar melhor a argumentação em alguns pontos específicos do texto.',
+      'Você precisa ser muito cuidadoso na hora de seguir o tema, pois essa foi a principal razão de sua nota não ser mais alta.',
   };
 
   // handlers
   const handleViewEssay = () => console.log('Navigating to essay view');
   const handleSavePDF = () => console.log('Saving PDF report');
-  const handleSeeMore = () => alert(teacherComment.fullComment); // troque por modal/rota se quiser
 
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8]">
-      {/* container invisível que engloba tudo */}
       <div className="mx-auto w-full max-w-5x10 px-5 py-8 sm:py-10 space-y-6">
-        {/* header com título centralizado e voltar à esquerda */}
+        {/* header */}
         <div className="relative flex items-center justify-center">
           <Link
             href="/student/classes/${id}/essays"
@@ -141,30 +184,57 @@ const CorrectionDetailsPage: React.FC = () => {
                 </div>
                 <div className="text-sm text-gray-600">/ {c.average} em média</div>
                 <div className="mt-1 text-xs text-gray-500">{c.description}</div>
+
+                {c.aiComment && (
+                  <>
+                    <p className="mt-2 text-sm text-gray-700">Feedback da IA</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-1 px-0 text-blue-700 hover:underline"
+                      onClick={() =>
+                        setOpenModal({ title: `${c.title} - ${c.description}`, aiComment: c.aiComment })
+                      }
+                    >
+                      Ver mais
+                    </Button>
+                  </>
+                )}
               </div>
             ))}
 
-            {/* comentários do professor */}
+            {/* comentário geral */}
             <div className="rounded-xl border border-blue-300 bg-[#eaf2ff] p-4">
-              <p className="text-[15px] font-semibold text-[#0f2752]">Comentários do professor</p>
-              <div className="mt-2 flex items-center gap-3">
-                <Image
-                  src={teacherComment.teacherAvatar}
-                  alt="Professor"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-                <span className="text-sm text-[#0f2752]">{teacherComment.teacherName}</span>
-              </div>
-              <p className="mt-3 text-sm text-gray-700">
-                {teacherComment.comment}
-              </p>
+              <p className="text-[15px] font-semibold text-[#0f2752]">Comentário geral</p>
+              <p className="mt-3 text-sm text-gray-700">Feedback da IA: Sua desenvoltura no tema deveria...</p>
               <Button
                 variant="ghost"
                 size="sm"
                 className="mt-2 px-0 text-blue-700 hover:underline"
-                onClick={handleSeeMore}
+                onClick={() =>
+                  setOpenModal({
+                    title: 'Comentário geral',
+                    aiComment:
+                      'A sua desenvoltura no tema deveria ter sido melhor, por isso sua nota foi mais baixa.',
+                    teacherComment: teacherComment.fullComment,
+                  })
+                }
+              >
+                Ver mais
+              </Button>
+              <p className="mt-3 text-sm text-gray-700">Feedback da IA: Sua desenvoltura no tema deveria...</p>
+                            <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2 px-0 text-blue-700 hover:underline"
+                onClick={() =>
+                  setOpenModal({
+                    title: 'Comentário geral',
+                    aiComment:
+                      'A sua desenvoltura no tema deveria ter sido melhor, por isso sua nota foi mais baixa.',
+                    teacherComment: teacherComment.fullComment,
+                  })
+                }
               >
                 Ver mais
               </Button>
@@ -174,14 +244,37 @@ const CorrectionDetailsPage: React.FC = () => {
 
         {/* ações */}
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
-          <Button variant="outline" size="lg" onClick={handleViewEssay}>
-            Ver redação
-          </Button>
           <Button variant="primary" size="lg" onClick={handleSavePDF}>
             Salvar relatório em PDF
           </Button>
         </div>
       </div>
+
+      {/* Modal Pop Up */}
+      {openModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
+            <h2 className="text-lg font-semibold text-[#0f2752] mb-4">{openModal.title}</h2>
+            {openModal.aiComment && (
+              <>
+                <p className="text-sm font-semibold text-[#0f2752]">Feedback da IA</p>
+                <p className="text-sm text-gray-700 mb-4">{openModal.aiComment}</p>
+              </>
+            )}
+            {openModal.teacherComment && (
+              <>
+                <p className="text-sm font-semibold text-[#0f2752]">Feedback do professor</p>
+                <p className="text-sm text-gray-700">{openModal.teacherComment}</p>
+              </>
+            )}
+            <div className="flex justify-end mt-6">
+              <Button variant="primary" onClick={() => setOpenModal(null)}>
+                Voltar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
