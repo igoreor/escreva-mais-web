@@ -8,8 +8,8 @@ import { useAuth } from "@/hooks/userAuth";
 import AuthService from "@/services/authService";
 
 const menuItems = [
-    {
-    id: 'home',
+  {
+    id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
     href: '/student/home'
@@ -20,13 +20,26 @@ const menuItems = [
     icon: <FiBookOpen size={34} />,
     href: '/student/classes',
   },
+        {
+          id: 'submit',
+          label: 'Enviar Nova Redação',
+          icon: <FiUpload size={34} />,
+          href: `/student/submit-essay` 
+        },
+        {
+          id: 'essays',
+          label: 'Minhas Redações',
+          icon: <FiFileText size={34} />,
+          href: `/student/essays`
+        },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile',
-  },
+    href: '/student/profile'
+  }
 ];
+
 
 
 const ProfilePage = () => {
