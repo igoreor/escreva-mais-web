@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiPlus, FiMoreVertical, FiTrash2, FiGrid, FiPlusSquare } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiPlus, FiMoreVertical, FiTrash2, FiGrid, FiPlusSquare, FiFileMinus } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import Link from 'next/link';
@@ -11,31 +11,30 @@ import { listSchools, deleteSchool } from '@/services/TeacherServices';
 
 
 const menuItems: SidebarItem[] = [
-  {
-    id: 'home',
-    label: 'Início',
-    icon: <FiHome size={28} />,
-    href: '/teacher/home',
-  },
-  {
-    id: 'management',
-    label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
-    children: [
-      {
-        id: 'schools',
-        label: 'Listar Escolas',
-        icon: <FiGrid size={20} />,
-        href: '/teacher/schools',
-      },
-    ],
-  },
-  {
-    id: 'profile',
-    label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
-    href: '/teacher/profile',
-  },
+    {
+      id: 'home',
+      label: 'Início',
+      icon: <FiHome size={34} />,
+      href: '/teacher/home',
+    },
+    {
+      id: 'management',
+      label: 'Minhas Turmas',
+      icon: <FiBookOpen size={34} />,
+      href: '/teacher/schools',
+    },
+    {
+      id: 'temas',
+      label: 'Meus Temas',
+      icon: <FiFileMinus  size={34} />,
+      href: '/teacher/themes',
+    },
+    {
+      id: 'profile',
+      label: 'Meu Perfil',
+      icon: <FiUser size={34} />,
+      href: '/teacher/profile',
+    },
 ];
 
 interface School {
