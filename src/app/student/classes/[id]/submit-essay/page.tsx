@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import EditText from "@/components/ui/EditText";
 import RouteGuard from "@/components/auth/RouterGuard";
-import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from "react-icons/fi";
+import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen, FiTrello } from "react-icons/fi";
 import { useAuth } from "@/hooks/userAuth";
 import Popup from "@/components/ui/Popup";
 
@@ -30,19 +30,13 @@ const getMenuItems = (id: string) => [
       {
         id: 'dashboard',
         label: 'Painel',
-        icon: <FiFileText size={24} />,
+        icon: <FiTrello  size={24} />,
         href: `/student/classes/${id}/dashboard`
-      },
-      {
-        id: 'submit',
-        label: 'Enviar Nova Redação',
-        icon: <FiUpload size={34} />,
-        href: `/student/classes/${id}/submit-essay`
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
-        icon: <FiFileText size={34} />,
+        icon: <FiFileText size={24} />,
         href: `/student/classes/${id}/essays`
       }
     ]
