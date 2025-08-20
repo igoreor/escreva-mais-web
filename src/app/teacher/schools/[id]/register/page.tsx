@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiArrowLeft, FiGrid, FiPlusSquare } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiUser, FiArrowLeft, FiGrid, FiPlusSquare, FiFileMinus } from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import { createClassroom } from '@/services/TeacherServices'; // função que criamos
@@ -19,30 +19,9 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     id: 'management',
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
-    children: [
-      {
-        id: 'schools',
-        label: 'Listar Escolas',
-        icon: <FiGrid size={20} />,
-        href: '/teacher/schools',
-        children: [
-          {
-            id: 'cadastro',
-            label: 'Cadastrar Escola',
-            icon: <FiGrid size={20} />,
-            href: id ? `/teacher/schools/${id}/register` : '/teacher/schools/register',
-          },
-        ],
-      },
-      { 
-        id: 'classes',
-        label: 'Minhas Turmas',
-        icon: <FiPlusSquare size={20} />,
-        href: id ? `/teacher/schools/${id}` : '/teacher/schools',
-      },
-      
-    ],
+
   },
+  { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
   {
     id: 'profile',
     label: 'Meu Perfil',
