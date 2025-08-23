@@ -45,7 +45,6 @@ class SubmitEssayService {
                 }
             );
 
-            
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || `Erro HTTP: ${response.status}`);

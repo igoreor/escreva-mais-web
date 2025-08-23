@@ -61,6 +61,5 @@ function ConfirmDeleteModal({ isOpen, onClose, onConfirm, themeName, isDeleting 
     </div>
   );
 }
-
-
 export { ConfirmDeleteModal };
+

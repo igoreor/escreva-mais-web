@@ -44,7 +44,6 @@ class ThemeServices {
       Authorization: `Bearer ${token}`,
     };
   }
-  
 
   static async createTheme(payload: ThemePayload): Promise<ThemeResponse> {
     const res = await fetch(`${this.API_BASE_URL}/essays/motivational-content`, {
