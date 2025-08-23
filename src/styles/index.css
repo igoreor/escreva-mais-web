@@ -3,37 +3,37 @@
 @tailwind utilities;
 
 input:-webkit-autofill {
-    box-shadow: 0 0 0px 1000px white inset;
-    -webkit-text-fill-color: #000 !important;
-    transition: background-color 5000s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px white inset;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 input:-webkit-autofill + label {
-    top: -0.5rem;
-    font-size: 0.75rem;
-    background: white;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-    color: #2557ca;            
-    transition: all 0.2s ease-out;
+  top: -0.5rem;
+  font-size: 0.75rem;
+  background: white;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  color: #2557ca;
+  transition: all 0.2s ease-out;
 }
 
 @media (min-width: 640px) {
-    input:-webkit-autofill + label {
-        top: -0.625rem;
-        font-size: 0.875rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
+  input:-webkit-autofill + label {
+    top: -0.625rem;
+    font-size: 0.875rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 }
 
 /* Remove default password field reveal icons in Chromium-based and legacy browsers */
 input[type='password']::-ms-reveal,
 input[type='password']::-ms-clear {
-    display: none;
+  display: none;
 }
 
 input[type='password']::-webkit-credentials-auto-fill-button,
 input[type='password']::-webkit-textfield-decoration-container {
-    display: none !important;
+  display: none !important;
 }
