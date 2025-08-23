@@ -49,6 +49,7 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     href: '/teacher/profile',
   },
 ];
+
 interface Classroom {
   id: string;
   name: string;
@@ -57,6 +58,22 @@ interface Classroom {
   join_code: string;
   school_id?: string;
   teacher_id?: string;
+}
+
+/**
+ * Componente de Loading Spinner
+ */
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="relative">
+        <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+        <div className="mt-4 text-center text-gray-600">
+          Carregando...
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -145,7 +162,7 @@ export default function SchoolDetailsPage() {
     if (id) fetchSchool();
   }, [id]);
 
-  if (loading) return <div className="p-10 text-gray-700">Carregando escola e turmas...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!school) return <div className="p-10 text-red-500">Escola não encontrada</div>;
 
   return (
