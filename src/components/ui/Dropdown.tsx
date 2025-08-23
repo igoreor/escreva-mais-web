@@ -31,8 +31,8 @@ const Dropdown: React.FC<DropdownProps> = ({
   rightImage = {
     src: '/images/img_arrowdropdown.svg',
     width: 24,
-    height: 24
-  }
+    height: 24,
+  },
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(value);
@@ -55,7 +55,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     onChange?.(optionValue);
   };
 
-  const selectedOption = options.find(option => option.value === selectedValue);
+  const selectedOption = options.find((option) => option.value === selectedValue);
 
   return (
     <div className={`relative w-full ${className}`} ref={dropdownRef}>
@@ -78,9 +78,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className="truncate">
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         <Image
           src={rightImage.src}
           alt="Dropdown arrow"
@@ -93,9 +91,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       {isOpen && (
         <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-black rounded-md shadow-lg max-h-60 overflow-auto">
           {options.length === 0 ? (
-            <div className="px-4 py-3 text-black text-sm">
-              No options available
-            </div>
+            <div className="px-4 py-3 text-black text-sm">No options available</div>
           ) : (
             options.map((option) => (
               <button

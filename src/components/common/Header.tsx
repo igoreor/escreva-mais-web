@@ -38,15 +38,10 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
         {/* Navigation Buttons */}
         <div className="flex flex-row gap-4 sm:gap-5 items-center">
-          <Button
-            variant="primary"
-            size="md"
-            onClick={handleLoginClick}
-            className="font-semibold"
-          >
+          <Button variant="primary" size="md" onClick={handleLoginClick} className="font-semibold">
             Login
           </Button>
-          
+
           <Button
             variant="outline"
             size="md"

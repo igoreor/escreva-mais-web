@@ -1,10 +1,18 @@
 'use client';
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiCalendar, FiTrello } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiFileText,
+  FiUser,
+  FiArrowLeft,
+  FiCalendar,
+  FiTrello,
+} from 'react-icons/fi';
 
 // Menu dinâmico
 const getMenuItems = (id: string) => [
@@ -12,7 +20,7 @@ const getMenuItems = (id: string) => [
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -23,23 +31,23 @@ const getMenuItems = (id: string) => [
       {
         id: 'dashboard',
         label: 'Painel',
-        icon: <FiTrello  size={24} />,
-        href: `/student/classes/${id}/dashboard`
+        icon: <FiTrello size={24} />,
+        href: `/student/classes/${id}/dashboard`,
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
         icon: <FiFileText size={24} />,
-        href: `/student/classes/${id}/essays`
-      }
-    ]
+        href: `/student/classes/${id}/essays`,
+      },
+    ],
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
-  }
+    href: '/student/profile',
+  },
 ];
 const ActivityDetailPage: React.FC = () => {
   const { logout } = useAuth();
@@ -55,8 +63,8 @@ const ActivityDetailPage: React.FC = () => {
         {/* Conteúdo principal */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
           {/* Botão voltar */}
-            <button
-            onClick={() => window.location.href = `/student/classes/${classId}/dashboard`}
+          <button
+            onClick={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
             className="flex items-center text-blue-600 mb-4 hover:underline"
           >
             <FiArrowLeft className="mr-1" /> Voltar
@@ -91,14 +99,16 @@ const ActivityDetailPage: React.FC = () => {
                 <div>
                   <h3 className="font-medium mb-1">TEXTO I</h3>
                   <p>
-                    O trabalho de cuidado não remunerado e mal pago é a crise global de desigualdade...
+                    O trabalho de cuidado não remunerado e mal pago é a crise global de
+                    desigualdade...
                   </p>
                 </div>
 
                 <div>
                   <h3 className="font-medium mb-1">TEXTO II</h3>
                   <p>
-                    Média de horas dedicadas pelas pessoas de 14 anos ou mais às atividades domésticas...
+                    Média de horas dedicadas pelas pessoas de 14 anos ou mais às atividades
+                    domésticas...
                   </p>
                   <img
                     src="/imagens/tabela-horas.png"
@@ -110,7 +120,8 @@ const ActivityDetailPage: React.FC = () => {
                 <div>
                   <h3 className="font-medium mb-1">TEXTO III</h3>
                   <p>
-                    A sociedade brasileira tem passado por inúmeras transformações sociais nos últimos anos...
+                    A sociedade brasileira tem passado por inúmeras transformações sociais nos
+                    últimos anos...
                   </p>
                 </div>
 

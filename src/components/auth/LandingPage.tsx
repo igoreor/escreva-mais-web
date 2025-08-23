@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <Header />
-      
+
       {/* Hero Section */}
       <section className="bg-global-5 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1166px] mx-auto py-12 sm:py-16 lg:py-20">
@@ -121,8 +121,12 @@ const LandingPage: React.FC = () => {
               <br />
               <p className="text-base sm:text-lg lg:text-xl text-white leading-relaxed text-justify">
                 Nosso modelo proporciona resultados precisos e confiáveis de forma eficiente.
-                <br /><br />
-                Disponível tanto para iOS quanto para Android, nossa solução inovadora permite que você capture uma foto de uma redação e receba o resultado imediatamente. Um processo ágil, prático e totalmente seguro, garantindo que você tenha a resposta que precisa no momento em que mais importa.
+                <br />
+                <br />
+                Disponível tanto para iOS quanto para Android, nossa solução inovadora permite que
+                você capture uma foto de uma redação e receba o resultado imediatamente. Um processo
+                ágil, prático e totalmente seguro, garantindo que você tenha a resposta que precisa
+                no momento em que mais importa.
               </p>
             </div>
 
@@ -170,10 +174,10 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
       <br />
-      
+
       {/* Login Section */}
       <LoginForm />
-      
+
       {/* Partner Logos */}
       <section id="terceira-secao" className="bg-white py-20 sm:py-22">
         <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8">

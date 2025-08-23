@@ -13,7 +13,7 @@ interface RouteGuardProps {
 const RouteGuard: React.FC<RouteGuardProps> = ({
   children,
   allowedRoles = [],
-  requireAuth = true
+  requireAuth = true,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);

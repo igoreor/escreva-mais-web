@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { useRouter, useParams } from "next/navigation"; 
+import React, { useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 
 type Competencia = {
   id: number;
@@ -14,7 +14,7 @@ type Competencia = {
 
 type PopupData =
   | {
-      type: "competencia";
+      type: 'competencia';
       titulo: string;
       descricao: string;
       pontos: string;
@@ -22,7 +22,7 @@ type PopupData =
       feedback: string;
     }
   | {
-      type: "geral";
+      type: 'geral';
       feedback: string;
     }
   | null;
@@ -30,53 +30,53 @@ type PopupData =
 const competencias: Competencia[] = [
   {
     id: 1,
-    titulo: "Competência 1",
-    descricao: "Domínio da norma padrão",
-    pontos: "160",
-    total: "1.0",
+    titulo: 'Competência 1',
+    descricao: 'Domínio da norma padrão',
+    pontos: '160',
+    total: '1.0',
     feedback:
-      "Você demonstrou um bom domínio da norma padrão, mas cometeu alguns deslizes gramaticais que prejudicaram a clareza em alguns trechos.",
+      'Você demonstrou um bom domínio da norma padrão, mas cometeu alguns deslizes gramaticais que prejudicaram a clareza em alguns trechos.',
   },
   {
     id: 2,
-    titulo: "Competência 2",
-    descricao: "Compreensão da proposta",
-    pontos: "100",
-    total: "1.0",
+    titulo: 'Competência 2',
+    descricao: 'Compreensão da proposta',
+    pontos: '100',
+    total: '1.0',
     feedback:
-      "Sua redação atende parcialmente à proposta, mas poderia aprofundar melhor a relação com o tema central.",
+      'Sua redação atende parcialmente à proposta, mas poderia aprofundar melhor a relação com o tema central.',
   },
   {
     id: 3,
-    titulo: "Competência 3",
-    descricao: "Capacidade de argumentação",
-    pontos: "100",
-    total: "1.0",
+    titulo: 'Competência 3',
+    descricao: 'Capacidade de argumentação',
+    pontos: '100',
+    total: '1.0',
     feedback:
-      "Sua argumentação apresenta bons pontos, mas carece de exemplos mais concretos para sustentar a tese apresentada.",
+      'Sua argumentação apresenta bons pontos, mas carece de exemplos mais concretos para sustentar a tese apresentada.',
   },
   {
     id: 4,
-    titulo: "Competência 4",
-    descricao: "Conhecimento dos mecanismos linguísticos",
-    pontos: "100",
-    total: "1.6",
+    titulo: 'Competência 4',
+    descricao: 'Conhecimento dos mecanismos linguísticos',
+    pontos: '100',
+    total: '1.6',
     feedback:
-      "Você usou conectivos básicos, mas precisa variar mais e explorar melhor recursos coesivos.",
+      'Você usou conectivos básicos, mas precisa variar mais e explorar melhor recursos coesivos.',
   },
   {
     id: 5,
-    titulo: "Competência 5",
-    descricao: "Proposta de intervenção",
-    pontos: "100",
-    total: "1.0",
+    titulo: 'Competência 5',
+    descricao: 'Proposta de intervenção',
+    pontos: '100',
+    total: '1.0',
     feedback:
-      "A proposta de intervenção está presente, mas faltam agentes claros e detalhamento das ações.",
+      'A proposta de intervenção está presente, mas faltam agentes claros e detalhamento das ações.',
   },
 ];
 
 const geralFeedback =
-  "No geral, sua redação apresenta boa estrutura, mas ainda precisa de ajustes em argumentação e detalhamento da proposta de intervenção.";
+  'No geral, sua redação apresenta boa estrutura, mas ainda precisa de ajustes em argumentação e detalhamento da proposta de intervenção.';
 
 export default function RedacaoPage() {
   const [popup, setPopup] = useState<PopupData>(null);
@@ -91,7 +91,7 @@ export default function RedacaoPage() {
   // Preview atualizado
   const preview = (text: string) => {
     if (text.length > 50) {
-      return { text: text.substring(0, 50) + "...", truncated: true };
+      return { text: text.substring(0, 50) + '...', truncated: true };
     }
     return { text, truncated: false };
   };
@@ -102,13 +102,11 @@ export default function RedacaoPage() {
       <div className="w-full mb-4">
         <button
           onClick={() =>
-            router.push(
-              `/teacher/schools/${params.id}/${params.classId}/painel/${params.essayid}`
-            )
+            router.push(`/teacher/schools/${params.id}/${params.classId}/painel/${params.essayid}`)
           }
           className="flex items-center text-black hover:text- font-medium"
         >
-          <span className="mr-1">{"<"}</span> Voltar
+          <span className="mr-1">{'<'}</span> Voltar
         </button>
       </div>
 
@@ -117,16 +115,12 @@ export default function RedacaoPage() {
         {/* Esse título pode mudar dinamicamente via props ou query params */}
         <h2 className="text-lg font-semibold mb-4">Maria de Silva</h2>
         <div className="bg-white border rounded-md h-[600px] overflow-y-scroll">
-          <p className="p-4 text-gray-600">
-            [Redação do aluno aparecerá aqui]
-          </p>
+          <p className="p-4 text-gray-600">[Redação do aluno aparecerá aqui]</p>
         </div>
       </div>
 
       {/* COMPETÊNCIAS */}
-      <h3 className="text-lg font-semibold text-blue-600 mb-4">
-        Desempenho por competência
-      </h3>
+      <h3 className="text-lg font-semibold text-blue-600 mb-4">Desempenho por competência</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {competencias.map((c) => (
@@ -143,13 +137,11 @@ export default function RedacaoPage() {
             {/* BODY */}
             <div className="p-5 flex flex-col flex-grow">
               <p className="text-2xl font-normal text-blue-900">
-                {c.pontos}{" "}
-                <span className="text-sm text-gray-400 font-normal">pontos</span>{" "}
-                <span className="text-sm font-normal text-gray-900">/</span>{""}
-                <span className="text-sm font-normal text-blue-900">
-                  {c.total}
-                </span>
-                {""}
+                {c.pontos} <span className="text-sm text-gray-400 font-normal">pontos</span>{' '}
+                <span className="text-sm font-normal text-gray-900">/</span>
+                {''}
+                <span className="text-sm font-normal text-blue-900">{c.total}</span>
+                {''}
                 <span className="text-sm font-normal text-gray-400">pontos</span>
               </p>
 
@@ -158,7 +150,7 @@ export default function RedacaoPage() {
                 className="text-blue-600 text-sm mt-2 text-left"
                 onClick={() =>
                   setPopup({
-                    type: "competencia",
+                    type: 'competencia',
                     titulo: c.titulo,
                     descricao: c.descricao,
                     pontos: c.pontos,
@@ -171,13 +163,13 @@ export default function RedacaoPage() {
               </button>
 
               <p className="text-sm text-gray-700 mt-1">
-                {preview(c.feedback).text}{" "}
+                {preview(c.feedback).text}{' '}
                 {preview(c.feedback).truncated && (
                   <button
                     type="button"
                     onClick={() =>
                       setPopup({
-                        type: "competencia",
+                        type: 'competencia',
                         titulo: c.titulo,
                         descricao: c.descricao,
                         pontos: c.pontos,
@@ -204,16 +196,16 @@ export default function RedacaoPage() {
             <button
               type="button"
               className="text-blue-600 text-sm mt-2 text-left"
-              onClick={() => setPopup({ type: "geral", feedback: geralFeedback })}
+              onClick={() => setPopup({ type: 'geral', feedback: geralFeedback })}
             >
               Feedback da IA
             </button>
             <p className="text-sm text-gray-700 mt-2 flex-grow">
-              {preview(geralFeedback).text}{" "}
+              {preview(geralFeedback).text}{' '}
               {preview(geralFeedback).truncated && (
                 <button
                   type="button"
-                  onClick={() => setPopup({ type: "geral", feedback: geralFeedback })}
+                  onClick={() => setPopup({ type: 'geral', feedback: geralFeedback })}
                   className="text-sm font-normal text-gray-400"
                 >
                   Ver mais
@@ -227,9 +219,7 @@ export default function RedacaoPage() {
       {/* COMENTÁRIO DO PROFESSOR */}
       <div className="mt-6 border border-gray-300 rounded-lg shadow-sm overflow-hidden">
         <div className="bg-white px-4 py-2 border-b">
-          <h4 className="text-sm font-bold text-blue-900">
-            Comentário do professor
-          </h4>
+          <h4 className="text-sm font-bold text-blue-900">Comentário do professor</h4>
         </div>
         <div className="bg-blue-50 p-4">
           <textarea
@@ -252,65 +242,45 @@ export default function RedacaoPage() {
         >
           <div
             className={`rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border
-              ${
-                popup.type === "geral"
-                  ? "bg-white border-blue-300"
-                  : "bg-white border-gray-200"
-              }`}
+              ${popup.type === 'geral' ? 'bg-white border-blue-300' : 'bg-white border-gray-200'}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* HEADER */}
             <div
               className={`px-5 py-3 border-b rounded-t-2xl 
-                ${popup.type === "geral" ? "bg-white" : "bg-blue-50"}`}
+                ${popup.type === 'geral' ? 'bg-white' : 'bg-blue-50'}`}
             >
               <h3 className="text-lg font-bold text-blue-900">
-                {popup.type === "competencia"
-                  ? popup.titulo
-                  : "Comentário geral"}
+                {popup.type === 'competencia' ? popup.titulo : 'Comentário geral'}
               </h3>
-              {popup.type === "competencia" && (
+              {popup.type === 'competencia' && (
                 <p className="text-sm text-gray-600">{popup.descricao}</p>
               )}
             </div>
 
             {/* BODY */}
-            <div
-              className={`p-6 ${
-                popup.type === "geral" ? "bg-blue-50" : "bg-white"
-              }`}
-            >
-              {popup.type === "competencia" ? (
+            <div className={`p-6 ${popup.type === 'geral' ? 'bg-blue-50' : 'bg-white'}`}>
+              {popup.type === 'competencia' ? (
                 <>
                   <p className="text-3xl font-normal text-blue-900 mb-4">
-                    {popup.pontos}{" "}
-                    <span className="text-base text-gray-400 font-normal">
-                      ponto
-                    </span>{" "}
+                    {popup.pontos}{' '}
+                    <span className="text-base text-gray-400 font-normal">ponto</span>{' '}
                     <span className="text-sm font-normal text-blue-900">/</span>
-                    {""}
-                    <span className="text-base font-normal text-blue-900">
-                      {popup.total}
-                    </span>
-                    {""}
-                    <span className="text-base text-gray-400 font-normal">
-                      pontos
-                    </span>
+                    {''}
+                    <span className="text-base font-normal text-blue-900">{popup.total}</span>
+                    {''}
+                    <span className="text-base text-gray-400 font-normal">pontos</span>
                   </p>
 
                   {/* Feedback da IA */}
                   <div className="mb-6">
-                    <h4 className="text-sm font-normal text-blue-600 mb-1">
-                      Feedback da IA
-                    </h4>
+                    <h4 className="text-sm font-normal text-blue-600 mb-1">Feedback da IA</h4>
                     <p className="text-sm text-gray-900">{popup.feedback}</p>
                   </div>
                 </>
               ) : (
                 <div className="mb-6">
-                  <h4 className="text-sm font-normal text-blue-600 mb-1">
-                    Feedback da IA
-                  </h4>
+                  <h4 className="text-sm font-normal text-blue-600 mb-1">Feedback da IA</h4>
                   <p className="text-sm text-gray-900">{popup.feedback}</p>
                 </div>
               )}

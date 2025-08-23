@@ -1,10 +1,10 @@
 // chamada dos componentes da tela "esqueci minha senha"
-"use client";
+'use client';
 
-import { EmailForm } from "@/components/ui/recover-key/EmailForm";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import PartnerLogos from "@/components/ui/register/PartnerLogos";
+import { EmailForm } from '@/components/ui/recover-key/EmailForm';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import PartnerLogos from '@/components/ui/register/PartnerLogos';
 
 export default function ForgetKeyPage() {
   const router = useRouter();
@@ -27,12 +27,10 @@ export default function ForgetKeyPage() {
 
           {/* Título e explicação */}
           <div className="text-center max-w-lg mx-auto">
-            <h1 className="text-2xl font-semibold mb-2 text-[#23609e]">
-              Esqueceu sua senha?
-            </h1>
+            <h1 className="text-2xl font-semibold mb-2 text-[#23609e]">Esqueceu sua senha?</h1>
             <p className="text-gray-700 mt-4">
-              Sem problema! Vamos enviar um link para você redefinir sua senha.
-              Por favor, adicione seu e-mail usado para fazer login no escreva+.
+              Sem problema! Vamos enviar um link para você redefinir sua senha. Por favor, adicione
+              seu e-mail usado para fazer login no escreva+.
             </p>
           </div>
 
@@ -41,7 +39,7 @@ export default function ForgetKeyPage() {
             <EmailForm />
             <button
               type="button"
-              onClick={() => router.push("/")}
+              onClick={() => router.push('/')}
               className="mt-4 px-4 py-2 text-global-2 rounded hover:bg-blue-300 transition"
             >
               Voltar para tela de login

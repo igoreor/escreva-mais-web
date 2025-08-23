@@ -12,6 +12,7 @@ import {
   FiEyeOff,
   FiGrid,
   FiPlusSquare,
+  FiFileMinus,
 } from 'react-icons/fi';
 import { FaGraduationCap } from 'react-icons/fa';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
@@ -33,14 +34,19 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
     children: [
-      { 
+      {
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: id ? `/teacher/schools/${id}` : '/teacher/schools',
       },
-
     ],
+  },
+  {
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
   },
   {
     id: 'profile',
@@ -60,32 +66,18 @@ interface Classroom {
   teacher_id?: string;
 }
 
-/**
- * Componente de Loading Spinner
- */
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="relative">
         <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <div className="mt-4 text-center text-gray-600">
-          Carregando...
-        </div>
+        <div className="mt-4 text-center text-gray-600">Carregando...</div>
       </div>
     </div>
   );
 }
 
-/**
- * Card de Turma
- */
-function ClassroomCard({
-  turma,
-  onCopied,
-}: {
-  turma: Classroom;
-  onCopied: () => void;
-}) {
+function ClassroomCard({ turma, onCopied }: { turma: Classroom; onCopied: () => void }) {
   const [showCode, setShowCode] = useState(false);
 
   const copiarCodigo = () => {
@@ -93,7 +85,6 @@ function ClassroomCard({
     onCopied();
   };
 
-  
   return (
     <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
       <div className="flex items-center gap-2 text-blue-800 mb-2">
@@ -114,8 +105,8 @@ function ClassroomCard({
             showCode ? 'blur-0' : 'blur-sm'
           }`}
           onClick={(e) => {
-            e.preventDefault(); 
-            e.stopPropagation(); 
+            e.preventDefault();
+            e.stopPropagation();
             copiarCodigo();
           }}
         >
@@ -123,11 +114,11 @@ function ClassroomCard({
         </span>
 
         <button
-            onClick={(e) => {
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              setShowCode(!showCode);
-            }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowCode(!showCode);
+          }}
           className="text-gray-600 hover:text-gray-800 transition"
         >
           {showCode ? <FiEyeOff size={18} /> : <FiEye size={18} />}
@@ -179,7 +170,7 @@ export default function SchoolDetailsPage() {
             />
 
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/teacher/schools')}
               className="absolute top-4 left-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition"
             >
               <FiArrowLeft className="inline-block mr-2" />
@@ -197,7 +188,7 @@ export default function SchoolDetailsPage() {
               {school.classrooms?.map((turma: Classroom) => (
                 <Link
                   key={turma.id}
-                  href={`/teacher/schools/${id}/${turma.id}/painel`} 
+                  href={`/teacher/schools/${id}/${turma.id}/painel`}
                   className="no-underline"
                 >
                   <ClassroomCard turma={turma} onCopied={() => setPopupOpen(true)} />

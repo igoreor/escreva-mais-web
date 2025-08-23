@@ -1,16 +1,16 @@
 // criação dos componentes da tela "escolha sua nova senha"
 
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import Button from "@/components/ui/Button";
-import FloatingInput from "@/components/ui/register/FloatingInput";
-import Image from "next/image";
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import FloatingInput from '@/components/ui/register/FloatingInput';
+import Image from 'next/image';
 
 export function PasswordForm() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,7 +36,7 @@ export function PasswordForm() {
     e.preventDefault();
     setSubmitted(true);
     if (isFormValid) {
-      alert("Senha redefinida com sucesso! (mock)");
+      alert('Senha redefinida com sucesso! (mock)');
       // Aqui entraria a chamada à API de redefinir senha
     }
   }
@@ -63,7 +63,7 @@ export function PasswordForm() {
       <div className="space-y-2">
         <FloatingInput
           label="Nova senha"
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={setPassword}
           focused={focusPassword}
@@ -77,29 +77,28 @@ export function PasswordForm() {
         <ul className="text-sm text-gray-600 space-y-0.5">
           <li
             className={`flex items-center gap-2 ${
-              passwordRules.length ? "text-green-600" : "text-gray-800"
+              passwordRules.length ? 'text-green-600' : 'text-gray-800'
             }`}
           >
             {renderIcon(passwordRules.length)} Tem pelo menos 10 caracteres
           </li>
           <li
             className={`flex items-center gap-2 ${
-              passwordRules.number ? "text-green-600" : "text-gray-800"
+              passwordRules.number ? 'text-green-600' : 'text-gray-800'
             }`}
           >
             {renderIcon(passwordRules.number)} Contém pelo menos um número
           </li>
           <li
             className={`flex items-center gap-2 ${
-              passwordRules.upper ? "text-green-600" : "text-gray-800"
+              passwordRules.upper ? 'text-green-600' : 'text-gray-800'
             }`}
           >
-            {renderIcon(passwordRules.upper)} Contém pelo menos uma letra
-            maiúscula
+            {renderIcon(passwordRules.upper)} Contém pelo menos uma letra maiúscula
           </li>
           <li
             className={`flex items-center gap-2 ${
-              passwordRules.lower ? "text-green-600" : "text-gray-800"
+              passwordRules.lower ? 'text-green-600' : 'text-gray-800'
             }`}
           >
             {renderIcon(passwordRules.lower)} Pelo menos uma letra minúscula
@@ -110,7 +109,7 @@ export function PasswordForm() {
       {/* Campo de confirmação */}
       <FloatingInput
         label="Confirmar nova senha"
-        type={showConfirm ? "text" : "password"}
+        type={showConfirm ? 'text' : 'password'}
         value={confirmPassword}
         onChange={setConfirmPassword}
         focused={focusConfirm}
@@ -128,13 +127,7 @@ export function PasswordForm() {
         <p className="text-red-600 text-sm mt-1">As senhas não coincidem.</p>
       )}
 
-      <Button
-        type="submit"
-        disabled={!isFormValid}
-        variant="primary"
-        size="lg"
-        fullWidth
-      >
+      <Button type="submit" disabled={!isFormValid} variant="primary" size="lg" fullWidth>
         Redefinir senha e fazer login
       </Button>
     </form>

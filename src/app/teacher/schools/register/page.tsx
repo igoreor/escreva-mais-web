@@ -1,7 +1,16 @@
 'use client';
 
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiArrowLeft, FiUpload, FiGrid, FiPlusSquare } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiUser,
+  FiArrowLeft,
+  FiUpload,
+  FiGrid,
+  FiPlusSquare,
+  FiFileMinus,
+} from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useRouter } from 'next/navigation';
@@ -21,7 +30,12 @@ const menuItems: SidebarItem[] = [
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
     href: '/teacher/schools',
-
+  },
+  {
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
   },
   {
     id: 'profile',
@@ -59,35 +73,34 @@ export default function CreateSchoolPage() {
   }
 
   async function handleSubmit(e: React.FormEvent) {
-      e.preventDefault();
+    e.preventDefault();
 
-      try {
-        if (!form.nome.trim()) {
-          setToast({ title: 'Erro', description: 'O nome da escola é obrigatório.' });
-          return;
-        }
-
-        const created = await createSchool(form.nome);
-        console.log('Escola criada:', created);
-
-        setToast({
-          title: 'Escola cadastrada com sucesso!',
-          description: 'A escola foi criada e está disponível para uso.',
-        });
-
-        // Redirecionar após o toast sumir (exemplo: 3 segundos)
-        setTimeout(() => {
-          router.push('/teacher/schools');
-        }, 3000);
-
-      } catch (error: any) {
-        console.error(error);
-        setToast({
-          title: 'Erro ao criar escola',
-          description: error.message || 'Erro inesperado.',
-        });
+    try {
+      if (!form.nome.trim()) {
+        setToast({ title: 'Erro', description: 'O nome da escola é obrigatório.' });
+        return;
       }
+
+      const created = await createSchool(form.nome);
+      console.log('Escola criada:', created);
+
+      setToast({
+        title: 'Escola cadastrada com sucesso!',
+        description: 'A escola foi criada e está disponível para uso.',
+      });
+
+      // Redirecionar após o toast sumir (exemplo: 3 segundos)
+      setTimeout(() => {
+        router.push('/teacher/schools');
+      }, 3000);
+    } catch (error: any) {
+      console.error(error);
+      setToast({
+        title: 'Erro ao criar escola',
+        description: error.message || 'Erro inesperado.',
+      });
     }
+  }
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
@@ -146,7 +159,7 @@ export default function CreateSchoolPage() {
               >
                 Confirmar cadastro
               </button>
-            </div>  
+            </div>
           </form>
         </main>
 

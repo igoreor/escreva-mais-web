@@ -1,15 +1,20 @@
 'use client';
 
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
-import Sidebar, { SidebarItem } from "@/components/common/SideBar";
-import { 
-  FiHome, FiBookOpen, FiUser, FiFileMinus, 
-  FiArrowLeft, FiLoader, FiSave 
-} from "react-icons/fi";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import ThemeServices, { ThemeResponse, ThemeUpdatePayload } from "@/services/ThemeServices";
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
+import Sidebar, { SidebarItem } from '@/components/common/SideBar';
+import {
+  FiHome,
+  FiBookOpen,
+  FiUser,
+  FiFileMinus,
+  FiArrowLeft,
+  FiLoader,
+  FiSave,
+} from 'react-icons/fi';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import ThemeServices, { ThemeResponse, ThemeUpdatePayload } from '@/services/ThemeServices';
 
 export default function EditThemePage() {
   const { logout } = useAuth();
@@ -20,14 +25,14 @@ export default function EditThemePage() {
   const [originalTheme, setOriginalTheme] = useState<ThemeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // Estados do formulário
-  const [titulo, setTitulo] = useState("");
-  const [texto1, setTexto1] = useState("");
-  const [texto2, setTexto2] = useState("");
-  const [texto3, setTexto3] = useState("");
-  const [texto4, setTexto4] = useState("");
+  const [titulo, setTitulo] = useState('');
+  const [texto1, setTexto1] = useState('');
+  const [texto2, setTexto2] = useState('');
+  const [texto3, setTexto3] = useState('');
+  const [texto4, setTexto4] = useState('');
 
   useEffect(() => {
     if (themeId) {
@@ -38,20 +43,20 @@ export default function EditThemePage() {
   const carregarTema = async () => {
     try {
       setLoading(true);
-      setError("");
-      
+      setError('');
+
       const data = await ThemeServices.getThemeById(themeId);
       setOriginalTheme(data);
-      
+
       // Preenche o formulário com os dados existentes
-      setTitulo(data.theme || "");
-      setTexto1(data.text1 || "");
-      setTexto2(data.text2 || "");
-      setTexto3(data.text3 || "");
-      setTexto4(data.text4 || "");
+      setTitulo(data.theme || '');
+      setTexto1(data.text1 || '');
+      setTexto2(data.text2 || '');
+      setTexto3(data.text3 || '');
+      setTexto4(data.text4 || '');
     } catch (err) {
-      console.error("Erro ao buscar tema:", err);
-      setError(err instanceof Error ? err.message : "Erro ao carregar tema");
+      console.error('Erro ao buscar tema:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao carregar tema');
     } finally {
       setLoading(false);
     }
@@ -59,12 +64,12 @@ export default function EditThemePage() {
 
   const handleSalvar = async () => {
     if (!titulo.trim()) {
-      setError("⚠️ O tema é obrigatório.");
+      setError('⚠️ O tema é obrigatório.');
       return;
     }
 
     if (![texto1, texto2, texto3, texto4].some((t) => t.trim())) {
-      setError("⚠️ Pelo menos um texto motivador deve ser preenchido.");
+      setError('⚠️ Pelo menos um texto motivador deve ser preenchido.');
       return;
     }
 
@@ -78,14 +83,14 @@ export default function EditThemePage() {
 
     try {
       setSaving(true);
-      setError("");
-      
+      setError('');
+
       await ThemeServices.updateTheme(themeId, payload);
-      alert("Tema atualizado com sucesso!");
+      alert('Tema atualizado com sucesso!');
       router.push(`/teacher/themes/${themeId}`);
     } catch (err) {
-      console.error("Erro ao atualizar tema:", err);
-      setError(err instanceof Error ? err.message : "❌ Erro ao atualizar tema.");
+      console.error('Erro ao atualizar tema:', err);
+      setError(err instanceof Error ? err.message : '❌ Erro ao atualizar tema.');
     } finally {
       setSaving(false);
     }
@@ -98,17 +103,22 @@ export default function EditThemePage() {
   const hasChanges = () => {
     if (!originalTheme) return false;
     return (
-      titulo !== (originalTheme.theme || "") ||
-      texto1 !== (originalTheme.text1 || "") ||
-      texto2 !== (originalTheme.text2 || "") ||
-      texto3 !== (originalTheme.text3 || "") ||
-      texto4 !== (originalTheme.text4 || "")
+      titulo !== (originalTheme.theme || '') ||
+      texto1 !== (originalTheme.text1 || '') ||
+      texto2 !== (originalTheme.text2 || '') ||
+      texto3 !== (originalTheme.text3 || '') ||
+      texto4 !== (originalTheme.text4 || '')
     );
   };
 
   const menuItems: SidebarItem[] = [
     { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
-    { id: 'management', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/teacher/schools' },
+    {
+      id: 'management',
+      label: 'Minhas Turmas',
+      icon: <FiBookOpen size={34} />,
+      href: '/teacher/schools',
+    },
     { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
     { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
   ];
@@ -131,7 +141,7 @@ export default function EditThemePage() {
           {error && !loading && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <p className="text-red-700">{error}</p>
-              <button 
+              <button
                 onClick={carregarTema}
                 className="mt-2 text-red-600 underline hover:text-red-800"
               >
@@ -151,7 +161,7 @@ export default function EditThemePage() {
                 >
                   <FiArrowLeft className="mr-1" /> Voltar aos detalhes
                 </button>
-                
+
                 <h1 className="text-2xl font-bold text-gray-900">Editar Tema</h1>
                 <p className="text-gray-600 mt-1">
                   Modificando: <span className="font-medium">{originalTheme.theme}</span>
@@ -170,28 +180,29 @@ export default function EditThemePage() {
                   <label className="block font-medium mb-2 text-gray-700">
                     Tema original <span className="text-red-500">*</span>
                   </label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={titulo}
                     onChange={(e) => setTitulo(e.target.value)}
                     placeholder="Ex: A importância da leitura na formação do cidadão"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
                     maxLength={255}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {titulo.length}/255 caracteres
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{titulo.length}/255 caracteres</p>
                 </div>
 
                 <div className="mb-6">
                   <label className="block font-medium mb-2 text-gray-700">
-                    Textos motivadores <span className="text-sm text-gray-500">(pelo menos um é obrigatório)</span>
+                    Textos motivadores{' '}
+                    <span className="text-sm text-gray-500">(pelo menos um é obrigatório)</span>
                   </label>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">TEXTO I</label>
-                      <textarea 
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        TEXTO I
+                      </label>
+                      <textarea
                         value={texto1}
                         onChange={(e) => setTexto1(e.target.value)}
                         placeholder="Digite um texto, insira um link ou anexe um arquivo."
@@ -199,10 +210,12 @@ export default function EditThemePage() {
                         rows={4}
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">TEXTO II</label>
-                      <textarea 
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        TEXTO II
+                      </label>
+                      <textarea
                         value={texto2}
                         onChange={(e) => setTexto2(e.target.value)}
                         placeholder="Digite um texto, insira um link ou anexe um arquivo."
@@ -210,10 +223,12 @@ export default function EditThemePage() {
                         rows={4}
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">TEXTO III</label>
-                      <textarea 
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        TEXTO III
+                      </label>
+                      <textarea
                         value={texto3}
                         onChange={(e) => setTexto3(e.target.value)}
                         placeholder="Digite um texto, insira um link ou anexe um arquivo."
@@ -221,10 +236,12 @@ export default function EditThemePage() {
                         rows={4}
                       />
                     </div>
-                    
+
                     <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">TEXTO IV</label>
-                      <textarea 
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        TEXTO IV
+                      </label>
+                      <textarea
                         value={texto4}
                         onChange={(e) => setTexto4(e.target.value)}
                         placeholder="Digite um texto, insira um link ou anexe um arquivo."
@@ -239,42 +256,47 @@ export default function EditThemePage() {
                 <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
                   <h3 className="font-medium text-gray-700 mb-2">Informações do tema</h3>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p><strong>ID:</strong> {originalTheme.id}</p>
-                    <p><strong>Criado em:</strong> {new Date(originalTheme.created_at).toLocaleDateString("pt-BR", {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}</p>
+                    <p>
+                      <strong>ID:</strong> {originalTheme.id}
+                    </p>
+                    <p>
+                      <strong>Criado em:</strong>{' '}
+                      {new Date(originalTheme.created_at).toLocaleDateString('pt-BR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex justify-between">
-                  <button 
-                    onClick={handleVoltar} 
+                  <button
+                    onClick={handleVoltar}
                     disabled={saving}
                     className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
                     Cancelar
                   </button>
-                  
+
                   <div className="flex gap-3">
                     {hasChanges() && (
                       <div className="flex items-center text-sm text-orange-600 mr-3">
                         ⚠️ Alterações não salvas
                       </div>
                     )}
-                    
-                    <button 
-                      onClick={handleSalvar} 
+
+                    <button
+                      onClick={handleSalvar}
                       disabled={saving || !titulo.trim() || !hasChanges()}
                       className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       {saving && <FiLoader className="animate-spin" size={16} />}
                       <FiSave size={16} />
-                      {saving ? "Salvando..." : "Salvar alterações"}
+                      {saving ? 'Salvando...' : 'Salvar alterações'}
                     </button>
                   </div>
                 </div>

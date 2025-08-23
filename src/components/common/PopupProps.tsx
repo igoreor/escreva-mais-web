@@ -17,34 +17,29 @@ const Popup: React.FC<PopupProps> = ({
   onClose,
   title,
   message,
-  buttonText = "Voltar",
-  titleColor = "#1E90FF",
-  buttonColor = "#1E90FF", 
-  backgroundColor = "#FFFFFF",
-  overlayColor = "rgba(0, 0, 0, 0.5)"
+  buttonText = 'Voltar',
+  titleColor = '#1E90FF',
+  buttonColor = '#1E90FF',
+  backgroundColor = '#FFFFFF',
+  overlayColor = 'rgba(0, 0, 0, 0.5)',
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ backgroundColor: overlayColor }}
     >
-      <div 
+      <div
         className="relative mx-4 max-w-md w-full rounded-2xl shadow-2xl p-8 text-center"
         style={{ backgroundColor }}
       >
-        <h2 
-          className="text-2xl font-bold mb-4"
-          style={{ color: titleColor }}
-        >
+        <h2 className="text-2xl font-bold mb-4" style={{ color: titleColor }}>
           {title}
         </h2>
-        
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          {message}
-        </p>
-        
+
+        <p className="text-gray-600 mb-8 leading-relaxed">{message}</p>
+
         <button
           onClick={onClose}
           className="w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95"
@@ -66,10 +61,8 @@ const PopupDemo = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-100 to-orange-200 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          Popup Personalizável
-        </h1>
-        
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Popup Personalizável</h1>
+
         <div className="grid md:grid-cols-3 gap-6">
           {/* Popup Redação Enviada */}
           <div className="bg-white rounded-xl p-6 shadow-lg">
@@ -112,7 +105,7 @@ const PopupDemo = () => {
         <div className="mt-12 bg-gray-900 rounded-xl p-6 text-white">
           <h3 className="text-xl font-semibold mb-4">Como usar:</h3>
           <pre className="text-sm overflow-x-auto">
-{`<Popup
+            {`<Popup
   isOpen={isPopupOpen}
   onClose={() => setIsPopupOpen(false)}
   title="Seu título aqui"

@@ -1,14 +1,14 @@
 // criação dos componentes da tela "esqueci minha senha"
-"use client";
+'use client';
 
-import { useState } from "react";
-import Button from "@/components/ui/Button";
-import FloatingInput from "@/components/ui/register/FloatingInput";
+import { useState } from 'react';
+import Button from '@/components/ui/Button';
+import FloatingInput from '@/components/ui/register/FloatingInput';
 
 export function EmailForm() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [focusEmail, setFocusEmail] = useState(false); // controle de foco
 
   // Validação simples do email
@@ -21,11 +21,11 @@ export function EmailForm() {
     setSubmitted(true);
 
     if (!validateEmail(email)) {
-      setError("Por favor, insira um e-mail válido.");
+      setError('Por favor, insira um e-mail válido.');
       return;
     }
 
-    setError("");
+    setError('');
     alert(`Link de redefinição enviado para: ${email} (mock)`);
     // Aqui entraria chamada real para API para enviar o email
   }
@@ -46,13 +46,7 @@ export function EmailForm() {
         onBlur={() => setFocusEmail(false)}
       />
 
-      <Button
-        type="submit"
-        disabled={!email || !!error}
-        variant="primary"
-        size="lg"
-        fullWidth
-      >
+      <Button type="submit" disabled={!email || !!error} variant="primary" size="lg" fullWidth>
         Enviar link de redefinição de senha
       </Button>
     </form>

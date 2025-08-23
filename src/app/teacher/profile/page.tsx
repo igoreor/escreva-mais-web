@@ -21,10 +21,10 @@ const menuItems: SidebarItem[] = [
     icon: <FiBookOpen size={34} />,
   },
   {
-      id: 'temas',
-      label: 'Meus Temas',
-      icon: <FiFileMinus size={34} />,
-      href: '/teacher/themes',
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
   },
   {
     id: 'profile',
@@ -53,7 +53,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const user = AuthService.getUser();
     if (user) {
-      setForm(prevForm => ({
+      setForm((prevForm) => ({
         ...prevForm,
         firstName: user.first_name || '',
         lastName: user.last_name || '',
@@ -71,7 +71,7 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validações básicas
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       alert('Por favor, preencha todos os campos obrigatórios.');
@@ -93,21 +93,21 @@ export default function ProfilePage() {
       //   email: form.email,
       //   ...(form.password && { password: form.password })
       // };
-      // 
+      //
       // const response = await updateUserProfile(updatedData);
 
       // Por enquanto, vamos atualizar apenas localmente
       AuthService.updateUserData({
         first_name: form.firstName,
         last_name: form.lastName,
-        email: form.email
+        email: form.email,
       });
 
       // Limpar campos de senha após salvar
-      setForm(prevForm => ({
+      setForm((prevForm) => ({
         ...prevForm,
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
       }));
 
       alert('Perfil atualizado com sucesso!');
@@ -138,9 +138,7 @@ export default function ProfilePage() {
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
         <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 py-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">
-            Meu perfil
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">Meu perfil</h1>
 
           <div className="relative mb-8">
             {/* Avatar com iniciais se não houver imagem */}
@@ -153,10 +151,7 @@ export default function ProfilePage() {
             </label>
           </div>
 
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-xl mx-auto flex flex-col gap-4"
-          >
+          <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto flex flex-col gap-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <label className="text-sm text-global-1">Nome *</label>

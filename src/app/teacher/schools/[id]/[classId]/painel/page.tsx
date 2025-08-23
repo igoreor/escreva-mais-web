@@ -1,12 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
-  FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiUsers,
-  FiCalendar, FiEye, FiPlusSquare, FiEdit2
+  FiHome,
+  FiBookOpen,
+  FiFileText,
+  FiUser,
+  FiArrowLeft,
+  FiUsers,
+  FiCalendar,
+  FiEye,
+  FiPlusSquare,
+  FiEdit2,
+  FiFileMinus,
 } from 'react-icons/fi';
 import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
 import ClassroomService, { Assignment, ClassroomDetails } from '@/services/ClassroomService';
@@ -23,7 +32,7 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
     children: [
-      { 
+      {
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
@@ -33,7 +42,8 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
             id: 'class-details',
             label: 'dashboard',
             icon: <FiFileText size={20} />,
-            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
+            href:
+              schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
           },
           {
             id: 'class-dashboard',
@@ -44,6 +54,12 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
         ],
       },
     ],
+  },
+  {
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
   },
   {
     id: 'profile',
@@ -68,7 +84,7 @@ const TeacherClassPage: React.FC = () => {
         setClassroom(data);
       }
     } catch (error) {
-      console.error("Erro ao carregar turma:", error);
+      console.error('Erro ao carregar turma:', error);
     } finally {
       setLoading(false);
     }
@@ -97,11 +113,13 @@ const TeacherClassPage: React.FC = () => {
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-gray-50">
-        <Sidebar menuItems={getMenuItems(schoolId as string, classId as string)} onLogout={logout} />
+        <Sidebar
+          menuItems={getMenuItems(schoolId as string, classId as string)}
+          onLogout={logout}
+        />
 
         {/* Conteúdo principal */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
-          
           {/* Header */}
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">
@@ -132,30 +150,28 @@ const TeacherClassPage: React.FC = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Atividades</h2>
           </div>
-        
-<div className="flex flex-col gap-4">
-              <div
-                className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between"
-              >
-                <div className="flex gap-3 items-start">
-                  <FiFileText size={28} className="text-blue-600 mt-1" />
-                </div>
-                <button
-                  onClick={() => setAbrirModal(true)}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  <FiPlusSquare /> Publicar atividade
-                </button>
 
-                <PublicarAtividadeModal
-                  classroomId={classId as string}
-                  onAssignmentCreated={handleAssignmentCreated}
-                  isOpen={abrirModal}
-                  onClose={() => setAbrirModal(false)}
-                />
+          <div className="flex flex-col gap-4">
+            <div className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between">
+              <div className="flex gap-3 items-start">
+                <FiFileText size={28} className="text-blue-600 mt-1" />
               </div>
+              <button
+                onClick={() => setAbrirModal(true)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                <FiPlusSquare /> Publicar atividade
+              </button>
+
+              <PublicarAtividadeModal
+                classroomId={classId as string}
+                onAssignmentCreated={handleAssignmentCreated}
+                isOpen={abrirModal}
+                onClose={() => setAbrirModal(false)}
+              />
+            </div>
           </div>
-        
+
           <div className="flex flex-col gap-4 pt-4">
             {classroom.assignments.map((assignment: Assignment) => (
               <div
@@ -167,25 +183,26 @@ const TeacherClassPage: React.FC = () => {
                   <div>
                     <h3 className="text-gray-800 font-medium">{assignment.title}</h3>
                     <div className="flex items-center gap-3 mt-2 text-sm">
-                  <span className="flex items-center gap-1 text-blue-600">
-                    <FiCalendar /> 
-                    Prazo: {new Date(assignment.due_date).toLocaleString("pt-BR", {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                      <span className="flex items-center gap-1 text-blue-600">
+                        <FiCalendar />
+                        Prazo:{' '}
+                        {new Date(assignment.due_date).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
                       <span className="text-gray-600">
                         {assignment.submission_status} entregues
                       </span>
                     </div>
                   </div>
                 </div>
-                
+
                 <a
-                   href={`/teacher/schools/${schoolId}/${classId}/painel/${assignment.id}`}
+                  href={`/teacher/schools/${schoolId}/${classId}/painel/${assignment.id}`}
                   className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
                   <FiEye size={18} /> Ver redações

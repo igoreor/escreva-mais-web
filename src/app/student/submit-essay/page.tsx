@@ -1,19 +1,19 @@
-"use client";
-import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from "react";
-import Sidebar from "@/components/common/SideBar";
-import Button from "@/components/ui/Button";
-import EditText from "@/components/ui/EditText";
-import RouteGuard from "@/components/auth/RouterGuard";
-import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from "react-icons/fi";
-import { useAuth } from "@/hooks/userAuth";
-import Popup from "@/components/ui/Popup";
+'use client';
+import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import Sidebar from '@/components/common/SideBar';
+import Button from '@/components/ui/Button';
+import EditText from '@/components/ui/EditText';
+import RouteGuard from '@/components/auth/RouterGuard';
+import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from 'react-icons/fi';
+import { useAuth } from '@/hooks/userAuth';
+import Popup from '@/components/ui/Popup';
 
 const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -21,29 +21,29 @@ const getMenuItems = (id: string) => [
     icon: <FiBookOpen size={34} />,
     href: '/student/classes',
   },
-        {
-          id: 'submit',
-          label: 'Enviar Nova Redação',
-          icon: <FiUpload size={34} />,
-          href: `/student/submit-essay` 
-        },
-        {
-          id: 'essays',
-          label: 'Minhas Redações',
-          icon: <FiFileText size={34} />,
-          href: `/student/essays`
-        },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: `/student/essays`,
+  },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
-  }
+    href: '/student/profile',
+  },
 ];
 
 const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,15 +64,18 @@ const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSe
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    setIsDragging(false);
-    const file = event.dataTransfer.files?.[0];
-    if (file) {
-      setFileName(file.name);
-      onFileSelect(file);
-    }
-  }, [onFileSelect]);
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      setIsDragging(false);
+      const file = event.dataTransfer.files?.[0];
+      if (file) {
+        setFileName(file.name);
+        onFileSelect(file);
+      }
+    },
+    [onFileSelect],
+  );
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -97,7 +100,8 @@ const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSe
       <div className="flex flex-col items-center justify-center text-center">
         <FiUpload className="w-10 h-10 mb-3 text-gray-400" />
         <p className="text-gray-500">
-          <span className="font-semibold text-blue-600">Clique para enviar</span> ou arraste e solte um arquivo
+          <span className="font-semibold text-blue-600">Clique para enviar</span> ou arraste e solte
+          um arquivo
         </p>
         <p className="text-xs text-gray-400 mt-1">PNG ou JPG (máx. 5MB)</p>
         {fileName && (
@@ -112,110 +116,113 @@ const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSe
 };
 
 const TextAreaWithLineNumbers: React.FC<{
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-    placeholder: string;
-    rows?: number;
-    maxLength?: number;
-    showCharCount?: boolean;
-    maxLines?: number;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder: string;
+  rows?: number;
+  maxLength?: number;
+  showCharCount?: boolean;
+  maxLines?: number;
 }> = ({ value, onChange, placeholder, rows = 10, maxLength, showCharCount, maxLines = 30 }) => {
-    const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    const [lineNumbers, setLineNumbers] = useState("01");
+  const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const [lineNumbers, setLineNumbers] = useState('01');
 
-    const syncScroll = useCallback(() => {
-        if (lineNumbersRef.current && textAreaRef.current) {
-            lineNumbersRef.current.scrollTop = textAreaRef.current.scrollTop;
-        }
-    }, []);
+  const syncScroll = useCallback(() => {
+    if (lineNumbersRef.current && textAreaRef.current) {
+      lineNumbersRef.current.scrollTop = textAreaRef.current.scrollTop;
+    }
+  }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newValue = e.target.value;
-        const lines = newValue.split('\n');
-        
-        // Limita o número de linhas
-        if (lines.length <= maxLines) {
-            onChange(e);
-        }
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    const lines = newValue.split('\n');
 
-    useLayoutEffect(() => {
-        if (textAreaRef.current) {
-            const textarea = textAreaRef.current;
-            const computedStyle = getComputedStyle(textarea);
-            const lineHeight = 24;
-            
-            const paddingTop = parseFloat(computedStyle.paddingTop);
-            const paddingBottom = parseFloat(computedStyle.paddingBottom);
-            const verticalPadding = paddingTop + paddingBottom;
-            
-            const contentHeight = textarea.scrollHeight - verticalPadding;
-            const renderedLineCount = Math.round(contentHeight / lineHeight);
+    // Limita o número de linhas
+    if (lines.length <= maxLines) {
+      onChange(e);
+    }
+  };
 
-            const newlineCount = value.split('\n').length;
+  useLayoutEffect(() => {
+    if (textAreaRef.current) {
+      const textarea = textAreaRef.current;
+      const computedStyle = getComputedStyle(textarea);
+      const lineHeight = 24;
 
-            const lineCount = Math.max(1, renderedLineCount, newlineCount);
-            
-            const newNumbers = Array.from({ length: lineCount }, (_, i) => 
-                String(i + 1).padStart(2, '0')
-            ).join('\n');
+      const paddingTop = parseFloat(computedStyle.paddingTop);
+      const paddingBottom = parseFloat(computedStyle.paddingBottom);
+      const verticalPadding = paddingTop + paddingBottom;
 
-            if (newNumbers !== lineNumbers) {
-                setLineNumbers(newNumbers);
-            }
-        }
-    }, [value, lineNumbers]);
+      const contentHeight = textarea.scrollHeight - verticalPadding;
+      const renderedLineCount = Math.round(contentHeight / lineHeight);
 
-    useEffect(() => {
-        syncScroll();
-    }, [lineNumbers, syncScroll]);
+      const newlineCount = value.split('\n').length;
 
-    const currentLines = value.split('\n').length;
+      const lineCount = Math.max(1, renderedLineCount, newlineCount);
 
-    return (
-        <div className="relative w-full">
-            <div className="flex w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
-                <textarea
-                    readOnly
-                    ref={lineNumbersRef}
-                    rows={rows}
-                    className="w-12 text-center p-2 bg-gray-100 text-gray-400 resize-none font-mono text-sm select-none border-r border-gray-200 focus:outline-none leading-6"
-                    value={lineNumbers}
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                />
-                <textarea
-                    ref={textAreaRef}
-                    rows={rows}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={handleChange}
-                    onScroll={syncScroll}
-                    maxLength={maxLength}
-                    className="flex-1 p-2 resize-none font-mono text-sm focus:outline-none leading-6"
-                />
-            </div>
-            <div className="flex justify-between items-center text-xs text-gray-400 mt-1">
-                <div>Linhas: {currentLines}/{maxLines}</div>
-                {showCharCount && maxLength && (
-                    <div>
-                        {value.length}/{maxLength} caracteres
-                    </div>
-                )}
-            </div>
+      const newNumbers = Array.from({ length: lineCount }, (_, i) =>
+        String(i + 1).padStart(2, '0'),
+      ).join('\n');
+
+      if (newNumbers !== lineNumbers) {
+        setLineNumbers(newNumbers);
+      }
+    }
+  }, [value, lineNumbers]);
+
+  useEffect(() => {
+    syncScroll();
+  }, [lineNumbers, syncScroll]);
+
+  const currentLines = value.split('\n').length;
+
+  return (
+    <div className="relative w-full">
+      <div className="flex w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
+        <textarea
+          readOnly
+          ref={lineNumbersRef}
+          rows={rows}
+          className="w-12 text-center p-2 bg-gray-100 text-gray-400 resize-none font-mono text-sm select-none border-r border-gray-200 focus:outline-none leading-6"
+          value={lineNumbers}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        />
+        <textarea
+          ref={textAreaRef}
+          rows={rows}
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          onScroll={syncScroll}
+          maxLength={maxLength}
+          className="flex-1 p-2 resize-none font-mono text-sm focus:outline-none leading-6"
+        />
+      </div>
+      <div className="flex justify-between items-center text-xs text-gray-400 mt-1">
+        <div>
+          Linhas: {currentLines}/{maxLines}
         </div>
-    );
+        {showCharCount && maxLength && (
+          <div>
+            {value.length}/{maxLength} caracteres
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-import { useParams } from "next/navigation";
-import SubmitEssayService from "@/services/submitEssay";
+import { useParams } from 'next/navigation';
+import SubmitEssayService from '@/services/submitEssay';
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
-  const classId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
-  const [theme, setTheme] = useState("");
-  const [title, setTitle] = useState("");
-  const [essayText, setEssayText] = useState("");
+  const classId =
+    typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
+  const [theme, setTheme] = useState('');
+  const [title, setTitle] = useState('');
+  const [essayText, setEssayText] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -228,7 +235,7 @@ const SubmitEssayPage: React.FC = () => {
   // const handleSaveDraft = async () => {
   //   // Permite salvar rascunho mesmo sem todos os campos obrigatórios
   //   setIsLoading(true);
-    
+
   //   try {
   //     await SubmitEssayService.saveDraft({
   //       theme: theme.trim() || "Rascunho sem tema",
@@ -253,11 +260,11 @@ const SubmitEssayPage: React.FC = () => {
   //     setIsLoading(false);
   //   }
   // };
-  
+
   const handleSubmit = async () => {
     // Validação usando o service
     const validation = SubmitEssayService.validateEssayData(theme, essayText, image);
-    
+
     if (!validation.isValid) {
       setPopupConfig({
         type: 'error',
@@ -274,11 +281,11 @@ const SubmitEssayPage: React.FC = () => {
         theme: theme.trim(),
         title: title.trim() || null,
         content: essayText.trim() || null,
-        image: image
+        image: image,
       });
 
       console.log('Redação enviada com sucesso:', result);
-      
+
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
@@ -290,12 +297,11 @@ const SubmitEssayPage: React.FC = () => {
       setTitle('');
       setEssayText('');
       setImage(null);
-
     } catch (error) {
       console.error('Erro ao enviar redação:', error);
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      
+
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
@@ -309,9 +315,9 @@ const SubmitEssayPage: React.FC = () => {
   const { logout } = useAuth();
 
   return (
-    <RouteGuard allowedRoles={["student"]}>
+    <RouteGuard allowedRoles={['student']}>
       <div className="flex min-h-screen bg-global-2">
-          <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
 
         <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
@@ -357,27 +363,22 @@ const SubmitEssayPage: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-4 w-full">
-                <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
-                    Ou faça o upload de uma foto
-                </h2>
-                <FileUpload onFileSelect={setImage} />
+              <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
+                Ou faça o upload de uma foto
+              </h2>
+              <FileUpload onFileSelect={setImage} />
             </div>
 
             <div className="flex justify-end gap-5 mt-4">
-              <Button 
-                variant="outline" 
-                size="lg" 
+              <Button
+                variant="outline"
+                size="lg"
                 // onClick={handleSaveDraft}
                 disabled={isLoading}
               >
                 {isLoading ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
-              <Button 
-                variant="primary" 
-                size="lg" 
-                onClick={handleSubmit}
-                disabled={isLoading}
-              >
+              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading}>
                 {isLoading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>

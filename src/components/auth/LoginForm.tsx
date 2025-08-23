@@ -6,13 +6,12 @@ import Button from '@/components/ui/Button';
 import { useAuth } from '@/hooks/userAuth';
 import FloatingTextField from './FloatingTextFieldProps ';
 
-
 const LoginForm: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'teacher'>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{email?: string, password?: string, general?: string}>({});
-  
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+
   const { login, isLoading } = useAuth();
 
   const handleRoleChange = (role: 'student' | 'teacher') => {
@@ -21,7 +20,7 @@ const LoginForm: React.FC = () => {
   };
 
   const validateForm = () => {
-    const newErrors: {email?: string, password?: string} = {};
+    const newErrors: { email?: string; password?: string } = {};
 
     if (!email) {
       newErrors.email = 'E-mail é obrigatório';
@@ -47,7 +46,7 @@ const LoginForm: React.FC = () => {
       await login({ email, password });
     } catch (error) {
       setErrors({
-        general: error instanceof Error ? error.message : 'Erro ao fazer login'
+        general: error instanceof Error ? error.message : 'Erro ao fazer login',
       });
     }
   };
@@ -74,7 +73,7 @@ const LoginForm: React.FC = () => {
           />
         </div>
         <br />
-        
+
         {/* Role Selection */}
         <div className="mb-6">
           <div className="bg-global-2 rounded p-1.5 flex">
@@ -121,7 +120,7 @@ const LoginForm: React.FC = () => {
             {errors.general}
           </div>
         )}
-        
+
         {/* Login Form */}
         <div className="space-y-6">
           <FloatingTextField
@@ -151,15 +150,14 @@ const LoginForm: React.FC = () => {
             className="font-semibold"
             disabled={isLoading}
           >
-            {isLoading 
-              ? 'Entrando...' 
-              : selectedRole === 'student' 
-                ? 'Entrar como aluno' 
-                : 'Entrar como professor'
-            }
+            {isLoading
+              ? 'Entrando...'
+              : selectedRole === 'student'
+                ? 'Entrar como aluno'
+                : 'Entrar como professor'}
           </Button>
         </div>
-        
+
         {/* Additional Links */}
         <div className="text-center pt-20 space-y-2">
           <button
@@ -170,10 +168,7 @@ const LoginForm: React.FC = () => {
           </button>
           <p className="text-global-1 text-sm sm:text-base">
             Ainda não tem uma conta?{' '}
-            <button
-              onClick={handleRegister}
-              className="text-global-2 hover:underline"
-            >
+            <button onClick={handleRegister} className="text-global-2 hover:underline">
               Cadastre-se.
             </button>
           </p>

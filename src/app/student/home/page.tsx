@@ -1,10 +1,20 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation'; // 1. Importado o hook 'useParams'
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import { FiCheckCircle, FiAlertCircle, FiBarChart2, FiFileText, FiHome, FiUpload, FiBookOpen, FiUser, FiArrowLeft } from 'react-icons/fi';
+import {
+  FiCheckCircle,
+  FiAlertCircle,
+  FiBarChart2,
+  FiFileText,
+  FiHome,
+  FiUpload,
+  FiBookOpen,
+  FiUser,
+  FiArrowLeft,
+} from 'react-icons/fi';
 
 // Interfaces (sem alteração)
 interface CompetencyCardProps {
@@ -39,7 +49,7 @@ const getMenuItems = (id: string) => [
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -47,24 +57,24 @@ const getMenuItems = (id: string) => [
     icon: <FiBookOpen size={34} />,
     href: '/student/classes',
   },
-        {
-          id: 'submit',
-          label: 'Enviar Nova Redação',
-          icon: <FiUpload size={34} />,
-          href: `/student/submit-essay` 
-        },
-        {
-          id: 'essays',
-          label: 'Minhas Redações',
-          icon: <FiFileText size={34} />,
-          href: `/student/essays`
-        },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: `/student/essays`,
+  },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
-  }
+    href: '/student/profile',
+  },
 ];
 
 const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => (
@@ -81,7 +91,8 @@ const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, 
           pontos
         </span>
         <span className="text-global-4 text-base sm:text-xl font-normal leading-6 ml-4 sm:ml-6 mb-1">
-          / {average.toFixed(1)} <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
+          / {average.toFixed(1)}{' '}
+          <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
         </span>
       </div>
       <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px] max-w-xs">
@@ -91,11 +102,10 @@ const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, 
   </div>
 );
 
-
 const StudentDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const params = useParams(); 
-  const classId = params.id as string; 
+  const params = useParams();
+  const classId = params.id as string;
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
 
   const dadosPadrao = {
@@ -108,7 +118,7 @@ const StudentDashboard: React.FC = () => {
       { nome: 'Competência 3', pontos: 200, media: 2.0 },
       { nome: 'Competência 4', pontos: 200, media: 2.0 },
       { nome: 'Competência 5', pontos: 200, media: 2.0 },
-    ]
+    ],
   };
 
   useEffect(() => {
@@ -147,17 +157,20 @@ const StudentDashboard: React.FC = () => {
             {/* MÉDIA GERAL */}
             <div className="w-full bg-blue-100 border border-blue-400 rounded-lg p-6 flex justify-between items-center">
               <div>
-                <h2 className="font-semibold text-blue-800 mb-2">Média geral de todas suas redações</h2>
+                <h2 className="font-semibold text-blue-800 mb-2">
+                  Média geral de todas suas redações
+                </h2>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-normal text-blue-900">{dados.mediaGeral}</span>
                   <span className="text-gray-500">pontos</span>
-                  <span className="text-lg text-gray-700">/ {(dados.mediaGeral / 100).toFixed(1)} em média</span>
+                  <span className="text-lg text-gray-700">
+                    / {(dados.mediaGeral / 100).toFixed(1)} em média
+                  </span>
                 </div>
                 <p className="text-sm text-gray-700 mt-1">
-                  {turmaSelecionada 
-                    ? `Baseado no desempenho da ${turmaSelecionada.nome}` 
-                    : 'Baseado em todas as redações corrigidas'
-                  }
+                  {turmaSelecionada
+                    ? `Baseado no desempenho da ${turmaSelecionada.nome}`
+                    : 'Baseado em todas as redações corrigidas'}
                 </p>
               </div>
               <FiBarChart2 size={32} className="text-black" />
@@ -170,9 +183,13 @@ const StudentDashboard: React.FC = () => {
                 <div>
                   <h3 className="text-green-600 font-semibold mb-1 text-center">Melhor redação</h3>
                   <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">{dados.melhorRedacao.nota}</span>
+                    <span className="text-2xl font-normal text-blue-900">
+                      {dados.melhorRedacao.nota}
+                    </span>
                     <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ {(dados.melhorRedacao.nota / 100).toFixed(1)} em média</span>
+                    <span className="text-lg text-gray-700">
+                      / {(dados.melhorRedacao.nota / 100).toFixed(1)} em média
+                    </span>
                   </div>
                   <div className="flex items-center gap-1 justify-center">
                     <FiFileText size={18} className="text-gray-800" />
@@ -187,9 +204,13 @@ const StudentDashboard: React.FC = () => {
                 <div>
                   <h3 className="text-red-500 font-semibold mb-1 text-center">Pior redação</h3>
                   <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">{dados.piorRedacao.nota}</span>
+                    <span className="text-2xl font-normal text-blue-900">
+                      {dados.piorRedacao.nota}
+                    </span>
                     <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">/ {(dados.piorRedacao.nota / 100).toFixed(1)} em média</span>
+                    <span className="text-lg text-gray-700">
+                      / {(dados.piorRedacao.nota / 100).toFixed(1)} em média
+                    </span>
                   </div>
                   <div className="flex items-center gap-1 justify-center">
                     <FiFileText size={18} className="text-gray-800" />
@@ -212,12 +233,19 @@ const StudentDashboard: React.FC = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {dados.competencias.map((competencia, index) => (
-                  <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 text-center">
+                  <div
+                    key={index}
+                    className="bg-white border border-gray-200 rounded-lg p-6 text-center"
+                  >
                     <h3 className="font-semibold text-blue-900 mb-2">{competencia.nome}</h3>
                     <div className="flex items-baseline justify-center gap-2 mb-2">
-                      <span className="text-2xl font-normal text-blue-900">{competencia.pontos}</span>
+                      <span className="text-2xl font-normal text-blue-900">
+                        {competencia.pontos}
+                      </span>
                       <span className="text-gray-500">pontos</span>
-                      <span className="text-lg text-gray-700">/ {competencia.media.toFixed(1)} em média</span>
+                      <span className="text-lg text-gray-700">
+                        / {competencia.media.toFixed(1)} em média
+                      </span>
                     </div>
                     <p className="text-gray-800">
                       {index === 0 && 'Domínio da norma padrão'}

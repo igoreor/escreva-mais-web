@@ -1,28 +1,27 @@
 // criação dos componentes da tela "verifique seu email"
-"use client";
+'use client';
 
-import Button from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
+import Button from '@/components/ui/Button';
+import { useRouter } from 'next/navigation';
 
 export function VerifyEmailForm() {
   const router = useRouter();
 
   function handleResendLink() {
-    alert("Link de redefinição reenviado para: email@email.com (mock)");
+    alert('Link de redefinição reenviado para: email@email.com (mock)');
     // Aqui entraria a chamada real para a API
   }
 
   return (
     <div className="space-y-6 w-full max-w-[570px] text-center">
       <p className="text-gray-700 mt-4">
-        Acabamos de enviar instruções e um link para você redefinir a senha para{" "}
-        <strong>email@email.com</strong>. Pode levar alguns minutinhos para
-        chegar.
+        Acabamos de enviar instruções e um link para você redefinir a senha para{' '}
+        <strong>email@email.com</strong>. Pode levar alguns minutinhos para chegar.
       </p>
 
       <Button
         type="button"
-        onClick={() => router.push("/")}
+        onClick={() => router.push('/')}
         variant="primary"
         size="lg"
         fullWidth

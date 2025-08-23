@@ -9,11 +9,11 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
 
 const menuItems = [
-    {
+  {
     id: 'home',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -66,7 +66,10 @@ export default function StudentClassesPage() {
     } catch (err) {
       console.error('Erro ao buscar turmas:', err);
       if (err instanceof Error) {
-        if (err.message.includes('Token não encontrado') || err.message.includes('não autenticado')) {
+        if (
+          err.message.includes('Token não encontrado') ||
+          err.message.includes('não autenticado')
+        ) {
           setError('Erro de autenticação. Faça login novamente.');
         } else if (err.message.includes('404')) {
           setClassrooms([]);
@@ -114,10 +117,10 @@ export default function StudentClassesPage() {
     }
   };
 
-const selecionarTurma = (turma: Classroom) => {
-  localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
-  router.push(`/student/classes/${turma.id}/dashboard`);
-};
+  const selecionarTurma = (turma: Classroom) => {
+    localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
+    router.push(`/student/classes/${turma.id}/dashboard`);
+  };
 
   const entrarSemTurma = () => {
     localStorage.removeItem('turmaSelecionada');
@@ -188,9 +191,7 @@ const selecionarTurma = (turma: Classroom) => {
                       <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                         {getShiftLabel(turma.shift)}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        Código: {turma.join_code}
-                      </span>
+                      <span className="text-xs text-gray-500">Código: {turma.join_code}</span>
                     </div>
                   </div>
                 </div>
@@ -204,7 +205,6 @@ const selecionarTurma = (turma: Classroom) => {
                 <FiPlus size={32} />
                 <span className="mt-2 font-medium">Entrar em uma nova turma</span>
               </button>
-
             </div>
           )}
 

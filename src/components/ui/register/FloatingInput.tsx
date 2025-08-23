@@ -32,7 +32,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   showToggle = false,
   onToggle,
   autoComplete = 'off',
-  className = ''
+  className = '',
 }) => {
   return (
     <div className={`w-full relative ${className}`}>
@@ -47,16 +47,19 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           autoComplete={autoComplete}
           className={`w-full px-5 pt-4 pb-4 ${showToggle ? 'pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
         />
-        <label className={`
+        <label
+          className={`
           absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none
-          ${focused || value
-            ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
-            : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
+          ${
+            focused || value
+              ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
+              : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
           }
-        `}>
+        `}
+        >
           {label}
         </label>
-        
+
         {showToggle && value && (
           <button
             type="button"

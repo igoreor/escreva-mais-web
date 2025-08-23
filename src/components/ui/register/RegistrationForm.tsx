@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import Button from "@/components/ui/Button";
-import ErrorPopup from "@/components/common/ErrorPopup";
-import UserTypeSelector from "./UserTypeSelector";
-import { FormData, FocusStates } from "@/types/registration";
-import { RegistrationService } from "@/services/registrationService";
-import FloatingInput from "./FloatingInput";
-import { useFormValidation } from "@/hooks/useFormValidation";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import ErrorPopup from '@/components/common/ErrorPopup';
+import UserTypeSelector from './UserTypeSelector';
+import { FormData, FocusStates } from '@/types/registration';
+import { RegistrationService } from '@/services/registrationService';
+import FloatingInput from './FloatingInput';
+import { useFormValidation } from '@/hooks/useFormValidation';
 
 const RegistrationForm: React.FC = () => {
   const router = useRouter();
@@ -20,12 +20,12 @@ const RegistrationForm: React.FC = () => {
   } = useFormValidation();
 
   const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    userType: "student",
+    fullName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    userType: 'student',
   });
 
   const [focusStates, setFocusStates] = useState<FocusStates>({
@@ -40,24 +40,24 @@ const RegistrationForm: React.FC = () => {
   const [emailAlreadyExists, setEmailAlreadyExists] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [submitError, setSubmitError] = useState<string>("");
+  const [submitError, setSubmitError] = useState<string>('');
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
 
     // Clear email exists error when user changes email
-    if (field === "email") {
+    if (field === 'email') {
       setEmailAlreadyExists(false);
-      setSubmitError("");
+      setSubmitError('');
     }
 
     // Validate the field
     validateField(field, value, newFormData);
 
     // Special handling for password confirmation
-    if (field === "password" && formData.confirmPassword) {
-      validateField("confirmPassword", formData.confirmPassword, newFormData);
+    if (field === 'password' && formData.confirmPassword) {
+      validateField('confirmPassword', formData.confirmPassword, newFormData);
     }
   };
 
@@ -79,15 +79,15 @@ const RegistrationForm: React.FC = () => {
       const result = await RegistrationService.registerUser(formData);
 
       if (result.success) {
-        router.push("/#terceira-secao");
-      } else if (result.error === "EMAIL_EXISTS") {
+        router.push('/#terceira-secao');
+      } else if (result.error === 'EMAIL_EXISTS') {
         setEmailAlreadyExists(true);
       } else {
-        setSubmitError(result.error || "Erro desconhecido ao registrar.");
+        setSubmitError(result.error || 'Erro desconhecido ao registrar.');
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      setSubmitError("Erro inesperado ao tentar registrar. Tente novamente.");
+      console.error('Registration error:', error);
+      setSubmitError('Erro inesperado ao tentar registrar. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -95,36 +95,32 @@ const RegistrationForm: React.FC = () => {
 
   const getErrorMessage = (field: keyof FormData): string => {
     switch (field) {
-      case "fullName":
-        return "Nome deve conter apenas letras.";
-      case "lastName":
-        return "Sobrenome deve conter apenas letras.";
-      case "email":
-        return "E-mail inválido.";
-      case "password":
-        const missingRequirements = getPasswordValidationMessages(
-          formData.password
-        );
+      case 'fullName':
+        return 'Nome deve conter apenas letras.';
+      case 'lastName':
+        return 'Sobrenome deve conter apenas letras.';
+      case 'email':
+        return 'E-mail inválido.';
+      case 'password':
+        const missingRequirements = getPasswordValidationMessages(formData.password);
         if (missingRequirements.length > 0) {
-          return `A senha deve conter: ${missingRequirements.join(", ")}.`;
+          return `A senha deve conter: ${missingRequirements.join(', ')}.`;
         }
-        return "";
-      case "confirmPassword":
-        return "Senha diferente.";
+        return '';
+      case 'confirmPassword':
+        return 'Senha diferente.';
       default:
-        return "";
+        return '';
     }
   };
 
   return (
     <div className="w-full max-w-[570px] flex flex-col items-center gap-6 sm:gap-8">
-      {submitError && (
-        <ErrorPopup message={submitError} onClose={() => setSubmitError("")} />
-      )}
+      {submitError && <ErrorPopup message={submitError} onClose={() => setSubmitError('')} />}
       {/* User Type Selection */}
       <UserTypeSelector
         value={formData.userType}
-        onChange={(type) => handleInputChange("userType", type)}
+        onChange={(type) => handleInputChange('userType', type)}
       />
 
       {/* Name Fields */}
@@ -132,24 +128,24 @@ const RegistrationForm: React.FC = () => {
         <FloatingInput
           label="Nome"
           value={formData.fullName}
-          onChange={(value) => handleInputChange("fullName", value)}
-          onFocus={() => handleFocus("fullName")}
-          onBlur={() => handleBlur("fullName")}
+          onChange={(value) => handleInputChange('fullName', value)}
+          onFocus={() => handleFocus('fullName')}
+          onBlur={() => handleBlur('fullName')}
           focused={focusStates.fullName}
           error={errors.fullName}
-          errorMessage={errors.fullName ? getErrorMessage("fullName") : ""}
+          errorMessage={errors.fullName ? getErrorMessage('fullName') : ''}
           placeholder="Insira seu nome aqui"
         />
 
         <FloatingInput
           label="Sobrenome"
           value={formData.lastName}
-          onChange={(value) => handleInputChange("lastName", value)}
-          onFocus={() => handleFocus("lastName")}
-          onBlur={() => handleBlur("lastName")}
+          onChange={(value) => handleInputChange('lastName', value)}
+          onFocus={() => handleFocus('lastName')}
+          onBlur={() => handleBlur('lastName')}
           focused={focusStates.lastName}
           error={errors.lastName}
-          errorMessage={errors.lastName ? getErrorMessage("lastName") : ""}
+          errorMessage={errors.lastName ? getErrorMessage('lastName') : ''}
           placeholder="Insira seu sobrenome aqui"
         />
       </div>
@@ -159,17 +155,17 @@ const RegistrationForm: React.FC = () => {
         label="E-mail"
         type="email"
         value={formData.email}
-        onChange={(value) => handleInputChange("email", value)}
-        onFocus={() => handleFocus("email")}
-        onBlur={() => handleBlur("email")}
+        onChange={(value) => handleInputChange('email', value)}
+        onFocus={() => handleFocus('email')}
+        onBlur={() => handleBlur('email')}
         focused={focusStates.email}
         error={errors.email || emailAlreadyExists}
         errorMessage={
           emailAlreadyExists
-            ? "Este e-mail já está cadastrado."
+            ? 'Este e-mail já está cadastrado.'
             : errors.email
-            ? getErrorMessage("email")
-            : ""
+              ? getErrorMessage('email')
+              : ''
         }
         autoComplete="email"
       />
@@ -178,16 +174,14 @@ const RegistrationForm: React.FC = () => {
       <div className="w-full flex flex-col sm:flex-row gap-5">
         <FloatingInput
           label="Senha"
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           value={formData.password}
-          onChange={(value) => handleInputChange("password", value)}
-          onFocus={() => handleFocus("password")}
-          onBlur={() => handleBlur("password")}
+          onChange={(value) => handleInputChange('password', value)}
+          onFocus={() => handleFocus('password')}
+          onBlur={() => handleBlur('password')}
           focused={focusStates.password}
           error={errors.passwordStrength}
-          errorMessage={
-            errors.passwordStrength ? getErrorMessage("password") : ""
-          }
+          errorMessage={errors.passwordStrength ? getErrorMessage('password') : ''}
           showToggle={!!formData.password}
           onToggle={() => setShowPassword(!showPassword)}
           className="flex-1"
@@ -195,16 +189,14 @@ const RegistrationForm: React.FC = () => {
 
         <FloatingInput
           label="Confirmar senha"
-          type={showConfirmPassword ? "text" : "password"}
+          type={showConfirmPassword ? 'text' : 'password'}
           value={formData.confirmPassword}
-          onChange={(value) => handleInputChange("confirmPassword", value)}
-          onFocus={() => handleFocus("confirmPassword")}
-          onBlur={() => handleBlur("confirmPassword")}
+          onChange={(value) => handleInputChange('confirmPassword', value)}
+          onFocus={() => handleFocus('confirmPassword')}
+          onBlur={() => handleBlur('confirmPassword')}
           focused={focusStates.confirmPassword}
           error={errors.confirmPassword}
-          errorMessage={
-            errors.confirmPassword ? getErrorMessage("confirmPassword") : ""
-          }
+          errorMessage={errors.confirmPassword ? getErrorMessage('confirmPassword') : ''}
           showToggle={!!formData.confirmPassword}
           onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
           className="flex-1"

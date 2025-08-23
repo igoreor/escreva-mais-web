@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import RegistrationForm from '@/components/ui/register/RegistrationForm';
 import PartnerLogos from '@/components/ui/register/PartnerLogos';
 
-
 const RegistrationPage: React.FC = () => {
   const router = useRouter();
 

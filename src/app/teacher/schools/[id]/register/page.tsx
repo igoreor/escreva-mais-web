@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiArrowLeft, FiGrid, FiPlusSquare, FiFileMinus } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiUser,
+  FiArrowLeft,
+  FiGrid,
+  FiPlusSquare,
+  FiFileMinus,
+} from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import { createClassroom } from '@/services/TeacherServices'; // função que criamos
@@ -19,9 +27,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     id: 'management',
     label: 'Minhas Turmas',
     icon: <FiBookOpen size={28} />,
-
   },
-  { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
+  {
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
+  },
   {
     id: 'profile',
     label: 'Meu Perfil',

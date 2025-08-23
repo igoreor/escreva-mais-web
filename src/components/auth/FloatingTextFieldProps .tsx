@@ -16,13 +16,13 @@ interface FloatingTextFieldProps {
 
 const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   placeholder,
-  name,    
+  name,
   value,
   onChange,
   type = 'text',
   rightIcon,
   className = '',
-  error
+  error,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +30,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   const [hasValue, setHasValue] = useState(false);
 
   useEffect(() => {
-    setHasValue(Boolean(value)); 
+    setHasValue(Boolean(value));
   }, [value]);
 
   const labelIsUp = isFocused || hasValue;
@@ -45,22 +45,20 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
     <div className={`relative ${className}`}>
       <input
         id={name}
-        name={name}        
+        name={name}
         type={inputType}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
-          error 
-            ? 'border-red-300 focus:ring-red-300' 
-            : 'border-gray-300 focus:ring-blue-300'
+          error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'
         }`}
         placeholder=" "
-        autoComplete={name} 
+        autoComplete={name}
       />
       <label
-        htmlFor={name}      
+        htmlFor={name}
         className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none ${
           labelIsUp
             ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
@@ -84,9 +82,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
           />
         </button>
       )}
-      {error && (
-        <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-xs mt-1 ml-1">{error}</p>}
     </div>
   );
 };

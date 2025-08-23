@@ -2,39 +2,48 @@
 
 import { useRouter } from 'next/navigation';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiPlus, FiMoreVertical, FiTrash2, FiGrid, FiPlusSquare, FiFileMinus } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiUser,
+  FiPlus,
+  FiMoreVertical,
+  FiTrash2,
+  FiGrid,
+  FiPlusSquare,
+  FiFileMinus,
+} from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { listSchools, deleteSchool } from '@/services/TeacherServices';
 
-
 const menuItems: SidebarItem[] = [
-    {
-      id: 'home',
-      label: 'Início',
-      icon: <FiHome size={34} />,
-      href: '/teacher/home',
-    },
-    {
-      id: 'management',
-      label: 'Minhas Turmas',
-      icon: <FiBookOpen size={34} />,
-      href: '/teacher/schools',
-    },
-    {
-      id: 'temas',
-      label: 'Meus Temas',
-      icon: <FiFileMinus  size={34} />,
-      href: '/teacher/themes',
-    },
-    {
-      id: 'profile',
-      label: 'Meu Perfil',
-      icon: <FiUser size={34} />,
-      href: '/teacher/profile',
-    },
+  {
+    id: 'home',
+    label: 'Início',
+    icon: <FiHome size={34} />,
+    href: '/teacher/home',
+  },
+  {
+    id: 'management',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/teacher/schools',
+  },
+  {
+    id: 'temas',
+    label: 'Meus Temas',
+    icon: <FiFileMinus size={34} />,
+    href: '/teacher/themes',
+  },
+  {
+    id: 'profile',
+    label: 'Meu Perfil',
+    icon: <FiUser size={34} />,
+    href: '/teacher/profile',
+  },
 ];
 
 interface School {
@@ -84,7 +93,7 @@ export default function TeacherClassesPage() {
 
     try {
       await deleteSchool(showDeleteModal);
-      setSchools(schools.filter(school => school.id !== showDeleteModal));
+      setSchools(schools.filter((school) => school.id !== showDeleteModal));
       setShowDeleteModal(null);
     } catch (err: any) {
       console.error('Erro ao deletar escola:', err);
@@ -151,7 +160,7 @@ export default function TeacherClassesPage() {
                   >
                     <FiMoreVertical size={20} className="text-gray-600" />
                   </button>
-                  
+
                   {openMenuId === school.id && (
                     <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border z-20">
                       <button
@@ -191,9 +200,7 @@ export default function TeacherClassesPage() {
           {showDeleteModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                  Confirmar exclusão
-                </h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirmar exclusão</h3>
                 <p className="text-gray-600 mb-6">
                   Tem certeza que deseja deletar esta escola? Esta ação não pode ser desfeita.
                 </p>

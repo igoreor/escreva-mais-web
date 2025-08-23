@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiChevronDown, FiMenu, FiX } from 'react-icons/fi';
-import clsx from "clsx";
+import clsx from 'clsx';
 
 export interface SidebarItem {
   id: string;
@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
           }
           if (item.children) {
             if (findPath(item.children)) {
-              branchIds.unshift(item.id); 
+              branchIds.unshift(item.id);
               return true;
             }
           }
@@ -57,9 +57,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
   }, [pathname, menuItems]);
 
   const handleMenuClick = (id: string) => {
-    setOpenMenus(prevOpenMenus => {
+    setOpenMenus((prevOpenMenus) => {
       if (prevOpenMenus.includes(id)) {
-        return prevOpenMenus.filter(menuId => !menuId.startsWith(id));
+        return prevOpenMenus.filter((menuId) => !menuId.startsWith(id));
       } else {
         return [...prevOpenMenus, id];
       }
@@ -86,16 +86,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
       'flex items-center w-full text-left p-3 transition-all duration-200 rounded-md';
     const hoverClasses = 'hover:bg-gray-100';
     const padding = isSubItem ? 'pl-10' : 'pl-5';
-    const activeClasses = isActive
-      ? 'bg-blue-100 text-blue-700 font-semibold'
-      : 'text-gray-800';
+    const activeClasses = isActive ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-800';
 
     const itemContent = (
       <>
         <div className={clsx('transition-colors', isActive ? 'text-blue-600' : 'text-gray-600')}>
           {item.icon}
         </div>
-        <span className={clsx('flex-1 ml-4 text-base font-normal transition-colors', isActive ? 'text-blue-700 font-semibold' : 'text-gray-800')}>
+        <span
+          className={clsx(
+            'flex-1 ml-4 text-base font-normal transition-colors',
+            isActive ? 'text-blue-700 font-semibold' : 'text-gray-800',
+          )}
+        >
           {item.label}
         </span>
         {hasChildren && (
@@ -120,12 +123,12 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
           </button>
           <div
             className={clsx('overflow-hidden transition-all duration-300 ease-in-out', {
-              'max-h-[1000px]': isMenuOpen, 
+              'max-h-[1000px]': isMenuOpen,
               'max-h-0': !isMenuOpen,
             })}
           >
             <div className="pt-2 pl-2 ml-[10px] border-l-2 border-gray-200 flex flex-col gap-y-1">
-              {item.children?.map(child => renderMenuItem(child, true))}
+              {item.children?.map((child) => renderMenuItem(child, true))}
             </div>
           </div>
         </div>
@@ -148,19 +151,19 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
     <>
       <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white shadow-md rounded-md"
-        onClick={() => setIsMobileOpen(prev => !prev)}
+        onClick={() => setIsMobileOpen((prev) => !prev)}
       >
         {isMobileOpen ? <FiX size={24} /> : <FiMenu size={24} />}
       </button>
 
       <aside
         className={clsx(
-          "fixed top-0 left-0 h-screen w-[270px] bg-white shadow-lg flex flex-col transform transition-transform duration-300 z-40",
+          'fixed top-0 left-0 h-screen w-[270px] bg-white shadow-lg flex flex-col transform transition-transform duration-300 z-40',
           {
-            "-translate-x-full lg:translate-x-0": !isMobileOpen, 
-            "translate-x-0": isMobileOpen,
+            '-translate-x-full lg:translate-x-0': !isMobileOpen,
+            'translate-x-0': isMobileOpen,
           },
-          className
+          className,
         )}
       >
         <div className="flex justify-center p-4 border-b">
@@ -168,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
         </div>
         <div className="flex flex-col justify-between flex-1">
           <nav className="p-3 flex flex-col gap-y-1">
-            {menuItems.map(item => renderMenuItem(item))}
+            {menuItems.map((item) => renderMenuItem(item))}
           </nav>
           <div className="p-3 border-t">
             <button
@@ -191,9 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', menuItems, onLogout }
                   />
                 </svg>
               </div>
-              <span className="ml-4 text-base font-normal text-left text-gray-800">
-                Sair
-              </span>
+              <span className="ml-4 text-base font-normal text-left text-gray-800">Sair</span>
             </button>
           </div>
         </div>

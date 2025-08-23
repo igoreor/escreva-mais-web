@@ -24,7 +24,11 @@ interface TeacherComment {
 
 const CorrectionDetailsPage: React.FC = () => {
   // estados de modal
-  const [openModal, setOpenModal] = useState<null | { title: string; aiComment?: string; teacherComment?: string }>(null);
+  const [openModal, setOpenModal] = useState<null | {
+    title: string;
+    aiComment?: string;
+    teacherComment?: string;
+  }>(null);
 
   // dados
   const overallScore = { score: 560, average: 5.6, totalCompetencies: 5 };
@@ -132,7 +136,13 @@ const CorrectionDetailsPage: React.FC = () => {
               Baseado em {overallScore.totalCompetencies} competências avaliadas
             </div>
           </div>
-          <Image src="/images/img_vector.svg" alt="gráfico" width={40} height={40} className="opacity-90" />
+          <Image
+            src="/images/img_vector.svg"
+            alt="gráfico"
+            width={40}
+            height={40}
+            className="opacity-90"
+          />
         </div>
 
         {/* melhor/pior competência */}
@@ -147,7 +157,9 @@ const CorrectionDetailsPage: React.FC = () => {
                 <span className="mb-1 text-sm text-gray-500">pontos</span>
               </div>
               <div className="text-sm text-gray-600">/ {bestCompetency.average} em média</div>
-              <div className="text-xs text-gray-500">Competência {bestCompetency.competencyNumber}</div>
+              <div className="text-xs text-gray-500">
+                Competência {bestCompetency.competencyNumber}
+              </div>
             </div>
             <Image src="/images/img_done.svg" alt="ok" width={56} height={56} />
           </div>
@@ -162,7 +174,9 @@ const CorrectionDetailsPage: React.FC = () => {
                 <span className="mb-1 text-sm text-gray-500">pontos</span>
               </div>
               <div className="text-sm text-gray-600">/ {worstCompetency.average} em média</div>
-              <div className="text-xs text-gray-500">Competência {worstCompetency.competencyNumber}</div>
+              <div className="text-xs text-gray-500">
+                Competência {worstCompetency.competencyNumber}
+              </div>
             </div>
             <Image src="/images/img_error_outline.svg" alt="erro" width={56} height={56} />
           </div>
@@ -170,16 +184,16 @@ const CorrectionDetailsPage: React.FC = () => {
 
         {/* desempenho por competência */}
         <div className="space-y-3">
-          <h3 className="text-[15px] font-semibold text-[#1d4b8f]">
-            Desempenho por competência
-          </h3>
+          <h3 className="text-[15px] font-semibold text-[#1d4b8f]">Desempenho por competência</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {competencyScores.map((c) => (
               <div key={c.id} className="rounded-xl border border-gray-200 bg-white p-4">
                 <p className="text-[15px] font-semibold text-[#0f2752]">{c.title}</p>
                 <div className="mt-1 flex items-end gap-2">
-                  <span className="text-[26px] font-semibold text-[#0f2752] leading-none">{c.score}</span>
+                  <span className="text-[26px] font-semibold text-[#0f2752] leading-none">
+                    {c.score}
+                  </span>
                   <span className="mb-1 text-sm text-gray-500">pontos</span>
                 </div>
                 <div className="text-sm text-gray-600">/ {c.average} em média</div>
@@ -193,7 +207,10 @@ const CorrectionDetailsPage: React.FC = () => {
                       size="sm"
                       className="mt-1 px-0 text-blue-700 hover:underline"
                       onClick={() =>
-                        setOpenModal({ title: `${c.title} - ${c.description}`, aiComment: c.aiComment })
+                        setOpenModal({
+                          title: `${c.title} - ${c.description}`,
+                          aiComment: c.aiComment,
+                        })
                       }
                     >
                       Ver mais
@@ -206,7 +223,9 @@ const CorrectionDetailsPage: React.FC = () => {
             {/* comentário geral */}
             <div className="rounded-xl border border-blue-300 bg-[#eaf2ff] p-4">
               <p className="text-[15px] font-semibold text-[#0f2752]">Comentário geral</p>
-              <p className="mt-3 text-sm text-gray-700">Feedback da IA: Sua desenvoltura no tema deveria...</p>
+              <p className="mt-3 text-sm text-gray-700">
+                Feedback da IA: Sua desenvoltura no tema deveria...
+              </p>
               <Button
                 variant="ghost"
                 size="sm"
@@ -222,8 +241,10 @@ const CorrectionDetailsPage: React.FC = () => {
               >
                 Ver mais
               </Button>
-              <p className="mt-3 text-sm text-gray-700">Feedback da IA: Sua desenvoltura no tema deveria...</p>
-                            <Button
+              <p className="mt-3 text-sm text-gray-700">
+                Feedback da IA: Sua desenvoltura no tema deveria...
+              </p>
+              <Button
                 variant="ghost"
                 size="sm"
                 className="mt-2 px-0 text-blue-700 hover:underline"

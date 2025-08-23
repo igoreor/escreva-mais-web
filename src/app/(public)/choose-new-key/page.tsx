@@ -1,11 +1,11 @@
 // chamada dos componentes da tela "escolha nova senha"
 
-"use client";
+'use client';
 
-import { PasswordForm } from "@/components/ui/recover-key/PasswordForm";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import PartnerLogos from "@/components/ui/register/PartnerLogos";
+import { PasswordForm } from '@/components/ui/recover-key/PasswordForm';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import PartnerLogos from '@/components/ui/register/PartnerLogos';
 
 export default function ForgetKeyPage() {
   const router = useRouter();
@@ -28,9 +28,7 @@ export default function ForgetKeyPage() {
 
           {/* Título e subtítulo */}
           <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-2 text-[#23609e]">
-              Escolha sua nova senha
-            </h1>
+            <h1 className="text-2xl font-semibold mb-2 text-[#23609e]">Escolha sua nova senha</h1>
           </div>
 
           {/* Formulário */}
@@ -38,7 +36,7 @@ export default function ForgetKeyPage() {
             <PasswordForm />
             <button
               type="button"
-              onClick={() => router.push("/registration")}
+              onClick={() => router.push('/registration')}
               className="mt-4 px-4 py-2 text-global-2 rounded hover:bg-blue-300 transition"
             >
               Voltar para tela de login

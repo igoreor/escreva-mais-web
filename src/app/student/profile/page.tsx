@@ -1,18 +1,27 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiFileText, FiHome, FiUpload, FiUser } from "react-icons/fi";
-import Sidebar, { SidebarItem } from "@/components/common/SideBar";
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
-import AuthService from "@/services/authService";
+import React, { useState, useEffect } from 'react';
+import {
+  FiBookOpen,
+  FiCamera,
+  FiEye,
+  FiEyeOff,
+  FiFileText,
+  FiHome,
+  FiUpload,
+  FiUser,
+} from 'react-icons/fi';
+import Sidebar, { SidebarItem } from '@/components/common/SideBar';
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
+import AuthService from '@/services/authService';
 
 const menuItems = [
   {
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -20,35 +29,33 @@ const menuItems = [
     icon: <FiBookOpen size={34} />,
     href: '/student/classes',
   },
-        {
-          id: 'submit',
-          label: 'Enviar Nova Redação',
-          icon: <FiUpload size={34} />,
-          href: `/student/submit-essay` 
-        },
-        {
-          id: 'essays',
-          label: 'Minhas Redações',
-          icon: <FiFileText size={34} />,
-          href: `/student/essays`
-        },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: `/student/essays`,
+  },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
-  }
+    href: '/student/profile',
+  },
 ];
-
-
 
 const ProfilePage = () => {
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -60,11 +67,11 @@ const ProfilePage = () => {
   useEffect(() => {
     const user = AuthService.getUser();
     if (user) {
-      setForm(prevForm => ({
+      setForm((prevForm) => ({
         ...prevForm,
-        firstName: user.first_name || "",
-        lastName: user.last_name || "",
-        email: user.email || "",
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        email: user.email || '',
       }));
     }
   }, []);
@@ -75,7 +82,7 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
@@ -96,21 +103,21 @@ const ProfilePage = () => {
       //   email: form.email,
       //   ...(form.password && { password: form.password })
       // };
-      // 
+      //
       // const response = await updateUserProfile(updatedData);
 
       // Por enquanto, vamos atualizar apenas localmente
       AuthService.updateUserData({
         first_name: form.firstName,
         last_name: form.lastName,
-        email: form.email
+        email: form.email,
       });
 
       // Limpar campos de senha após salvar
-      setForm(prevForm => ({
+      setForm((prevForm) => ({
         ...prevForm,
-        password: "",
-        confirmPassword: ""
+        password: '',
+        confirmPassword: '',
       }));
 
       alert('Perfil atualizado com sucesso!');
@@ -141,9 +148,7 @@ const ProfilePage = () => {
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
         <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 py-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">
-            Meu perfil
-          </h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">Meu perfil</h1>
 
           <div className="relative mb-8">
             {/* Avatar com iniciais se não houver imagem */}
@@ -163,7 +168,7 @@ const ProfilePage = () => {
                 <input
                   type="text"
                   value={form.firstName}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  onChange={(e) => handleChange('firstName', e.target.value)}
                   className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
                   required
                 />
@@ -173,7 +178,7 @@ const ProfilePage = () => {
                 <input
                   type="text"
                   value={form.lastName}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  onChange={(e) => handleChange('lastName', e.target.value)}
                   className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
                   required
                 />
@@ -185,7 +190,7 @@ const ProfilePage = () => {
               <input
                 type="email"
                 value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
+                onChange={(e) => handleChange('email', e.target.value)}
                 className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
                 required
               />
@@ -196,10 +201,10 @@ const ProfilePage = () => {
                 <div className="flex-1">
                   <label className="text-sm text-global-1">Nova senha (opcional)</label>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     value={form.password}
                     placeholder="Digite sua nova senha"
-                    onChange={(e) => handleChange("password", e.target.value)}
+                    onChange={(e) => handleChange('password', e.target.value)}
                     className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
                   />
                 </div>
@@ -216,12 +221,10 @@ const ProfilePage = () => {
                 <div className="flex-1">
                   <label className="text-sm text-global-1">Confirmar nova senha</label>
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     value={form.confirmPassword}
                     placeholder="Confirme sua nova senha"
-                    onChange={(e) =>
-                      handleChange("confirmPassword", e.target.value)
-                    }
+                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
                     className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
                   />
                 </div>
@@ -230,11 +233,7 @@ const ProfilePage = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="text-gray-500 hover:text-gray-700 mt-5"
                 >
-                  {showConfirmPassword ? (
-                    <FiEyeOff size={20} />
-                  ) : (
-                    <FiEye size={20} />
-                  )}
+                  {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
                 </button>
               </div>
             </div>

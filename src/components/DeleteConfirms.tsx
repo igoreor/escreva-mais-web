@@ -1,4 +1,4 @@
-import { FiAlertTriangle, FiLoader, FiX } from "react-icons/fi";
+import { FiAlertTriangle, FiLoader, FiX } from 'react-icons/fi';
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
@@ -8,7 +8,13 @@ interface ConfirmDeleteModalProps {
   isDeleting: boolean;
 }
 
-function ConfirmDeleteModal({ isOpen, onClose, onConfirm, themeName, isDeleting }: ConfirmDeleteModalProps) {
+function ConfirmDeleteModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  themeName,
+  isDeleting,
+}: ConfirmDeleteModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -27,19 +33,13 @@ function ConfirmDeleteModal({ isOpen, onClose, onConfirm, themeName, isDeleting 
             <FiX size={20} />
           </button>
         </div>
-        
+
         <div className="p-4">
-          <p className="text-gray-700 mb-2">
-            Tem certeza que deseja excluir o tema:
-          </p>
-          <p className="font-semibold text-gray-900 mb-4">
-            "{themeName}"
-          </p>
-          <p className="text-sm text-red-600">
-            ⚠️ Esta ação não pode ser desfeita.
-          </p>
+          <p className="text-gray-700 mb-2">Tem certeza que deseja excluir o tema:</p>
+          <p className="font-semibold text-gray-900 mb-4">"{themeName}"</p>
+          <p className="text-sm text-red-600">⚠️ Esta ação não pode ser desfeita.</p>
         </div>
-        
+
         <div className="flex gap-3 p-4 border-t bg-gray-50">
           <button
             onClick={onClose}
@@ -54,7 +54,7 @@ function ConfirmDeleteModal({ isOpen, onClose, onConfirm, themeName, isDeleting 
             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {isDeleting && <FiLoader className="animate-spin" size={16} />}
-            {isDeleting ? "Excluindo..." : "Excluir"}
+            {isDeleting ? 'Excluindo...' : 'Excluir'}
           </button>
         </div>
       </div>
@@ -62,4 +62,3 @@ function ConfirmDeleteModal({ isOpen, onClose, onConfirm, themeName, isDeleting 
   );
 }
 export { ConfirmDeleteModal };
-

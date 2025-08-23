@@ -1,10 +1,22 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import RouteGuard from "@/components/auth/RouterGuard";
-import { useAuth } from "@/hooks/userAuth";
+import RouteGuard from '@/components/auth/RouterGuard';
+import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiFileText, FiUpload, FiUser, FiArrowLeft, FiUsers, FiMessageSquare, FiCalendar, FiEye, FiTrello } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiFileText,
+  FiUpload,
+  FiUser,
+  FiArrowLeft,
+  FiUsers,
+  FiMessageSquare,
+  FiCalendar,
+  FiEye,
+  FiTrello,
+} from 'react-icons/fi';
 
 // Interfaces
 interface Atividade {
@@ -20,7 +32,7 @@ const getMenuItems = (id: string) => [
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -31,23 +43,23 @@ const getMenuItems = (id: string) => [
       {
         id: 'dashboard',
         label: 'Painel',
-        icon: <FiTrello  size={24} />,
-        href: `/student/classes/${id}/dashboard`
+        icon: <FiTrello size={24} />,
+        href: `/student/classes/${id}/dashboard`,
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
         icon: <FiFileText size={24} />,
-        href: `/student/classes/${id}/essays`
-      }
-    ]
+        href: `/student/classes/${id}/essays`,
+      },
+    ],
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
-  }
+    href: '/student/profile',
+  },
 ];
 
 const ClassDetailPage: React.FC = () => {
@@ -59,8 +71,18 @@ const ClassDetailPage: React.FC = () => {
   useEffect(() => {
     // mock — futuramente substituir por API
     setAtividades([
-      { id: 1, titulo: 'O impacto das redes sociais na sociedade moderna', prazo: '22/07/2025', status: 'pendente' },
-      { id: 2, titulo: 'A importância da educação digital no século XXI', prazo: '15/06/2025', status: 'entregue' }
+      {
+        id: 1,
+        titulo: 'O impacto das redes sociais na sociedade moderna',
+        prazo: '22/07/2025',
+        status: 'pendente',
+      },
+      {
+        id: 2,
+        titulo: 'A importância da educação digital no século XXI',
+        prazo: '15/06/2025',
+        status: 'entregue',
+      },
     ]);
   }, []);
 
@@ -124,9 +146,13 @@ const ClassDetailPage: React.FC = () => {
                       <FiCalendar /> Prazo: {atividade.prazo}
                     </span>
                     {atividade.status === 'pendente' ? (
-                      <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs">Pendente</span>
+                      <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs">
+                        Pendente
+                      </span>
                     ) : (
-                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">Entregue</span>
+                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">
+                        Entregue
+                      </span>
                     )}
                   </div>
                 </div>

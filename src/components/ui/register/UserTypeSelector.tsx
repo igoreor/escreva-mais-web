@@ -14,9 +14,10 @@ const UserTypeSelector: React.FC<UserTypeSelectorProps> = ({ value, onChange }) 
         className={`
           flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 
           rounded-[5px] text-base font-normal transition-all duration-200
-          ${value === 'student' 
-            ? 'bg-button-2 text-global-1 shadow-md' 
-            : 'text-global-1 hover:bg-gray-200'
+          ${
+            value === 'student'
+              ? 'bg-button-2 text-global-1 shadow-md'
+              : 'text-global-1 hover:bg-gray-200'
           }
         `}
       >
@@ -34,9 +35,10 @@ const UserTypeSelector: React.FC<UserTypeSelectorProps> = ({ value, onChange }) 
         className={`
           flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 
           rounded-[5px] text-base font-normal transition-all duration-200
-          ${value === 'teacher' 
-            ? 'bg-button-2 text-global-1 shadow-md' 
-            : 'text-global-1 hover:bg-gray-200'
+          ${
+            value === 'teacher'
+              ? 'bg-button-2 text-global-1 shadow-md'
+              : 'text-global-1 hover:bg-gray-200'
           }
         `}
       >

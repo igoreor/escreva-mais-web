@@ -36,11 +36,46 @@ const CorrectionDetailsPage: React.FC = () => {
     competencyNumber: 2,
   };
   const competencyScores: CompetencyScore[] = [
-    { id: 1, title: 'Competência 1', score: 200, maxScore: 200, average: 2.0, description: 'Domínio da norma padrão' },
-    { id: 2, title: 'Competência 2', score: 160, maxScore: 200, average: 1.6, description: 'Compreensão da proposta' },
-    { id: 3, title: 'Competência 3', score: 200, maxScore: 200, average: 2.0, description: 'Capacidade de argumentação' },
-    { id: 4, title: 'Competência 4', score: 200, maxScore: 200, average: 2.0, description: 'Conhecimento dos mecanismos linguísticos' },
-    { id: 5, title: 'Competência 5', score: 200, maxScore: 200, average: 2.0, description: 'Proposta de intervenção' },
+    {
+      id: 1,
+      title: 'Competência 1',
+      score: 200,
+      maxScore: 200,
+      average: 2.0,
+      description: 'Domínio da norma padrão',
+    },
+    {
+      id: 2,
+      title: 'Competência 2',
+      score: 160,
+      maxScore: 200,
+      average: 1.6,
+      description: 'Compreensão da proposta',
+    },
+    {
+      id: 3,
+      title: 'Competência 3',
+      score: 200,
+      maxScore: 200,
+      average: 2.0,
+      description: 'Capacidade de argumentação',
+    },
+    {
+      id: 4,
+      title: 'Competência 4',
+      score: 200,
+      maxScore: 200,
+      average: 2.0,
+      description: 'Conhecimento dos mecanismos linguísticos',
+    },
+    {
+      id: 5,
+      title: 'Competência 5',
+      score: 200,
+      maxScore: 200,
+      average: 2.0,
+      description: 'Proposta de intervenção',
+    },
   ];
   const teacherComment: TeacherComment = {
     id: 1,
@@ -89,7 +124,13 @@ const CorrectionDetailsPage: React.FC = () => {
               Baseado em {overallScore.totalCompetencies} competências avaliadas
             </div>
           </div>
-          <Image src="/images/img_vector.svg" alt="gráfico" width={40} height={40} className="opacity-90" />
+          <Image
+            src="/images/img_vector.svg"
+            alt="gráfico"
+            width={40}
+            height={40}
+            className="opacity-90"
+          />
         </div>
 
         {/* melhor/pior competência */}
@@ -104,7 +145,9 @@ const CorrectionDetailsPage: React.FC = () => {
                 <span className="mb-1 text-sm text-gray-500">pontos</span>
               </div>
               <div className="text-sm text-gray-600">/ {bestCompetency.average} em média</div>
-              <div className="text-xs text-gray-500">Competência {bestCompetency.competencyNumber}</div>
+              <div className="text-xs text-gray-500">
+                Competência {bestCompetency.competencyNumber}
+              </div>
             </div>
             <Image src="/images/img_done.svg" alt="ok" width={56} height={56} />
           </div>
@@ -119,7 +162,9 @@ const CorrectionDetailsPage: React.FC = () => {
                 <span className="mb-1 text-sm text-gray-500">pontos</span>
               </div>
               <div className="text-sm text-gray-600">/ {worstCompetency.average} em média</div>
-              <div className="text-xs text-gray-500">Competência {worstCompetency.competencyNumber}</div>
+              <div className="text-xs text-gray-500">
+                Competência {worstCompetency.competencyNumber}
+              </div>
             </div>
             <Image src="/images/img_error_outline.svg" alt="erro" width={56} height={56} />
           </div>
@@ -127,16 +172,16 @@ const CorrectionDetailsPage: React.FC = () => {
 
         {/* desempenho por competência */}
         <div className="space-y-3">
-          <h3 className="text-[15px] font-semibold text-[#1d4b8f]">
-            Desempenho por competência
-          </h3>
+          <h3 className="text-[15px] font-semibold text-[#1d4b8f]">Desempenho por competência</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {competencyScores.map((c) => (
               <div key={c.id} className="rounded-xl border border-gray-200 bg-white p-4">
                 <p className="text-[15px] font-semibold text-[#0f2752]">{c.title}</p>
                 <div className="mt-1 flex items-end gap-2">
-                  <span className="text-[26px] font-semibold text-[#0f2752] leading-none">{c.score}</span>
+                  <span className="text-[26px] font-semibold text-[#0f2752] leading-none">
+                    {c.score}
+                  </span>
                   <span className="mb-1 text-sm text-gray-500">pontos</span>
                 </div>
                 <div className="text-sm text-gray-600">/ {c.average} em média</div>
@@ -157,9 +202,7 @@ const CorrectionDetailsPage: React.FC = () => {
                 />
                 <span className="text-sm text-[#0f2752]">{teacherComment.teacherName}</span>
               </div>
-              <p className="mt-3 text-sm text-gray-700">
-                {teacherComment.comment}
-              </p>
+              <p className="mt-3 text-sm text-gray-700">{teacherComment.comment}</p>
               <Button
                 variant="ghost"
                 size="sm"

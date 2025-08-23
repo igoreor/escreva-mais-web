@@ -1,13 +1,12 @@
-"use client";
-import React, { useState, forwardRef } from "react";
+'use client';
+import React, { useState, forwardRef } from 'react';
 
-interface EditTextProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
+interface EditTextProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
   error?: string;
   helperText?: string;
-  variant?: "outlined" | "filled" | "standard";
-  size?: "sm" | "md" | "lg";
+  variant?: 'outlined' | 'filled' | 'standard';
+  size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -22,38 +21,38 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(
       label,
       error,
       helperText,
-      variant = "outlined",
-      size = "md",
+      variant = 'outlined',
+      size = 'md',
       fullWidth = true,
       leftIcon,
       rightIcon,
       onClear,
       showClearButton = false,
-      className = "",
-      inputClassName = "", // <-- receber a nova prop
+      className = '',
+      inputClassName = '', // <-- receber a nova prop
       disabled = false,
       value,
       onChange,
       placeholder,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [isFocused, setIsFocused] = useState(false);
 
     const variants = {
       outlined:
-        "border border-gray-600 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+        'border border-gray-600 bg-white text-black placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500',
       filled:
-        "bg-white text-black border-b-2 border-gray-300 placeholder-gray-500 focus:border-blue-500",
+        'bg-white text-black border-b-2 border-gray-300 placeholder-gray-500 focus:border-blue-500',
       standard:
-        "border-b border-gray-300 bg-transparent text-black placeholder-gray-500 focus:border-blue-500",
+        'border-b border-gray-300 bg-transparent text-black placeholder-gray-500 focus:border-blue-500',
     };
 
     const sizes = {
-      sm: "px-3 py-2 text-sm",
-      md: "px-4 py-3 sm:px-5 sm:py-4 text-sm sm:text-base",
-      lg: "px-5 py-4 text-base",
+      sm: 'px-3 py-2 text-sm',
+      md: 'px-4 py-3 sm:px-5 sm:py-4 text-sm sm:text-base',
+      lg: 'px-5 py-4 text-base',
     };
 
     const handleClear = () => {
@@ -63,12 +62,8 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(
     };
 
     return (
-      <div className={`${fullWidth ? "w-full" : "w-auto"} ${className}`}>
-        {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-          </label>
-        )}
+      <div className={`${fullWidth ? 'w-full' : 'w-auto'} ${className}`}>
+        {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
 
         <div className="relative">
           {leftIcon && (
@@ -89,20 +84,16 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(
             w-full
             ${variants[variant]}
             ${sizes[size]}
-            ${leftIcon ? "pl-10" : ""}
-            ${rightIcon || showClearButton ? "pr-10" : ""}
+            ${leftIcon ? 'pl-10' : ''}
+            ${rightIcon || showClearButton ? 'pr-10' : ''}
             ${inputClassName}  /* <-- AQUI aplica a classe personalizada */
             placeholder-dropdown-1
             font-normal leading-[19px]
             transition-all duration-200 ease-in-out
             focus:outline-none
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${
-              error
-                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                : ""
-            }
-            ${isFocused ? "ring-opacity-50" : ""}
+            ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
+            ${isFocused ? 'ring-opacity-50' : ''}
           `}
             {...props}
           />
@@ -116,12 +107,7 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(
                   className="text-gray-400 hover:text-gray-600 focus:outline-none"
                   tabIndex={-1}
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -137,19 +123,15 @@ const EditText = forwardRef<HTMLInputElement, EditTextProps>(
         </div>
 
         {(error || helperText) && (
-          <p
-            className={`mt-1 text-xs ${
-              error ? "text-red-500" : "text-gray-500"
-            }`}
-          >
+          <p className={`mt-1 text-xs ${error ? 'text-red-500' : 'text-gray-500'}`}>
             {error || helperText}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
-EditText.displayName = "EditText";
+EditText.displayName = 'EditText';
 
 export default EditText;
