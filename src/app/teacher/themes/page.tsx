@@ -7,10 +7,12 @@ import {
   FiHome, FiBookOpen, FiUser, FiFileMinus, 
   FiCalendar, FiEye, FiPlus 
 } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ThemeServices, { ThemePayload } from "@/services/ThemeServices";
+import AuthService from "@/services/authService";
 
 interface Tema {
-  id: number;
+  id: string | number;
   titulo: string;
   criado: string;
   textos: string[];
@@ -19,30 +21,44 @@ interface Tema {
 export default function MeusTemasPage() {
   const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const [temas, setTemas] = useState<Tema[]>([]);
 
-  const menuItems: SidebarItem[] = [
-    { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
-    { id: 'management', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/teacher/schools' },
-    { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
-    { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
-  ];
-
-  const [temas, setTemas] = useState<Tema[]>([
-    { id: 1, titulo: "O impacto das redes sociais na sociedade moderna", criado: "22/06/2025", textos: [] },
-    { id: 2, titulo: "A importância da educação digital no século XXI", criado: "22/06/2025", textos: [] },
-    { id: 3, titulo: "Sustentabilidade e responsabilidade ambiental", criado: "22/06/2025", textos: [] },
-    { id: 4, titulo: "Desafios da mobilidade urbana nas grandes cidades", criado: "22/06/2025", textos: [] },
-  ]);
-
-  // Estados do formulário
   const [titulo, setTitulo] = useState("");
   const [texto1, setTexto1] = useState("");
   const [texto2, setTexto2] = useState("");
   const [texto3, setTexto3] = useState("");
   const [texto4, setTexto4] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleConfirmar = () => {
+
+  useEffect(() => {
+    const carregarTemas = async () => {
+      try {
+        const teacherId = AuthService.getUserId();
+        if (!teacherId) return;
+
+        const data = await ThemeServices.getThemesByTeacher(teacherId);
+
+        const adaptados: Tema[] = data.items.map((item: any) => ({
+          id: item.id,
+          titulo: item.theme,
+          criado: new Date(item.created_at).toLocaleDateString("pt-BR"),
+          textos: [item.text1, item.text2, item.text3, item.text4].filter(Boolean),
+        }));
+
+        setTemas(adaptados);
+      } catch (err) {
+        console.error("Erro ao buscar temas:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarTemas();
+  }, []);
+
+  const handleConfirmar = async () => {
     if (!titulo.trim()) {
       setError("⚠️ O tema é obrigatório.");
       return;
@@ -53,22 +69,47 @@ export default function MeusTemasPage() {
       return;
     }
 
-    const novoTema: Tema = {
-      id: temas.length + 1,
-      titulo,
-      criado: new Date().toLocaleDateString("pt-BR"),
-      textos: [texto1, texto2, texto3].filter((t) => t.trim() !== ""),
+    const payload: ThemePayload = {
+      theme: titulo,
+      text1: texto1,
+      text2: texto2,
+      text3: texto3,
+      text4: texto4,
     };
 
-    setTemas([novoTema, ...temas]); // adiciona no topo da lista
-    setTitulo("");
-    setTexto1("");
-    setTexto2("");
-    setTexto3("");
-    setTexto4("");
-    setError("");
-    setShowModal(false);
+    try {
+      setLoading(true);
+      const novoTema = await ThemeServices.createTheme(payload);
+
+      const temaAdaptado: Tema = {
+        id: novoTema.id || Date.now(),
+        titulo: novoTema.theme,
+        criado: new Date().toLocaleDateString("pt-BR"),
+        textos: [novoTema.text1, novoTema.text2, novoTema.text3, novoTema.text4].filter((t: string) => t),
+      };
+
+      setTemas([temaAdaptado, ...temas]);
+      setTitulo("");
+      setTexto1("");
+      setTexto2("");
+      setTexto3("");
+      setTexto4("");
+      setError("");
+      setShowModal(false);
+    } catch (err) {
+      console.error(err);
+      setError("❌ Erro ao criar tema.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const menuItems: SidebarItem[] = [
+    { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
+    { id: 'management', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/teacher/schools' },
+    { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
+    { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
+  ];
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
@@ -112,13 +153,11 @@ export default function MeusTemasPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          {/* Fundo escuro */}
           <div 
             className="absolute inset-0 bg-black bg-opacity-50"
             onClick={() => setShowModal(false)}
           ></div>
 
-          {/* Conteúdo do modal */}
           <div className="relative bg-white rounded-xl shadow-lg w-full max-w-2xl p-8 z-10">
             <h2 className="text-xl font-bold text-center text-blue-800 mb-6">Criar novo tema</h2>
 
@@ -153,9 +192,9 @@ export default function MeusTemasPage() {
                 value={texto3}
                 onChange={(e) => setTexto3(e.target.value)}
                 placeholder="TEXTO III - Digite um texto, insira um link ou anexe um arquivo."
-                className="w-full border rounded-md px-3 py-2"
+                className="w-full border rounded-md px-3 py-2 mb-2"
               />
-                <textarea 
+              <textarea 
                 value={texto4}
                 onChange={(e) => setTexto4(e.target.value)}
                 placeholder="TEXTO IV - Digite um texto, insira um link ou anexe um arquivo."
@@ -172,9 +211,10 @@ export default function MeusTemasPage() {
               </button>
               <button 
                 onClick={handleConfirmar} 
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                disabled={loading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
-                Confirmar publicação
+                {loading ? "Publicando..." : "Confirmar publicação"}
               </button>
             </div>
           </div>
