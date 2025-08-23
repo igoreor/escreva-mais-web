@@ -1,4 +1,4 @@
-import AuthService from "./authService";
+import AuthService from './authService';
 
 export interface ThemePayload {
   theme: string;
@@ -36,27 +36,27 @@ export interface ThemesListResponse {
 
 class ThemeServices {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-  
+
   private static getHeaders() {
     const token = AuthService.getToken();
     return {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     };
   }
 
   static async createTheme(payload: ThemePayload): Promise<ThemeResponse> {
     const res = await fetch(`${this.API_BASE_URL}/essays/motivational-content`, {
-      method: "POST",
+      method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao criar tema");
+      throw new Error(errorData.message || 'Erro ao criar tema');
     }
-    
+
     return res.json();
   }
 
@@ -64,33 +64,30 @@ class ThemeServices {
     const res = await fetch(
       `${this.API_BASE_URL}/users/teacher/${teacherId}/motivational-contents`,
       {
-        method: "GET",
+        method: 'GET',
         headers: this.getHeaders(),
-      }
+      },
     );
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao carregar temas");
+      throw new Error(errorData.message || 'Erro ao carregar temas');
     }
-    
+
     return res.json();
   }
 
   static async getThemeById(themeId: string): Promise<ThemeResponse> {
-    const res = await fetch(
-      `${this.API_BASE_URL}/essays/motivational-content/${themeId}`,
-      {
-        method: "GET", 
-        headers: this.getHeaders(),
-      }
-    );
+    const res = await fetch(`${this.API_BASE_URL}/essays/motivational-content/${themeId}`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao carregar tema");
+      throw new Error(errorData.message || 'Erro ao carregar tema');
     }
-    
+
     return res.json();
   }
 
@@ -98,17 +95,17 @@ class ThemeServices {
     const res = await fetch(
       `${this.API_BASE_URL}/essays/motivational-content?motivational_content_id=${themeId}`,
       {
-        method: "PATCH",
+        method: 'PATCH',
         headers: this.getHeaders(),
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao atualizar tema");
+      throw new Error(errorData.message || 'Erro ao atualizar tema');
     }
-    
+
     return res.json();
   }
 
@@ -116,14 +113,14 @@ class ThemeServices {
     const res = await fetch(
       `${this.API_BASE_URL}/essays/motivational-content?motivational_content_id=${themeId}`,
       {
-        method: "DELETE",
+        method: 'DELETE',
         headers: this.getHeaders(),
-      }
+      },
     );
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Erro ao deletar tema");
+      throw new Error(errorData.message || 'Erro ao deletar tema');
     }
   }
 }

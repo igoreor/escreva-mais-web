@@ -4,4 +4,4 @@
 // export { Modal } from './modal'
 
 // Placeholder para componentes UI futuros
-export const placeholder = 'UI components will be added here' 
+export const placeholder = 'UI components will be added here';

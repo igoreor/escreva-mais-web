@@ -17,7 +17,7 @@ export const useAuth = () => {
   const checkAuthStatus = () => {
     const authenticated = AuthService.isAuthenticated();
     const currentUser = AuthService.getUser();
-    
+
     setIsAuthenticated(authenticated);
     setUser(currentUser);
   };
@@ -26,14 +26,14 @@ export const useAuth = () => {
     setIsLoading(true);
     try {
       const response = await AuthService.login(credentials);
-      
+
       setUser(response.user);
       setIsAuthenticated(true);
-      
+
       // Redirecionar baseado na role
       const redirectPath = AuthService.getRedirectPath(response.user.role);
       router.push(redirectPath);
-      
+
       return response;
     } catch (error) {
       throw error;
@@ -54,6 +54,6 @@ export const useAuth = () => {
     isLoading,
     login,
     logout,
-    checkAuthStatus
+    checkAuthStatus,
   };
 };

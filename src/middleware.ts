@@ -5,10 +5,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const protectedRoutes = ['/student', '/teacher'];
-  
-  const isProtectedRoute = protectedRoutes.some(route => 
-    pathname.startsWith(route)
-  );
+
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
   if (isProtectedRoute) {
     return NextResponse.next();
@@ -18,7 +16,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|images).*)'],
 };

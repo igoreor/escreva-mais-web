@@ -19,10 +19,10 @@ class AuthService {
       }
 
       const data: LoginResponse = await response.json();
-      
+
       // Salvar no localStorage
       this.saveAuthData(data);
-      
+
       return data;
     } catch (error) {
       throw new Error('Erro ao fazer login. Verifique suas credenciais.');
@@ -104,8 +104,8 @@ class AuthService {
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(''),
     );
     return JSON.parse(jsonPayload);
   }
@@ -128,8 +128,8 @@ class AuthService {
         ...authData,
         user: {
           ...authData.user,
-          ...updatedUser
-        }
+          ...updatedUser,
+        },
       };
       this.saveAuthData(newAuthData);
     }

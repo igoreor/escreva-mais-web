@@ -1,6 +1,6 @@
 import AuthService from './authService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function createSchool(name: string) {
   const token = AuthService.getToken();
@@ -61,10 +61,8 @@ export async function deleteSchool(schoolId: string) {
     return;
   }
 
-  return response.json(); 
+  return response.json();
 }
-
-
 
 export async function createClassroom(
   schoolId: string,
@@ -72,7 +70,7 @@ export async function createClassroom(
     name: string;
     description: string;
     shift: string;
-  }
+  },
 ) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
@@ -110,5 +108,5 @@ export async function getSchoolWithClassroomsById(schoolId: string) {
     throw new Error(`Erro ao buscar escola e turmas: ${error}`);
   }
 
-  return response.json(); 
+  return response.json();
 }

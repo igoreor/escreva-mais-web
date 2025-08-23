@@ -1,10 +1,10 @@
-import AuthService from "./authService";
+import AuthService from './authService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function getStudentClassrooms() {
   const token = AuthService.getToken();
-  if (!token) throw new Error("Token não encontrado");
+  if (!token) throw new Error('Token não encontrado');
 
   const response = await fetch(`${API_BASE_URL}/classroom/classrooms`, {
     headers: {
@@ -32,7 +32,7 @@ export async function getStudentClassrooms() {
 
 export async function joinClassroom(joinCode: string) {
   const token = AuthService.getToken();
-  if (!token) throw new Error("Token não encontrado");
+  if (!token) throw new Error('Token não encontrado');
 
   const response = await fetch(`${API_BASE_URL}/classroom/classrooms/join`, {
     method: 'POST',
@@ -41,7 +41,7 @@ export async function joinClassroom(joinCode: string) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      join_code: joinCode
+      join_code: joinCode,
     }),
   });
 

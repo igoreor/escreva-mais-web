@@ -14,7 +14,7 @@ export const useFormValidation = () => {
   const validateField = useCallback((field: keyof FormData, value: string, formData?: FormData) => {
     // CORREÇÃO: Adicionei esta verificação para ignorar a validação do 'userType'.
     if (field === 'userType') {
-      return; 
+      return;
     }
 
     let hasError = false;
@@ -26,20 +26,20 @@ export const useFormValidation = () => {
         const onlyLetters = /^[A-Za-zÀ-ÿ\s]+$/;
         hasError = !onlyLetters.test(value) && value !== '';
         break;
-      
+
       case 'email':
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         hasError = !emailRegex.test(value) && value !== '';
         break;
-      
+
       case 'password':
-        errorKey = 'passwordStrength'; 
+        errorKey = 'passwordStrength';
         const hasUppercase = /[A-Z]/.test(value);
         const hasNumber = /\d/.test(value);
         const hasSpecialChar = /[\W_]/.test(value);
         hasError = value !== '' && !(hasUppercase && hasNumber && hasSpecialChar);
         break;
-      
+
       case 'confirmPassword':
         if (formData) {
           hasError = formData.password !== value && value !== '';
@@ -47,13 +47,12 @@ export const useFormValidation = () => {
         break;
     }
 
-    setErrors(prev => ({ ...prev, [errorKey]: hasError }));
-    
+    setErrors((prev) => ({ ...prev, [errorKey]: hasError }));
   }, []);
 
   const getPasswordValidationMessages = useCallback((password: string) => {
     if (!password) return [];
-    
+
     const messages = [];
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -68,28 +67,35 @@ export const useFormValidation = () => {
 
   const getFormValidationMessages = useCallback((formData: FormData) => {
     const messages = [];
-    
+
     if (!formData.fullName) messages.push('Nome é obrigatório');
     if (!formData.lastName) messages.push('Sobrenome é obrigatório');
     if (!formData.email) messages.push('E-mail é obrigatório');
     if (!formData.password) messages.push('Senha é obrigatória');
     if (!formData.confirmPassword) messages.push('Confirmação de senha é obrigatória');
-    
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+
+    if (
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    ) {
       messages.push('As senhas devem ser iguais');
     }
 
     return messages;
   }, []);
 
-  const isFormValid = useCallback((formData: FormData) => {
-    const requiredFields = ['fullName', 'lastName', 'email', 'password', 'confirmPassword'];
-    const hasAllFields = requiredFields.every(field => formData[field as keyof FormData]);
-    const hasNoErrors = Object.values(errors).every(error => !error);
-    const passwordsMatch = formData.password === formData.confirmPassword;
-    
-    return hasAllFields && hasNoErrors && passwordsMatch;
-  }, [errors]);
+  const isFormValid = useCallback(
+    (formData: FormData) => {
+      const requiredFields = ['fullName', 'lastName', 'email', 'password', 'confirmPassword'];
+      const hasAllFields = requiredFields.every((field) => formData[field as keyof FormData]);
+      const hasNoErrors = Object.values(errors).every((error) => !error);
+      const passwordsMatch = formData.password === formData.confirmPassword;
+
+      return hasAllFields && hasNoErrors && passwordsMatch;
+    },
+    [errors],
+  );
 
   return {
     errors,
@@ -97,7 +103,6 @@ export const useFormValidation = () => {
     isFormValid,
     getPasswordValidationMessages,
     getFormValidationMessages,
-    setErrors
+    setErrors,
   };
 };
-
