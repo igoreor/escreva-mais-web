@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 interface ToastProps {
   title: string;
   description: string;
-  duration?: number; // tempo em ms antes de sumir, padrão 3000ms
+  duration?: number;
   onClose: () => void;
 }
 
