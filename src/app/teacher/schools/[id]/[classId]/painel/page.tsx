@@ -9,15 +9,9 @@ import {
   FiCalendar, FiEye, FiPlusSquare, FiEdit2
 } from 'react-icons/fi';
 import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
+import ClassroomService, { Assignment, ClassroomDetails } from '@/services/ClassroomService';
 
-interface Tema {
-  id: number;
-  titulo: string;
-  prazo: string;
-  entregas: number;
-}
-
-const getMenuItems = (id?: string): SidebarItem[] => [
+const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
@@ -33,23 +27,22 @@ const getMenuItems = (id?: string): SidebarItem[] => [
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
-        href: '/teacher/schools/${id}', 
+        href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
             id: 'class-details',
             label: 'dashboard',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/dashboard', 
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
           },
           {
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/painel',
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}` : undefined,
           },
         ],
       },
-      
     ],
   },
   {
@@ -59,108 +52,88 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     href: '/teacher/profile',
   },
 ];
+
 const TeacherClassPage: React.FC = () => {
-  const { user, logout } = useAuth();
-  const params = useParams();
-  const classId = params.id as string;
-  const [temas, setTemas] = useState<Tema[]>([]);
-  const [frase, setFrase] = useState<string>(
-    "Aviso ou frase motivadora que o professor queira colocar. Sugiro que fique alguma frase padrão quando a turma for criada, antes do professor colocar uma frase."
-  );
-  const [editando, setEditando] = useState<boolean>(false);
-  const [fraseTemp, setFraseTemp] = useState<string>(frase);
+  const { logout } = useAuth();
+  const { id: schoolId, classId } = useParams();
+
+  const [classroom, setClassroom] = useState<ClassroomDetails | null>(null);
+  const [loading, setLoading] = useState(true);
   const [abrirModal, setAbrirModal] = useState(false);
 
-  useEffect(() => {
-    // mock — futuramente substituir por API
-    setTemas([
-      { id: 1, titulo: 'O impacto das redes sociais na sociedade moderna', prazo: '22/07/2025', entregas: 17 },
-      { id: 2, titulo: 'A importância da educação digital no século XXI', prazo: '15/06/2025', entregas: 24 }
-    ]);
-  }, []);
-
-  const salvarFrase = () => {
-    setFrase(fraseTemp);
-    setEditando(false);
+  const fetchClassroom = async () => {
+    try {
+      if (classId) {
+        const data = await ClassroomService.getClassroomDetails(classId as string);
+        setClassroom(data);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar turma:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchClassroom();
+  }, [classId]);
+
+  const handleAssignmentCreated = () => {
+    fetchClassroom(); // Recarrega as atividades
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!classroom) {
+    return <div className="p-10 text-red-500">Turma não encontrada</div>;
+  }
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-gray-50">
-        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        <Sidebar menuItems={getMenuItems(schoolId as string, classId as string)} onLogout={logout} />
 
         {/* Conteúdo principal */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
+          
           {/* Header */}
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => (window.location.href = '/teacher/schools')}
+                onClick={() => (window.location.href = `/teacher/schools/${schoolId}`)}
                 className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg"
               >
                 <FiArrowLeft size={20} />
               </button>
               <h1 className="text-2xl font-semibold text-blue-900 flex items-center gap-2">
-                🎓 1º ano A
+                🎓 {classroom.name}
               </h1>
             </div>
             <div className="flex items-center text-gray-700 text-sm gap-2">
-              <FiUsers /> 25 alunos
+              <FiUsers /> {classroom.student_count} alunos
               <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-                {'E'}
+                {classroom.name.charAt(0).toUpperCase()}
               </div>
             </div>
           </div>
 
-          {/* Aviso / Frase motivadora */}
+          {/* Descrição da turma */}
           <div className="bg-white border border-gray-200 rounded-lg p-5 mb-8">
-            {editando ? (
-              <div className="flex flex-col gap-3">
-                <textarea
-                  value={fraseTemp}
-                  onChange={(e) => setFraseTemp(e.target.value)}
-                  className="w-full border rounded-lg p-3 text-gray-700"
-                />
-                <div className="flex gap-3 justify-end">
-                  <button
-                    onClick={() => setEditando(false)}
-                    className="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={salvarFrase}
-                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                  >
-                    Salvar
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <p className="text-gray-700 mb-3">{frase}</p>
-                <div className="flex items-center justify-between">
-                    <button
-                    onClick={() => setEditando(true)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                  >
-                    <FiEdit2 /> Editar frase
-                  </button>
-                  <span className="text-sm text-gray-500 flex items-center gap-1">
-                    <FiCalendar /> 22/06/2025
-                  </span>
-
-                </div>
-              </>
-            )}
+            <p className="text-gray-700">{classroom.description}</p>
           </div>
 
-          {/* Temas */}
+          {/* Atividades (Temas) */}
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Temas</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Atividades</h2>
           </div>
         
-          <div className="flex flex-col gap-4">
+<div className="flex flex-col gap-4">
               <div
                 className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between"
               >
@@ -175,31 +148,43 @@ const TeacherClassPage: React.FC = () => {
                 </button>
 
                 <PublicarAtividadeModal
+                  classroomId={classId as string}
+                  onAssignmentCreated={handleAssignmentCreated}
                   isOpen={abrirModal}
                   onClose={() => setAbrirModal(false)}
                 />
               </div>
           </div>
+        
           <div className="flex flex-col gap-4 pt-4">
-            {temas.map((tema) => (
+            {classroom.assignments.map((assignment: Assignment) => (
               <div
-                key={tema.id}
+                key={assignment.id}
                 className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between"
               >
                 <div className="flex gap-3 items-start">
                   <FiFileText size={28} className="text-blue-600 mt-1" />
                   <div>
-                    <h3 className="text-gray-800 font-medium">{tema.titulo}</h3>
+                    <h3 className="text-gray-800 font-medium">{assignment.title}</h3>
                     <div className="flex items-center gap-3 mt-2 text-sm">
-                      <span className="flex items-center gap-1 text-blue-600">
-                        <FiCalendar /> Prazo: {tema.prazo}
+                  <span className="flex items-center gap-1 text-blue-600">
+                    <FiCalendar /> 
+                    Prazo: {new Date(assignment.due_date).toLocaleString("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                      <span className="text-gray-600">
+                        {assignment.submission_status} entregues
                       </span>
-                      <span className="text-gray-600">{tema.entregas}/25 entregues</span>
                     </div>
                   </div>
                 </div>
                 <a
-                   href={`/teacher/schools/${params.id}/${classId}/painel/${tema.id}`}
+                   href={`/teacher/schools/${schoolId}/${classId}/painel/${assignment.id}`}
                   className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
                   <FiEye size={18} /> Ver redações
