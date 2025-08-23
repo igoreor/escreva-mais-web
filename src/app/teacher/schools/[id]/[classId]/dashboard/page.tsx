@@ -21,6 +21,7 @@ interface Redacao {
   nota: number;
 }
 
+
 interface Turma {
   id: number;
   nome: string;

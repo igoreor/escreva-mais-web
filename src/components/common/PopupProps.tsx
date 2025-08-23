@@ -12,6 +12,7 @@ interface PopupProps {
   overlayColor?: string;
 }
 
+
 const Popup: React.FC<PopupProps> = ({
   isOpen,
   onClose,

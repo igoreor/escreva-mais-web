@@ -35,3 +35,4 @@ export function Toast({ title, description, duration = 3000, onClose }: ToastPro
     </div>
   );
 }
+
