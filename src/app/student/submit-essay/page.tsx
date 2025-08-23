@@ -2,17 +2,11 @@
 import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from "react";
 import Sidebar from "@/components/common/SideBar";
 import Button from "@/components/ui/Button";
-import Dropdown from "@/components/ui/Dropdown";
 import EditText from "@/components/ui/EditText";
 import RouteGuard from "@/components/auth/RouterGuard";
 import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from "react-icons/fi";
 import { useAuth } from "@/hooks/userAuth";
 import Popup from "@/components/ui/Popup";
-
-interface DropdownOption {
-  value: string;
-  label: string;
-}
 
 const getMenuItems = (id: string) => [
   {
@@ -46,6 +40,7 @@ const getMenuItems = (id: string) => [
     href: '/student/profile'
   }
 ];
+
 const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -104,7 +99,7 @@ const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSe
         <p className="text-gray-500">
           <span className="font-semibold text-blue-600">Clique para enviar</span> ou arraste e solte um arquivo
         </p>
-        <p className="text-xs text-gray-400 mt-1">PNG ou JPG</p>
+        <p className="text-xs text-gray-400 mt-1">PNG ou JPG (máx. 5MB)</p>
         {fileName && (
           <div className="mt-4 flex items-center text-sm text-gray-600">
             <FiPaperclip className="mr-2" />
@@ -123,7 +118,8 @@ const TextAreaWithLineNumbers: React.FC<{
     rows?: number;
     maxLength?: number;
     showCharCount?: boolean;
-}> = ({ value, onChange, placeholder, rows = 10, maxLength, showCharCount }) => {
+    maxLines?: number;
+}> = ({ value, onChange, placeholder, rows = 10, maxLength, showCharCount, maxLines = 30 }) => {
     const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [lineNumbers, setLineNumbers] = useState("01");
@@ -133,6 +129,16 @@ const TextAreaWithLineNumbers: React.FC<{
             lineNumbersRef.current.scrollTop = textAreaRef.current.scrollTop;
         }
     }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = e.target.value;
+        const lines = newValue.split('\n');
+        
+        // Limita o número de linhas
+        if (lines.length <= maxLines) {
+            onChange(e);
+        }
+    };
 
     useLayoutEffect(() => {
         if (textAreaRef.current) {
@@ -165,6 +171,7 @@ const TextAreaWithLineNumbers: React.FC<{
         syncScroll();
     }, [lineNumbers, syncScroll]);
 
+    const currentLines = value.split('\n').length;
 
     return (
         <div className="relative w-full">
@@ -182,31 +189,35 @@ const TextAreaWithLineNumbers: React.FC<{
                     rows={rows}
                     placeholder={placeholder}
                     value={value}
-                    onChange={onChange}
+                    onChange={handleChange}
                     onScroll={syncScroll}
                     maxLength={maxLength}
                     className="flex-1 p-2 resize-none font-mono text-sm focus:outline-none leading-6"
                 />
             </div>
-            {showCharCount && maxLength && (
-                <div className="text-right text-xs text-gray-400 mt-1">
-                    {value.length}/{maxLength}
-                </div>
-            )}
+            <div className="flex justify-between items-center text-xs text-gray-400 mt-1">
+                <div>Linhas: {currentLines}/{maxLines}</div>
+                {showCharCount && maxLength && (
+                    <div>
+                        {value.length}/{maxLength} caracteres
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
 
-
 import { useParams } from "next/navigation";
+import SubmitEssayService from "@/services/submitEssay";
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
   const classId = typeof params?.id === "string" ? params.id : Array.isArray(params?.id) ? params.id[0] : "";
-  const [selectedTheme, setSelectedTheme] = useState("");
+  const [theme, setTheme] = useState("");
   const [title, setTitle] = useState("");
   const [essayText, setEssayText] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -214,57 +225,84 @@ const SubmitEssayPage: React.FC = () => {
     message: string;
   } | null>(null);
 
-  const themeOptions: DropdownOption[] = [
-    { value: "education", label: "Educação no Brasil" },
-    { value: "environment", label: "Meio Ambiente" },
-    { value: "technology", label: "Tecnologia e Sociedade" },
-    { value: "health", label: "Saúde Pública" },
-    { value: "politics", label: "Política Nacional" },
-    { value: "culture", label: "Cultura Brasileira" },
-    { value: "economy", label: "Economia" },
-    { value: "social", label: "Questões Sociais" },
-  ];
+  // const handleSaveDraft = async () => {
+  //   // Permite salvar rascunho mesmo sem todos os campos obrigatórios
+  //   setIsLoading(true);
+    
+  //   try {
+  //     await SubmitEssayService.saveDraft({
+  //       theme: theme.trim() || "Rascunho sem tema",
+  //       title: title.trim() || null,
+  //       content: essayText.trim() || null,
+  //       image: image
+  //     });
 
-  const handleSaveDraft = async () => {
-      setPopupConfig({
-        type: 'success',
-        title: 'Rascunho salvo com sucesso',
-        message: 'Seu rascunho foi salvo. Encontre-o na aba "Minhas Redações"',
-      });
-      return;
-    }
+  //     setPopupConfig({
+  //       type: 'success',
+  //       title: 'Rascunho salvo com sucesso',
+  //       message: 'Seu rascunho foi salvo. Encontre-o na aba "Minhas Redações"',
+  //     });
+  //   } catch (error) {
+  //     console.error('Erro ao salvar rascunho:', error);
+  //     setPopupConfig({
+  //       type: 'error',
+  //       title: 'Erro ao Salvar Rascunho',
+  //       message: 'Não foi possível salvar o rascunho. Tente novamente.',
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   
   const handleSubmit = async () => {
-    if (!selectedTheme || (!essayText && !file)) {
+    // Validação usando o service
+    const validation = SubmitEssayService.validateEssayData(theme, essayText, image);
+    
+    if (!validation.isValid) {
       setPopupConfig({
         type: 'error',
         title: 'Campos Incompletos',
-        message: 'Por favor, selecione um tema e digite sua redação ou anexe um arquivo para continuar.',
+        message: validation.errors.join('\n'),
       });
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      // Simulação de chamada ao back-end (sempre com sucesso por enquanto)
-      // TODO: Substitua este bloco pela sua chamada de API real (ex: usando fetch ou axios)
-      console.log("Enviando dados:", { selectedTheme, title, essayText, file });
-      // const response = await api.post('/essays', formData);
+      const result = await SubmitEssayService.createStandAloneEssay({
+        theme: theme.trim(),
+        title: title.trim() || null,
+        content: essayText.trim() || null,
+        image: image
+      });
+
+      console.log('Redação enviada com sucesso:', result);
       
-      // Simulação de sucesso (status 200)
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
-      
+
+      // Limpa o formulário após o envio bem-sucedido
+      setTheme('');
+      setTitle('');
+      setEssayText('');
+      setImage(null);
 
     } catch (error) {
+      console.error('Erro ao enviar redação:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
-        message: 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
+        message: `Não foi possível enviar sua redação: ${errorMessage}`,
       });
-      console.error("Erro ao enviar redação:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -283,13 +321,14 @@ const SubmitEssayPage: React.FC = () => {
           <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
             <div className="bg-global-3 border border-gray-300 rounded-2xl p-6 sm:p-7 md:p-8 flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-global-1 font-semibold">Tema</label>
-                <Dropdown
-                  options={themeOptions}
-                  placeholder="Selecione um tema ou crie um novo"
-                  value={selectedTheme}
-                  onChange={setSelectedTheme}
-                  className="w-full"
+                <label className="text-global-1 font-semibold">
+                  Tema <span className="text-red-500">*</span>
+                </label>
+                <EditText
+                  placeholder="Digite o tema da sua redação"
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -299,6 +338,7 @@ const SubmitEssayPage: React.FC = () => {
                   placeholder="Insira aqui o título da sua redação, caso deseje"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -311,6 +351,7 @@ const SubmitEssayPage: React.FC = () => {
                   rows={10}
                   showCharCount
                   maxLength={3450}
+                  maxLines={30}
                 />
               </div>
             </div>
@@ -319,15 +360,25 @@ const SubmitEssayPage: React.FC = () => {
                 <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                     Ou faça o upload de uma foto
                 </h2>
-                <FileUpload onFileSelect={setFile} />
+                <FileUpload onFileSelect={setImage} />
             </div>
 
             <div className="flex justify-end gap-5 mt-4">
-              <Button variant="outline" size="lg" onClick={handleSaveDraft}>
-                Salvar rascunho
+              <Button 
+                variant="outline" 
+                size="lg" 
+                // onClick={handleSaveDraft}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
-              <Button variant="primary" size="lg" onClick={handleSubmit}>
-                Enviar
+              <Button 
+                variant="primary" 
+                size="lg" 
+                onClick={handleSubmit}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>
           </div>
