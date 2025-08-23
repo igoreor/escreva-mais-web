@@ -32,7 +32,7 @@ interface Turma {
   competencias: Competencia[];
 }
 
-const getMenuItems = (id?: string): SidebarItem[] => [
+const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
@@ -48,23 +48,22 @@ const getMenuItems = (id?: string): SidebarItem[] => [
         id: 'classes',
         label: 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
-        href: '/teacher/schools/${id}', // 👈 depois substituímos com o id certo
+        href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
             id: 'class-details',
             label: 'dashboard',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/dashboard', // 👈 depois substituímos com o id certo
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
           },
           {
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileText size={20} />,
-            href: '/teacher/schools/${id}/${classId}/painel', // 👈 depois substituímos com o id certo
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/painel` : undefined,
           },
         ],
       },
-      
     ],
   },
   {
@@ -74,6 +73,7 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     href: '/teacher/profile',
   },
 ];
+
 const TeacherDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const params = useParams();
@@ -112,9 +112,9 @@ const TeacherDashboard: React.FC = () => {
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-global-2">
-        <Sidebar menuItems={getMenuItems(schoolId as string)} onLogout={logout} />
+        <Sidebar menuItems={getMenuItems(schoolId as string, classId as string)} onLogout={logout} />
 
- <main className="flex-1 lg:ml-[270px] p-6 lg:p-10">
+        <main className="flex-1 lg:ml-[270px] p-6 lg:p-10">
           {/* Cabeçalho */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">
