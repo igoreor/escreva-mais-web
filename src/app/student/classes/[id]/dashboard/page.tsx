@@ -55,6 +55,18 @@ const getMenuItems = (id: string) => [
     ],
   },
   {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: `/student/essays`,
+  },
+  {
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
