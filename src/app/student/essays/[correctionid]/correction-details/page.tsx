@@ -1,100 +1,97 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import { useParams, useRouter } from 'next/navigation';
+import StudentEssayService, { StudentFeedbackDetails, Competency } from '@/services/StudentEssayService';
+import html2pdf from 'html2pdf.js';
 
-interface CompetencyScore {
-  id: number;
-  title: string;
-  score: number;
-  maxScore: number;
-  average: number;
-  description: string;
-}
-interface TeacherComment {
-  id: number;
-  teacherName: string;
-  teacherAvatar: string;
-  comment: string;
-  fullComment: string;
-}
+const COMPETENCIES_MAP: Record<string, { title: string; description: string }> = {
+  C1: {
+    title: "Competência 1",
+    description: "Domínio da norma padrão da Língua Portuguesa",
+  },
+  C2: {
+    title: "Competência 2",
+    description: "Compreensão da proposta de redação",
+  },
+  C3: {
+    title: "Competência 3",
+    description:
+      "Capacidade de selecionar, relacionar, organizar e interpretar informações para defender um ponto de vista",
+  },
+  C4: {
+    title: "Competência 4",
+    description:
+      "Conhecimento dos mecanismos linguísticos necessários para a construção da argumentação",
+  },
+  C5: {
+    title: "Competência 5",
+    description:
+      "Elaboração de proposta de intervenção para o problema abordado",
+  },
+};
 
 const CorrectionDetailsPage: React.FC = () => {
-  const overallScore = { score: 960, average: 9.6, totalCompetencies: 5 };
-  const bestCompetency = {
-    title: 'Melhor competência',
-    score: 200,
-    average: 2.0,
-    competencyNumber: 5,
-  };
-  const worstCompetency = {
-    title: 'Pior competência',
-    score: 160,
-    average: 1.6,
-    competencyNumber: 2,
-  };
-  const competencyScores: CompetencyScore[] = [
-    {
-      id: 1,
-      title: 'Competência 1',
-      score: 200,
-      maxScore: 200,
-      average: 2.0,
-      description: 'Domínio da norma padrão',
-    },
-    {
-      id: 2,
-      title: 'Competência 2',
-      score: 160,
-      maxScore: 200,
-      average: 1.6,
-      description: 'Compreensão da proposta',
-    },
-    {
-      id: 3,
-      title: 'Competência 3',
-      score: 200,
-      maxScore: 200,
-      average: 2.0,
-      description: 'Capacidade de argumentação',
-    },
-    {
-      id: 4,
-      title: 'Competência 4',
-      score: 200,
-      maxScore: 200,
-      average: 2.0,
-      description: 'Conhecimento dos mecanismos linguísticos',
-    },
-    {
-      id: 5,
-      title: 'Competência 5',
-      score: 200,
-      maxScore: 200,
-      average: 2.0,
-      description: 'Proposta de intervenção',
-    },
-  ];
-  const teacherComment: TeacherComment = {
-    id: 1,
-    teacherName: 'Prof. Helena',
-    teacherAvatar: '/images/image_2.png',
-    comment: 'Você precisa melhorar nos ...',
-    fullComment:
-      'Você precisa melhorar nos aspectos de coesão e coerência textual, além de trabalhar melhor a argumentação em alguns pontos específicos do texto.',
+  const params = useParams();
+  const router = useRouter();
+  const essayId = params.correctionid as string;
+
+  const [feedback, setFeedback] = useState<StudentFeedbackDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await StudentEssayService.getStudentFeedbackDetails(essayId);
+        setFeedback(data);
+      } catch (error) {
+        console.error('Erro ao carregar detalhes da redação:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (essayId) {
+      fetchData();
+    }
+  }, [essayId]);
+
+  if (loading) {
+    return <p className="text-center text-gray-500 py-10">Carregando detalhes...</p>;
+  }
+
+  if (!feedback) {
+    return <p className="text-center text-red-500 py-10">Não foi possível carregar os detalhes.</p>;
+  }
+
+  const handleSavePDF = () => {
+    if (reportRef.current) {
+      const element = reportRef.current;
+      const opt = {
+        margin: 0.5,
+        filename: `relatorio-redacao.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
   };
 
-  // handlers
-  const handleViewEssay = () => console.log('Navigating to essay view');
-  const handleSavePDF = () => console.log('Saving PDF report');
-  const handleSeeMore = () => alert(teacherComment.fullComment); // troque por modal/rota se quiser
+  const handleViewEssay = () => {
+    router.push(`/student/essays/${essayId}/correction-details/${essayId}`);
+  };
+
+  const handleSeeMore = () => alert(feedback.teacher_comment);
 
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8]">
-      {/* container invisível que engloba tudo */}
-      <div className="mx-auto w-full max-w-5x10 px-5 py-8 sm:py-10 space-y-6">
-        {/* header com título centralizado e voltar à esquerda */}
+      <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:py-10 space-y-6">
+        {/* header */}
         <div className="relative flex items-center justify-center">
           <Link
             href="/student/essays"
@@ -108,108 +105,90 @@ const CorrectionDetailsPage: React.FC = () => {
           </h1>
         </div>
 
-        {/* minha nota */}
-        <div className="rounded-xl border border-blue-200 bg-[#e8f1ff] p-4 sm:p-5 flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-[15px] font-semibold text-[#0f2752]">Minha nota</h2>
-            <div className="flex items-end gap-2">
-              <span className="text-[32px] font-semibold text-[#0f2752] leading-none">
-                {overallScore.score}
-              </span>
-              <span className="mb-1 text-sm text-gray-500">pontos</span>
-            </div>
-            <div className="text-sm text-gray-600">/ {overallScore.average} em média</div>
-            <div className="text-xs text-gray-500">
-              Baseado em {overallScore.totalCompetencies} competências avaliadas
-            </div>
-          </div>
-          <Image
-            src="/images/img_vector.svg"
-            alt="gráfico"
-            width={40}
-            height={40}
-            className="opacity-90"
-          />
-        </div>
-
-        {/* melhor/pior competência */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 flex items-center justify-between">
+        {/* Conteúdo que será salvo em PDF */}
+        <div ref={reportRef} className="space-y-6">
+          {/* minha nota */}
+          <div className="rounded-xl border border-blue-200 bg-[#e8f1ff] p-4 sm:p-5 flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-[15px] font-semibold text-green-600">{bestCompetency.title}</p>
+              <h2 className="text-[15px] font-semibold text-[#0f2752]">Minha nota</h2>
               <div className="flex items-end gap-2">
-                <span className="text-[28px] font-semibold text-[#0f2752] leading-none">
-                  {bestCompetency.score}
+                <span className="text-[32px] font-semibold text-[#0f2752] leading-none">
+                  {feedback.total_score}
                 </span>
                 <span className="mb-1 text-sm text-gray-500">pontos</span>
               </div>
-              <div className="text-sm text-gray-600">/ {bestCompetency.average} em média</div>
               <div className="text-xs text-gray-500">
-                Competência {bestCompetency.competencyNumber}
+                Baseado em {feedback.competencies.length} competências avaliadas
               </div>
             </div>
-            <Image src="/images/img_done.svg" alt="ok" width={56} height={56} />
+            <Image
+              src="/images/img_vector.svg"
+              alt="gráfico"
+              width={40}
+              height={40}
+              className="opacity-90"
+            />
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-[15px] font-semibold text-red-600">{worstCompetency.title}</p>
-              <div className="flex items-end gap-2">
-                <span className="text-[28px] font-semibold text-[#0f2752] leading-none">
-                  {worstCompetency.score}
-                </span>
-                <span className="mb-1 text-sm text-gray-500">pontos</span>
-              </div>
-              <div className="text-sm text-gray-600">/ {worstCompetency.average} em média</div>
-              <div className="text-xs text-gray-500">
-                Competência {worstCompetency.competencyNumber}
-              </div>
-            </div>
-            <Image src="/images/img_error_outline.svg" alt="erro" width={56} height={56} />
-          </div>
-        </div>
-
-        {/* desempenho por competência */}
-        <div className="space-y-3">
-          <h3 className="text-[15px] font-semibold text-[#1d4b8f]">Desempenho por competência</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {competencyScores.map((c) => (
-              <div key={c.id} className="rounded-xl border border-gray-200 bg-white p-4">
-                <p className="text-[15px] font-semibold text-[#0f2752]">{c.title}</p>
-                <div className="mt-1 flex items-end gap-2">
-                  <span className="text-[26px] font-semibold text-[#0f2752] leading-none">
-                    {c.score}
+          {/* melhor/pior competência */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[15px] font-semibold text-green-600">Melhor competência</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-[28px] font-semibold text-[#0f2752] leading-none">
+                    {feedback.best_competency.score}
                   </span>
                   <span className="mb-1 text-sm text-gray-500">pontos</span>
                 </div>
-                <div className="text-sm text-gray-600">/ {c.average} em média</div>
-                <div className="mt-1 text-xs text-gray-500">{c.description}</div>
+                <div className="text-xs text-gray-500">
+                  {COMPETENCIES_MAP[feedback.best_competency.competency]?.title}
+                </div>
               </div>
-            ))}
+              <Image src="/images/img_done.svg" alt="ok" width={56} height={56} />
+            </div>
 
-            {/* comentários do professor */}
-            <div className="rounded-xl border border-blue-300 bg-[#eaf2ff] p-4">
-              <p className="text-[15px] font-semibold text-[#0f2752]">Comentários do professor</p>
-              <div className="mt-2 flex items-center gap-3">
-                <Image
-                  src={teacherComment.teacherAvatar}
-                  alt="Professor"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-                <span className="text-sm text-[#0f2752]">{teacherComment.teacherName}</span>
+            <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[15px] font-semibold text-red-600">Pior competência</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-[28px] font-semibold text-[#0f2752] leading-none">
+                    {feedback.worst_competency.score}
+                  </span>
+                  <span className="mb-1 text-sm text-gray-500">pontos</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {COMPETENCIES_MAP[feedback.worst_competency.competency]?.title}
+                </div>
               </div>
-              <p className="mt-3 text-sm text-gray-700">{teacherComment.comment}</p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-2 px-0 text-blue-700 hover:underline"
-                onClick={handleSeeMore}
-              >
-                Ver mais
-              </Button>
+              <Image src="/images/img_error_outline.svg" alt="erro" width={56} height={56} />
+            </div>
+          </div>
+
+          {/* desempenho por competência */}
+          <div className="space-y-3">
+            <h3 className="text-[15px] font-semibold text-[#1d4b8f]">
+              Desempenho por competência
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {feedback.competencies.map((c: Competency) => {
+                const comp = COMPETENCIES_MAP[c.competency];
+                return (
+                  <div key={c.id} className="rounded-xl border border-gray-200 bg-white p-4">
+                    <p className="text-[15px] font-semibold text-[#0f2752]">
+                      {comp?.title || c.competency}
+                    </p>
+                    <p className="text-xs text-gray-500 mb-1">{comp?.description}</p>
+                    <div className="mt-1 flex items-end gap-2">
+                      <span className="text-[26px] font-semibold text-[#0f2752] leading-none">
+                        {c.score}
+                      </span>
+                      <span className="mb-1 text-sm text-gray-500">pontos</span>
+                    </div>
+                    <div className="mt-1 text-xs text-gray-500">{c.feedback}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
