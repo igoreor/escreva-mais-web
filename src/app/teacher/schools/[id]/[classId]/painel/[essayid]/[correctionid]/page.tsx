@@ -1,24 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-
-type Competencia = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  pontos: string;
-  total: string;
-  feedback: string;
-};
+import EssayService, { EssayDetailsForTeacherResponse } from '@/services/EssayService';
 
 type PopupData =
   | {
       type: 'competencia';
       titulo: string;
       descricao: string;
-      pontos: string;
-      total: string;
+      pontos: number;
+      total: number;
       feedback: string;
     }
   | {
@@ -27,66 +19,54 @@ type PopupData =
     }
   | null;
 
-const competencias: Competencia[] = [
-  {
-    id: 1,
-    titulo: 'Competência 1',
-    descricao: 'Domínio da norma padrão',
-    pontos: '160',
-    total: '1.0',
-    feedback:
-      'Você demonstrou um bom domínio da norma padrão, mas cometeu alguns deslizes gramaticais que prejudicaram a clareza em alguns trechos.',
-  },
-  {
-    id: 2,
-    titulo: 'Competência 2',
-    descricao: 'Compreensão da proposta',
-    pontos: '100',
-    total: '1.0',
-    feedback:
-      'Sua redação atende parcialmente à proposta, mas poderia aprofundar melhor a relação com o tema central.',
-  },
-  {
-    id: 3,
-    titulo: 'Competência 3',
-    descricao: 'Capacidade de argumentação',
-    pontos: '100',
-    total: '1.0',
-    feedback:
-      'Sua argumentação apresenta bons pontos, mas carece de exemplos mais concretos para sustentar a tese apresentada.',
-  },
-  {
-    id: 4,
-    titulo: 'Competência 4',
-    descricao: 'Conhecimento dos mecanismos linguísticos',
-    pontos: '100',
-    total: '1.6',
-    feedback:
-      'Você usou conectivos básicos, mas precisa variar mais e explorar melhor recursos coesivos.',
-  },
-  {
-    id: 5,
-    titulo: 'Competência 5',
-    descricao: 'Proposta de intervenção',
-    pontos: '100',
-    total: '1.0',
-    feedback:
-      'A proposta de intervenção está presente, mas faltam agentes claros e detalhamento das ações.',
-  },
-];
-
-const geralFeedback =
-  'No geral, sua redação apresenta boa estrutura, mas ainda precisa de ajustes em argumentação e detalhamento da proposta de intervenção.';
-
 export default function RedacaoPage() {
   const [popup, setPopup] = useState<PopupData>(null);
+  const [essayData, setEssayData] = useState<EssayDetailsForTeacherResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const router = useRouter();
-  const params = useParams<{
-    id: string;
-    classId: string;
-    essayid: string;
-    correctionid: string;
-  }>();
+  const { id: schoolId, classId, essayid, correctionid } = useParams();
+
+  // Fetch dos dados da redação
+  useEffect(() => {
+    const fetchEssayData = async () => {
+      if (!essayid || typeof essayid !== 'string') {
+        setError('ID da redação não encontrado');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(essayid);
+        setEssayData(data);
+      } catch (err: any) {
+        console.error('Erro ao carregar dados da redação:', err);
+        setError(err.message || 'Erro ao carregar dados da redação');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEssayData();
+  }, [essayid]);
+
+  // Função para mapear competências para formato do componente
+  const getCompetenciaDisplay = (competency: string) => {
+    const competencyMap: { [key: string]: string } = {
+      'C1': 'Domínio da norma padrão',
+      'C2': 'Compreensão da proposta', 
+      'C3': 'Capacidade de argumentação',
+      'C4': 'Conhecimento dos mecanismos linguísticos',
+      'C5': 'Proposta de intervenção'
+    };
+    
+    return {
+      titulo: `Competência ${competency.replace('C', '')}`,
+      descricao: competencyMap[competency] || 'Descrição não disponível'
+    };
+  };
 
   // Preview atualizado
   const preview = (text: string) => {
@@ -96,15 +76,43 @@ export default function RedacaoPage() {
     return { text, truncated: false };
   };
 
+  if (loading) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600">Carregando dados da redação...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <strong>Erro:</strong> {error}
+        </div>
+      </div>
+    );
+  }
+
+  if (!essayData) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="text-center text-gray-600">Dados da redação não encontrados</div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      {/* BOTÃO VOLTAR - vai para a tela anterior */}
+      {/* BOTÃO VOLTAR */}
       <div className="w-full mb-4">
         <button
           onClick={() =>
-            router.push(`/teacher/schools/${params.id}/${params.classId}/painel/${params.essayid}`)
+            router.push(`/teacher/schools/${schoolId}/${classId}/painel/${essayid}`)
           }
-          className="flex items-center text-black hover:text- font-medium"
+          className="flex items-center text-black hover:text-gray-600 font-medium"
         >
           <span className="mr-1">{'<'}</span> Voltar
         </button>
@@ -112,10 +120,14 @@ export default function RedacaoPage() {
 
       {/* REDAÇÃO */}
       <div className="bg-gray-100 p-6 rounded-lg shadow mb-6">
-        {/* Esse título pode mudar dinamicamente via props ou query params */}
-        <h2 className="text-lg font-semibold mb-4">Maria de Silva</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {essayData.student.first_name} {essayData.student.last_name}
+        </h2>
         <div className="bg-white border rounded-md h-[600px] overflow-y-scroll">
-          <p className="p-4 text-gray-600">[Redação do aluno aparecerá aqui]</p>
+          <div className="p-4">
+            <h3 className="font-semibold text-lg mb-3">{essayData.title}</h3>
+            <div className="text-gray-700 whitespace-pre-wrap">{essayData.content}</div>
+          </div>
         </div>
       </div>
 
@@ -123,69 +135,67 @@ export default function RedacaoPage() {
       <h3 className="text-lg font-semibold text-blue-600 mb-4">Desempenho por competência</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {competencias.map((c) => (
-          <div
-            key={c.id}
-            className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden min-h-[200px] flex flex-col justify-between"
-          >
-            {/* HEADER */}
-            <div className="bg-blue-50 px-4 py-3 border-b">
-              <h4 className="text-sm font-bold text-blue-900">{c.titulo}</h4>
-              <p className="text-xs text-gray-600">{c.descricao}</p>
+        {essayData.competency_feedbacks.map((competency) => {
+          const display = getCompetenciaDisplay(competency.competency);
+          return (
+            <div
+              key={competency.id}
+              className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden min-h-[200px] flex flex-col justify-between"
+            >
+              {/* HEADER */}
+              <div className="bg-blue-50 px-4 py-3 border-b">
+                <h4 className="text-sm font-bold text-blue-900">{display.titulo}</h4>
+                <p className="text-xs text-gray-600">{display.descricao}</p>
+              </div>
+
+              {/* BODY */}
+              <div className="p-5 flex flex-col flex-grow">
+                <p className="text-2xl font-normal text-blue-900">
+                  {competency.score} <span className="text-sm text-gray-400 font-normal">pontos</span>
+                </p>
+
+                <button
+                  type="button"
+                  className="text-blue-600 text-sm mt-2 text-left"
+                  onClick={() =>
+                    setPopup({
+                      type: 'competencia',
+                      titulo: display.titulo,
+                      descricao: display.descricao,
+                      pontos: competency.score,
+                      total: 200, // Valor máximo padrão, você pode ajustar conforme necessário
+                      feedback: competency.feedback,
+                    })
+                  }
+                >
+                  Feedback da IA
+                </button>
+
+                <p className="text-sm text-gray-700 mt-1">
+                  {preview(competency.feedback).text}{' '}
+                  {preview(competency.feedback).truncated && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPopup({
+                          type: 'competencia',
+                          titulo: display.titulo,
+                          descricao: display.descricao,
+                          pontos: competency.score,
+                          total: 200,
+                          feedback: competency.feedback,
+                        })
+                      }
+                      className="text-sm font-normal text-gray-400"
+                    >
+                      Ver mais
+                    </button>
+                  )}
+                </p>
+              </div>
             </div>
-
-            {/* BODY */}
-            <div className="p-5 flex flex-col flex-grow">
-              <p className="text-2xl font-normal text-blue-900">
-                {c.pontos} <span className="text-sm text-gray-400 font-normal">pontos</span>{' '}
-                <span className="text-sm font-normal text-gray-900">/</span>
-                {''}
-                <span className="text-sm font-normal text-blue-900">{c.total}</span>
-                {''}
-                <span className="text-sm font-normal text-gray-400">pontos</span>
-              </p>
-
-              <button
-                type="button"
-                className="text-blue-600 text-sm mt-2 text-left"
-                onClick={() =>
-                  setPopup({
-                    type: 'competencia',
-                    titulo: c.titulo,
-                    descricao: c.descricao,
-                    pontos: c.pontos,
-                    total: c.total,
-                    feedback: c.feedback,
-                  })
-                }
-              >
-                Feedback da IA
-              </button>
-
-              <p className="text-sm text-gray-700 mt-1">
-                {preview(c.feedback).text}{' '}
-                {preview(c.feedback).truncated && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setPopup({
-                        type: 'competencia',
-                        titulo: c.titulo,
-                        descricao: c.descricao,
-                        pontos: c.pontos,
-                        total: c.total,
-                        feedback: c.feedback,
-                      })
-                    }
-                    className="text-sm font-normal text-gray-400"
-                  >
-                    Ver mais
-                  </button>
-                )}
-              </p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* COMENTÁRIO GERAL */}
         <div className="bg-blue-50 border border-gray-200 rounded-lg shadow-sm overflow-hidden min-h-[200px] flex flex-col justify-between">
@@ -196,16 +206,16 @@ export default function RedacaoPage() {
             <button
               type="button"
               className="text-blue-600 text-sm mt-2 text-left"
-              onClick={() => setPopup({ type: 'geral', feedback: geralFeedback })}
+              onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback })}
             >
               Feedback da IA
             </button>
             <p className="text-sm text-gray-700 mt-2 flex-grow">
-              {preview(geralFeedback).text}{' '}
-              {preview(geralFeedback).truncated && (
+              {preview(essayData.general_feedback).text}{' '}
+              {preview(essayData.general_feedback).truncated && (
                 <button
                   type="button"
-                  onClick={() => setPopup({ type: 'geral', feedback: geralFeedback })}
+                  onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback })}
                   className="text-sm font-normal text-gray-400"
                 >
                   Ver mais
@@ -264,11 +274,9 @@ export default function RedacaoPage() {
                 <>
                   <p className="text-3xl font-normal text-blue-900 mb-4">
                     {popup.pontos}{' '}
-                    <span className="text-base text-gray-400 font-normal">ponto</span>{' '}
+                    <span className="text-base text-gray-400 font-normal">pontos</span>{' '}
                     <span className="text-sm font-normal text-blue-900">/</span>
-                    {''}
                     <span className="text-base font-normal text-blue-900">{popup.total}</span>
-                    {''}
                     <span className="text-base text-gray-400 font-normal">pontos</span>
                   </p>
 

@@ -1,24 +1,18 @@
 'use client';
-
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import {
-  FiHome,
-  FiBookOpen,
-  FiUser,
-  FiFileMinus,
-  FiArrowLeft,
-  FiMessageCircle,
-} from 'react-icons/fi';
-import { useParams } from 'next/navigation';
+import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiUsers, FiCalendar, FiEye, FiFileMinus, FiMessageCircle } from 'react-icons/fi';
+import EssayService, { AssignmentDetailsResponse, Submission } from '@/services/EssayService';
 
-export default function TemaDetalhesPage() {
+const EssayPage: React.FC = () => {
   const { logout } = useAuth();
-  const params = useParams();
+  const { id: schoolId, classId, essayid } = useParams();
 
-  const classId = params.classId as string;
-  const schoolId = params.id as string;
+  const [assignment, setAssignment] = useState<AssignmentDetailsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const menuItems: SidebarItem[] = [
     { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
@@ -28,58 +22,49 @@ export default function TemaDetalhesPage() {
       icon: <FiBookOpen size={34} />,
       href: '/teacher/schools',
     },
-  {
-    id: 'temas',
-    label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
-    href: '/teacher/themes',
-  },
-  {id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
+    {
+      id: 'temas',
+      label: 'Meus Temas',
+      icon: <FiFileMinus size={34} />,
+      href: '/teacher/themes',
+    },
+    { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
   ];
 
-  const tema = {
-    id: 42,
-    titulo: 'O impacto das redes sociais na sociedade moderna',
-    textos: [
-      {
-        titulo: 'TEXTO I',
-        conteudo:
-          'O trabalho de cuidado não remunerado e mal pago é essencial para nossas sociedades e para a economia. Ele inclui o trabalho de cuidar de crianças, idosos e pessoas com doenças e deficiências físicas e mentais, bem como o trabalho doméstico diário que inclui cozinhar, limpar, lavar, consertar coisas e buscar água e lenha. Se ninguém investisse tempo, esforços e recursos nessas tarefas diárias, economias inteiras ficariam estagnadas...',
-        fonte: 'Documento informativo - Tempo de Cuidar. Oxfam, 2023.',
-      },
-      {
-        titulo: 'TEXTO II',
-        conteudo:
-          'Média de horas dedicadas pelas pessoas de 14 anos ou mais de idade aos afazeres domésticos e/ou às tarefas de cuidado de pessoas, por sexo.',
-        imagem: 'https://via.placeholder.com/300x150',
-        fonte: 'Fonte: IBGE, 2023.',
-      },
-      {
-        titulo: 'TEXTO III',
-        conteudo:
-          'A sociedade brasileira tem passado por inúmeras transformações sociais ao longo das últimas décadas. Entre elas as percepções sociais a respeito dos valores e das convenções de gênero e a forma como mulheres têm se inserido na sociedade.',
-        fonte: 'Disponível em: https://repositorio.ipea.gov.br',
-      },
-      {
-        titulo: 'TEXTO IV',
-        imagem: 'https://via.placeholder.com/300x400',
-        fonte: 'Capa da revista Pesquisa FAPESP, 2023.',
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      if (!essayid) return;
+      try {
+        setLoading(true);
+        const data = await EssayService.getAssignmentDetailsForTeacherWithPermissionCheck(essayid as string);
+        setAssignment(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAssignment();
+  }, [essayid]);
 
-  const entregas = [
-    { id: 1, nome: 'Caio da Silva', data: '22/08/2025', nota: 569, max: 1000 },
-    { id: 2, nome: 'Rosana Altura', data: '22/08/2025', nota: 920, max: 1000 },
-    { id: 3, nome: 'Fernando Santos', data: '22/08/2025', nota: 846, max: 1000 },
-    { id: 4, nome: 'Helena Freitas', data: '22/08/2025', nota: 240, max: 1000 },
-  ];
-
-  const getNotaColor = (nota: number) => {
+  const getNotaColor = (nota: number | null) => {
+    if (nota === null) return 'bg-gray-100 text-gray-700 border-gray-300';
     if (nota >= 800) return 'bg-green-100 text-green-700 border-green-300';
     if (nota >= 500) return 'bg-yellow-100 text-yellow-700 border-yellow-300';
     return 'bg-red-100 text-red-700 border-red-300';
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!assignment) {
+    return <div className="p-10 text-red-500">Atividade não encontrada</div>;
+  }
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
@@ -90,75 +75,138 @@ export default function TemaDetalhesPage() {
           {/* Voltar */}
           <button
             type="button"
-            onClick={() =>
-              (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)
-            }
+            onClick={() => (window.location.href = `/teacher/schools/${schoolId}/${classId}`)}
             className="flex items-center text-blue-600 mb-4 hover:underline"
           >
             <FiArrowLeft className="mr-1" /> Voltar
           </button>
-          {/* Título */}{' '}
+
+          {/* Título */}
           <div className="bg-white rounded-lg shadow p-6">
-            {' '}
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">{tema.titulo}</h1>{' '}
-            <h2 className="text-lg font-semibold text-blue-700 mb-4">Textos motivadores</h2>{' '}
-            <div className="flex flex-col gap-6">
-              {' '}
-              {tema.textos.map((t, idx) => (
-                <div key={idx} className="bg-gray-50 border rounded-lg p-4">
-                  {' '}
-                  <h3 className="font-bold mb-2">{t.titulo}</h3>{' '}
-                  {t.conteudo && (
-                    <p className="text-gray-700 mb-2 whitespace-pre-line">{t.conteudo}</p>
-                  )}{' '}
-                  {t.imagem && (
-                    <img
-                      src={t.imagem}
-                      alt={t.titulo}
-                      className="rounded-lg border mb-2 max-w-md"
-                    />
-                  )}{' '}
-                  {t.fonte && <p className="text-sm text-gray-500">📖 {t.fonte}</p>}{' '}
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-gray-900">
+                📝 {assignment.motivational_content.theme}
+              </h1>
+              <div className="flex items-center text-gray-700 text-sm gap-2">
+                <FiUsers /> {assignment.students_count} alunos
+              </div>
+            </div>
+
+            <h2 className="text-lg font-semibold text-blue-700 mb-4">Textos motivadores</h2>
+            
+            <div className="flex flex-col gap-6 mb-6">
+              {/* Texto 1 */}
+              {assignment.motivational_content.text1 && (
+                <div className="bg-gray-50 border rounded-lg p-4">
+                  <h3 className="font-bold mb-2">TEXTO I</h3>
+                  <p className="text-gray-700 mb-2 whitespace-pre-line">
+                    {assignment.motivational_content.text1}
+                  </p>
                 </div>
-              ))}{' '}
-            </div>{' '}
+              )}
+
+              {/* Texto 2 */}
+              {assignment.motivational_content.text2 && (
+                <div className="bg-gray-50 border rounded-lg p-4">
+                  <h3 className="font-bold mb-2">TEXTO II</h3>
+                  <p className="text-gray-700 mb-2 whitespace-pre-line">
+                    {assignment.motivational_content.text2}
+                  </p>
+                </div>
+              )}
+
+              {/* Texto 3 */}
+              {assignment.motivational_content.text3 && (
+                <div className="bg-gray-50 border rounded-lg p-4">
+                  <h3 className="font-bold mb-2">TEXTO III</h3>
+                  <p className="text-gray-700 mb-2 whitespace-pre-line">
+                    {assignment.motivational_content.text3}
+                  </p>
+                </div>
+              )}
+
+              {/* Texto 4 */}
+              {assignment.motivational_content.text4 && (
+                <div className="bg-gray-50 border rounded-lg p-4">
+                  <h3 className="font-bold mb-2">TEXTO IV</h3>
+                  <p className="text-gray-700 mb-2 whitespace-pre-line">
+                    {assignment.motivational_content.text4}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="text-gray-600 text-sm">
+                📅 Prazo: {new Date(assignment.due_date).toLocaleString('pt-BR', { 
+                  day: '2-digit', 
+                  month: '2-digit', 
+                  year: 'numeric', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </p>
+              <p className="text-gray-600 text-sm">
+                📊 Submissões: {assignment.submissions_count}/{assignment.students_count}
+              </p>
+            </div>
           </div>
+
           {/* Entregas */}
           <div className="bg-white rounded-lg shadow p-6 mt-8">
             <h2 className="text-lg font-semibold text-blue-700 mb-4">Entregas</h2>
 
             <div className="flex flex-col gap-4">
-              {entregas.map((entrega) => (
+              {assignment.submissions.map((sub: Submission) => (
                 <div
-                  key={entrega.id}
+                  key={sub.essay_id}
                   className="flex items-center justify-between border rounded-lg p-4 bg-gray-50"
                 >
                   <div>
-                    <p className="font-semibold text-gray-900">{entrega.nome}</p>
-                    <p className="text-sm text-gray-500">Enviado em: {entrega.data}</p>
+                    <p className="font-semibold text-gray-900">
+                      {sub.user.first_name} {sub.user.last_name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Enviado em: {new Date(sub.submitted_at).toLocaleString('pt-BR', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <span
-                      className={`px-3 py-1 text-sm font-bold rounded-lg border ${getNotaColor(entrega.nota)}`}
+                      className={`px-3 py-1 text-sm font-bold rounded-lg border ${getNotaColor(sub.grade)}`}
                     >
-                      {entrega.nota}/{entrega.max}
+                      {sub.grade ?? 'Não avaliada'}/{sub.grade ? '1000' : '---'}
                     </span>
 
-                    {/* Botão com href */}
-                    <a
-                      href={`/teacher/schools/${schoolId}/${classId}/painel/${tema.id}/${entrega.id}`}
+                    <button
+                      onClick={() => {
+                        window.location.href = `/teacher/schools/${schoolId}/${classId}/essays/${essayid}/${sub.essay_id}`;
+                      }}
                       className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                     >
                       <FiMessageCircle size={18} /> Ver redação
-                    </a>
+                    </button>
                   </div>
                 </div>
               ))}
+
+              {assignment.submissions.length === 0 && (
+                <div className="text-center text-gray-500 py-8">
+                  Nenhuma redação foi enviada ainda.
+                </div>
+              )}
             </div>
           </div>
         </main>
       </div>
     </RouteGuard>
   );
-}
+};
+
+export default EssayPage;
