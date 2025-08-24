@@ -1,26 +1,18 @@
 'use client';
-import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import {
-  FiHome,
-  FiBookOpen,
-  FiFileText,
-  FiUser,
-  FiArrowLeft,
-  FiCalendar,
-  FiTrello,
-} from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiCalendar, FiTrello } from 'react-icons/fi';
+import StudentClassroomService from '@/services/StudentClassroomService';
 
-// Menu dinâmico
 const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home',
+    href: '/student/home'
   },
   {
     id: 'classes',
@@ -32,13 +24,13 @@ const getMenuItems = (id: string) => [
         id: 'dashboard',
         label: 'Painel',
         icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`,
+        href: `/student/classes/${id}/dashboard`
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
         icon: <FiFileText size={24} />,
-        href: `/student/classes/${id}/essays`,
+        href: `/student/classes/${id}/essays`
       },
     ],
   },
@@ -46,108 +38,201 @@ const getMenuItems = (id: string) => [
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile',
+    href: '/student/profile'
   },
 ];
+
+// Interfaces locais
+interface MotivationalContent {
+  id: string;
+  theme: string;
+  text1?: string;
+  text2?: string;
+  text3?: string;
+  text4?: string;
+  created_at: string;
+  creator_id: string;
+}
+
+interface AssignmentDetails {
+  title: string;
+  description: string;
+  motivational_content: MotivationalContent;
+  due_date: string;
+  assignment_status: string;
+  essay_id: string;
+}
+
 const ActivityDetailPage: React.FC = () => {
   const { logout } = useAuth();
   const params = useParams();
-  const router = useRouter();
   const classId = params.id as string;
+  const essayId = params.essayid as string;
+  const [assignment, setAssignment] = useState<AssignmentDetails | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAssignment = async () => {
+      try {
+        setLoading(true);
+        const data = await StudentClassroomService.getAssignmentDetailsForStudent(essayId);
+        setAssignment(data);
+      } catch (err: any) {
+        setError(err.message || 'Erro ao carregar a atividade.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignment();
+  }, [essayId]);
+
+  // Função para formatar a data
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR');
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Função para renderizar apenas textos que existem
+  const renderMotivationalTexts = (): React.ReactNode => {
+    const texts: React.ReactElement[] = [];
+    const motivationalContent = assignment?.motivational_content;
+    
+    if (!motivationalContent) return null;
+
+    ['text1', 'text2', 'text3', 'text4'].forEach((key, index) => {
+      const textContent = (motivationalContent as any)[key];
+      if (textContent && textContent.trim()) {
+        texts.push(
+          <div key={index} className="mb-6">
+            <h3 className="font-medium mb-2 text-gray-800">TEXTO {index + 1}</h3>
+            <p className="text-gray-700 leading-relaxed">{textContent}</p>
+          </div>
+        );
+      }
+    });
+
+    return texts.length > 0 ? texts : (
+      <p className="text-gray-500 italic">Nenhum texto motivador disponível.</p>
+    );
+  };
+
+  // Função para renderizar botões baseado no status
+  const renderActionButtons = () => {
+    if (!assignment) return null;
+
+    const status = assignment.assignment_status;
+
+    if (status === 'Entregue') {
+      return (
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+          <a
+            href={`/student/classes/${classId}/dashboard/${essayId}/view-essay`}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
+          >
+            📄 Ver Redação
+          </a>
+          <a
+            href={`/student/classes/${classId}/dashboard/${essayId}/view-correction`}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
+          >
+            ✏️ Ver Correção
+          </a>
+        </div>
+      );
+    } else if (status === 'Não enviado' || status === 'Pendente') {
+      return (
+        <div className="flex justify-center mt-8">
+          <a
+            href={`/student/classes/${classId}/dashboard/${essayId}/submit-essay`}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
+          >
+            ➤ Enviar redação
+          </a>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
+  if (loading) return (
+    <RouteGuard allowedRoles={['student']}>
+      <div className="flex w-full bg-gray-50">
+        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="text-gray-600 text-sm">Carregando atividade...</p>
+          </div>
+        </main>
+      </div>
+    </RouteGuard>
+  );
+  if (error) return <div className="p-6 text-red-600">{error}</div>;
+  if (!assignment) return null;
 
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-
-        {/* Conteúdo principal */}
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
           {/* Botão voltar */}
           <button
             onClick={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
-            className="flex items-center text-blue-600 mb-4 hover:underline"
+            className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
-            <FiArrowLeft className="mr-1" /> Voltar
+            <FiArrowLeft className="mr-1" />
+            Voltar
           </button>
 
           {/* Card principal */}
-          <div className="bg-white shadow-md rounded-xl p-6 max-w-5xl mx-auto">
-            {/* Título e status */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <div>
-                <h1 className="text-xl font-semibold text-gray-800">
-                  O impacto das redes sociais na sociedade moderna
-                </h1>
-                <p className="text-gray-500 text-sm">
-                  Breve descrição da atividade e do tema, instruções do professor.
-                </p>
+          <div className="bg-white shadow-md rounded-xl p-8 max-w-5xl mx-auto">
+            {/* Cabeçalho estilo da imagem */}
+            <div className="flex items-start gap-4 mb-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+              <div className="bg-blue-600 text-white p-2 rounded-lg flex-shrink-0">
+                <FiFileText size={24} />
               </div>
-              <div className="flex items-center gap-2 mt-3 md:mt-0">
-                <span className="flex items-center gap-1 text-sm text-blue-600 font-medium">
-                  <FiCalendar /> Prazo: 22/07/2025
-                </span>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
-                  Pendente
-                </span>
+              <div className="flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-800 mb-1">{assignment.title}</h1>
+                    <p className="text-gray-600 text-sm">{assignment.description}</p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-sm">
+                    <div className="flex items-center gap-1 text-blue-600 font-medium">
+                      <FiCalendar size={16} />
+                      <span>Prazo: {formatDate(assignment.due_date)}</span>
+                    </div>
+                    <span className={`px-3 py-1 text-xs rounded-full font-medium ${
+                      assignment.assignment_status === 'Entregue' 
+                        ? 'bg-green-100 text-green-700' 
+                        : assignment.assignment_status === 'Pendente'
+                        ? 'bg-orange-100 text-orange-700'
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {assignment.assignment_status}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Textos motivadores */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-700 mb-4">Textos motivadores</h2>
-              <div className="space-y-6 text-justify text-gray-700">
-                <div>
-                  <h3 className="font-medium mb-1">TEXTO I</h3>
-                  <p>
-                    O trabalho de cuidado não remunerado e mal pago é a crise global de
-                    desigualdade...
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-medium mb-1">TEXTO II</h3>
-                  <p>
-                    Média de horas dedicadas pelas pessoas de 14 anos ou mais às atividades
-                    domésticas...
-                  </p>
-                  <img
-                    src="/imagens/tabela-horas.png"
-                    alt="Tabela de horas de cuidado"
-                    className="rounded-lg shadow mt-2"
-                  />
-                </div>
-
-                <div>
-                  <h3 className="font-medium mb-1">TEXTO III</h3>
-                  <p>
-                    A sociedade brasileira tem passado por inúmeras transformações sociais nos
-                    últimos anos...
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-medium mb-1">TEXTO IV</h3>
-                  <img
-                    src="/imagens/pesquisa.png"
-                    alt="Capa pesquisa FAPESP"
-                    className="rounded-lg shadow"
-                  />
-                </div>
+              <h2 className="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">Textos motivadores</h2>
+              <div className="text-justify">
+                {renderMotivationalTexts()}
               </div>
             </div>
 
-            {/* Botão de enviar redação */}
-            <div className="flex justify-center mt-8">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
-                {/* Use Link for navigation instead of href on button */}
-                <a
-                  href={`/student/classes/${classId}/dashboard/${params.essayid}/submit-essay`}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow flex items-center"
-                >
-                  ➤ Enviar redação
-                </a>
-              </button>
-            </div>
+            {/* Botões de ação */}
+            {renderActionButtons()}
           </div>
         </main>
       </div>
