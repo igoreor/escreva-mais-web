@@ -21,7 +21,6 @@ interface TeacherComment {
 }
 
 const CorrectionDetailsPage: React.FC = () => {
-  // dados (mantive os seus)
   const overallScore = { score: 960, average: 9.6, totalCompetencies: 5 };
   const bestCompetency = {
     title: 'Melhor competência',
