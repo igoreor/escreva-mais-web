@@ -1,4 +1,4 @@
-import AuthService from "./authService";
+import AuthService from './authService';
 
 interface Assignment {
   id: string;
@@ -73,18 +73,22 @@ class StudentClassroomService {
     };
   }
 
-  static async getClassroomDetailsForStudent(classroomId: string): Promise<ClassroomDetailsForStudent> {
+  static async getClassroomDetailsForStudent(
+    classroomId: string,
+  ): Promise<ClassroomDetailsForStudent> {
     try {
       const response = await fetch(
         `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/student-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`Erro ao buscar detalhes da sala de aula: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `Erro ao buscar detalhes da sala de aula: ${response.status} - ${response.statusText}`,
+        );
       }
 
       const data: ClassroomDetailsForStudent = await response.json();
@@ -95,18 +99,22 @@ class StudentClassroomService {
     }
   }
 
-  static async getAssignmentDetailsForStudent(assignmentId: string): Promise<AssignmentDetailsForStudent> {
+  static async getAssignmentDetailsForStudent(
+    assignmentId: string,
+  ): Promise<AssignmentDetailsForStudent> {
     try {
       const response = await fetch(
         `${this.API_BASE_URL}/essays/assignment/${assignmentId}/student-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`Erro ao buscar detalhes do assignment: ${response.status} - ${response.statusText}`);
+        throw new Error(
+          `Erro ao buscar detalhes do assignment: ${response.status} - ${response.statusText}`,
+        );
       }
 
       const data: AssignmentDetailsForStudent = await response.json();
@@ -117,31 +125,30 @@ class StudentClassroomService {
     }
   }
 
-  static async createEssayInAssignment(essayData: CreateEssayRequest): Promise<CreateEssayResponse> {
+  static async createEssayInAssignment(
+    essayData: CreateEssayRequest,
+  ): Promise<CreateEssayResponse> {
     try {
       const formData = new FormData();
       formData.append('assignment_id', essayData.assignment_id);
-      
+
       if (essayData.title) {
         formData.append('title', essayData.title);
       }
-      
+
       if (essayData.content) {
         formData.append('content', essayData.content);
       }
-      
+
       if (essayData.image) {
         formData.append('image', essayData.image);
       }
 
-      const response = await fetch(
-        `${this.API_BASE_URL}/essays/create-in-assignment`,
-        {
-          method: 'POST',
-          headers: this.getMultipartHeaders(),
-          body: formData,
-        }
-      );
+      const response = await fetch(`${this.API_BASE_URL}/essays/create-in-assignment`, {
+        method: 'POST',
+        headers: this.getMultipartHeaders(),
+        body: formData,
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -164,7 +171,6 @@ class StudentClassroomService {
       throw error;
     }
   }
-
 
   static async evaluateEssay(essayId: string) {
     try {

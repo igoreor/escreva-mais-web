@@ -1,4 +1,4 @@
-import AuthService from "./authService";
+import AuthService from './authService';
 
 interface MotivationalContent {
   id: string;
@@ -16,7 +16,7 @@ interface User {
   first_name: string;
   last_name: string;
   email: string;
-  role: "student" | "teacher";
+  role: 'student' | 'teacher';
 }
 
 interface Submission {
@@ -81,14 +81,16 @@ class EssayService {
     };
   }
 
-  static async getAssignmentDetailsForTeacher(assignmentId: string): Promise<AssignmentDetailsResponse> {
+  static async getAssignmentDetailsForTeacher(
+    assignmentId: string,
+  ): Promise<AssignmentDetailsResponse> {
     try {
       const response = await fetch(
         `${this.API_BASE_URL}/essays/assignment/${assignmentId}/teacher-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -102,7 +104,7 @@ class EssayService {
       if (error instanceof ApiError) {
         throw error;
       }
-      
+
       console.error('Erro ao buscar detalhes da atividade:', error);
       throw new ApiError('Erro de conexão com o servidor', 500);
     }
@@ -115,7 +117,7 @@ class EssayService {
         {
           method: 'GET',
           headers: this.getHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -129,7 +131,7 @@ class EssayService {
       if (error instanceof ApiError) {
         throw error;
       }
-      
+
       console.error('Erro ao buscar detalhes da redação:', error);
       throw new ApiError('Erro de conexão com o servidor', 500);
     }
@@ -140,17 +142,27 @@ class EssayService {
     return userRole === 'teacher';
   }
 
-  static async getAssignmentDetailsForTeacherWithPermissionCheck(assignmentId: string): Promise<AssignmentDetailsResponse> {
+  static async getAssignmentDetailsForTeacherWithPermissionCheck(
+    assignmentId: string,
+  ): Promise<AssignmentDetailsResponse> {
     if (!this.isTeacher()) {
-      throw new ApiError('Acesso negado: apenas professores podem acessar esta funcionalidade', 403);
+      throw new ApiError(
+        'Acesso negado: apenas professores podem acessar esta funcionalidade',
+        403,
+      );
     }
 
     return this.getAssignmentDetailsForTeacher(assignmentId);
   }
 
-  static async getEssayDetailsForTeacherWithPermissionCheck(essayId: string): Promise<EssayDetailsForTeacherResponse> {
+  static async getEssayDetailsForTeacherWithPermissionCheck(
+    essayId: string,
+  ): Promise<EssayDetailsForTeacherResponse> {
     if (!this.isTeacher()) {
-      throw new ApiError('Acesso negado: apenas professores podem acessar esta funcionalidade', 403);
+      throw new ApiError(
+        'Acesso negado: apenas professores podem acessar esta funcionalidade',
+        403,
+      );
     }
 
     return this.getEssayDetailsForTeacher(essayId);
@@ -158,20 +170,23 @@ class EssayService {
 }
 
 class ApiError extends Error {
-  constructor(message: string, public status: number) {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
 export default EssayService;
-export type { 
-  AssignmentDetailsResponse, 
-  Submission, 
-  User, 
-  MotivationalContent, 
+export type {
+  AssignmentDetailsResponse,
+  Submission,
+  User,
+  MotivationalContent,
   EssayDetailsForTeacherResponse,
   EvaluationPoint,
   CompetencyFeedback,
-  ApiError 
+  ApiError,
 };

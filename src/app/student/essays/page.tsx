@@ -20,9 +20,24 @@ import StudentEssayService, { EssayWithStatus } from '@/services/StudentEssaySer
 
 const getMenuItems = (id: string) => [
   { id: 'student', label: 'Início', icon: <FiHome size={34} />, href: '/student/home' },
-  { id: 'classes', label: 'Minhas Turmas', icon: <FiBookOpen size={34} />, href: '/student/classes' },
-  { id: 'submit', label: 'Enviar Nova Redação', icon: <FiUpload size={34} />, href: `/student/submit-essay` },
-  { id: 'essays', label: 'Minhas Redações', icon: <FiFileText size={34} />, href: `/student/essays` },
+  {
+    id: 'classes',
+    label: 'Minhas Turmas',
+    icon: <FiBookOpen size={34} />,
+    href: '/student/classes',
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={34} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <FiFileText size={34} />,
+    href: `/student/essays`,
+  },
   { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/student/profile' },
 ];
 
@@ -46,12 +61,12 @@ const EssayCard: React.FC<{ essay: EssayWithStatus }> = ({ essay }) => {
             <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-100 text-green-700 text-sm font-medium">
               <FiCheckCircle size={16} /> Corrigida
             </span>
-          <Link
-            href={`/student/essays/${essay.id}/correction-details`}
-            className="px-3 py-1 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-          >
-            Ver detalhes
-          </Link>
+            <Link
+              href={`/student/essays/${essay.id}/correction-details`}
+              className="px-3 py-1 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              Ver detalhes
+            </Link>
           </div>
         );
       case 'sent':
@@ -81,7 +96,7 @@ const EssayCard: React.FC<{ essay: EssayWithStatus }> = ({ essay }) => {
           {new Date(essay.created_at).toLocaleString('pt-BR', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric'
+            year: 'numeric',
           })}
         </p>
       </div>
@@ -100,7 +115,6 @@ const EssaysPage: React.FC = () => {
   const [isPageVisible, setIsPageVisible] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsPageVisible(!document.hidden);
@@ -114,7 +128,7 @@ const EssaysPage: React.FC = () => {
     const fetchEssays = async (isInitialLoad = false) => {
       try {
         if (!isInitialLoad) setIsRefreshing(true);
-        
+
         const data = await StudentEssayService.getMyEssaysWithStatus();
         setEssays(data);
       } catch (error) {
@@ -131,7 +145,7 @@ const EssaysPage: React.FC = () => {
       if (isPageVisible) {
         fetchEssays(false);
       }
-    }, 15000); 
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [isPageVisible]);

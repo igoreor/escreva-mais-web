@@ -4,7 +4,15 @@ import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiCalendar, FiTrello } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiFileText,
+  FiUser,
+  FiArrowLeft,
+  FiCalendar,
+  FiTrello,
+} from 'react-icons/fi';
 import StudentClassroomService from '@/services/StudentClassroomService';
 
 const getMenuItems = (id: string) => [
@@ -12,7 +20,7 @@ const getMenuItems = (id: string) => [
     id: 'student',
     label: 'Início',
     icon: <FiHome size={34} />,
-    href: '/student/home'
+    href: '/student/home',
   },
   {
     id: 'classes',
@@ -24,13 +32,13 @@ const getMenuItems = (id: string) => [
         id: 'dashboard',
         label: 'Painel',
         icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`
+        href: `/student/classes/${id}/dashboard`,
       },
       {
         id: 'essays',
         label: 'Minhas Redações',
         icon: <FiFileText size={24} />,
-        href: `/student/classes/${id}/essays`
+        href: `/student/classes/${id}/essays`,
       },
     ],
   },
@@ -38,7 +46,7 @@ const getMenuItems = (id: string) => [
     id: 'profile',
     label: 'Meu Perfil',
     icon: <FiUser size={34} />,
-    href: '/student/profile'
+    href: '/student/profile',
   },
 ];
 
@@ -102,7 +110,7 @@ const ActivityDetailPage: React.FC = () => {
   const renderMotivationalTexts = (): React.ReactNode => {
     const texts: React.ReactElement[] = [];
     const motivationalContent = assignment?.motivational_content;
-    
+
     if (!motivationalContent) return null;
 
     ['text1', 'text2', 'text3', 'text4'].forEach((key, index) => {
@@ -112,12 +120,14 @@ const ActivityDetailPage: React.FC = () => {
           <div key={index} className="mb-6">
             <h3 className="font-medium mb-2 text-gray-800">TEXTO {index + 1}</h3>
             <p className="text-gray-700 leading-relaxed">{textContent}</p>
-          </div>
+          </div>,
         );
       }
     });
 
-    return texts.length > 0 ? texts : (
+    return texts.length > 0 ? (
+      texts
+    ) : (
       <p className="text-gray-500 italic">Nenhum texto motivador disponível.</p>
     );
   };
@@ -152,12 +162,12 @@ const ActivityDetailPage: React.FC = () => {
           theme: assignment.motivational_content.theme,
           title: assignment.title,
           description: assignment.description,
-          dueDate: assignment.due_date
+          dueDate: assignment.due_date,
         };
-        
+
         // Armazenar dados temporariamente
         sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
-        
+
         // Navegar para página de envio
         window.location.href = `/student/classes/${classId}/dashboard/${essayId}/submit-essay`;
       };
@@ -173,23 +183,24 @@ const ActivityDetailPage: React.FC = () => {
         </div>
       );
     }
-    
+
     return null;
   };
 
-  if (loading) return (
-    <RouteGuard allowedRoles={['student']}>
-      <div className="flex w-full bg-gray-50">
-        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="text-gray-600 text-sm">Carregando atividade...</p>
-          </div>
-        </main>
-      </div>
-    </RouteGuard>
-  );
+  if (loading)
+    return (
+      <RouteGuard allowedRoles={['student']}>
+        <div className="flex w-full bg-gray-50">
+          <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+          <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <p className="text-gray-600 text-sm">Carregando atividade...</p>
+            </div>
+          </main>
+        </div>
+      </RouteGuard>
+    );
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!assignment) return null;
 
@@ -225,13 +236,15 @@ const ActivityDetailPage: React.FC = () => {
                       <FiCalendar size={16} />
                       <span>Prazo: {formatDate(assignment.due_date)}</span>
                     </div>
-                    <span className={`px-3 py-1 text-xs rounded-full font-medium ${
-                      assignment.assignment_status === 'Entregue' 
-                        ? 'bg-green-100 text-green-700' 
-                        : assignment.assignment_status === 'Pendente'
-                        ? 'bg-orange-100 text-orange-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
+                    <span
+                      className={`px-3 py-1 text-xs rounded-full font-medium ${
+                        assignment.assignment_status === 'Entregue'
+                          ? 'bg-green-100 text-green-700'
+                          : assignment.assignment_status === 'Pendente'
+                            ? 'bg-orange-100 text-orange-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                      }`}
+                    >
                       {assignment.assignment_status}
                     </span>
                   </div>
@@ -241,10 +254,10 @@ const ActivityDetailPage: React.FC = () => {
 
             {/* Textos motivadores */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">Textos motivadores</h2>
-              <div className="text-justify">
-                {renderMotivationalTexts()}
-              </div>
+              <h2 className="text-lg font-semibold text-gray-700 mb-6 border-b pb-2">
+                Textos motivadores
+              </h2>
+              <div className="text-justify">{renderMotivationalTexts()}</div>
             </div>
 
             {/* Botões de ação */}

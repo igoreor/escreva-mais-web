@@ -24,7 +24,7 @@ export default function RedacaoPage() {
   const [essayData, setEssayData] = useState<EssayDetailsForTeacherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const router = useRouter();
   const { id: schoolId, classId, essayid, correctionid } = useParams();
 
@@ -55,16 +55,16 @@ export default function RedacaoPage() {
   // Função para mapear competências para formato do componente
   const getCompetenciaDisplay = (competency: string) => {
     const competencyMap: { [key: string]: string } = {
-      'C1': 'Domínio da norma padrão',
-      'C2': 'Compreensão da proposta', 
-      'C3': 'Capacidade de argumentação',
-      'C4': 'Conhecimento dos mecanismos linguísticos',
-      'C5': 'Proposta de intervenção'
+      C1: 'Domínio da norma padrão',
+      C2: 'Compreensão da proposta',
+      C3: 'Capacidade de argumentação',
+      C4: 'Conhecimento dos mecanismos linguísticos',
+      C5: 'Proposta de intervenção',
     };
-    
+
     return {
       titulo: `Competência ${competency.replace('C', '')}`,
-      descricao: competencyMap[competency] || 'Descrição não disponível'
+      descricao: competencyMap[competency] || 'Descrição não disponível',
     };
   };
 
@@ -109,9 +109,7 @@ export default function RedacaoPage() {
       {/* BOTÃO VOLTAR */}
       <div className="w-full mb-4">
         <button
-          onClick={() =>
-            router.push(`/teacher/schools/${schoolId}/${classId}/painel/${essayid}`)
-          }
+          onClick={() => router.push(`/teacher/schools/${schoolId}/${classId}/painel/${essayid}`)}
           className="flex items-center text-black hover:text-gray-600 font-medium"
         >
           <span className="mr-1">{'<'}</span> Voltar
@@ -151,7 +149,8 @@ export default function RedacaoPage() {
               {/* BODY */}
               <div className="p-5 flex flex-col flex-grow">
                 <p className="text-2xl font-normal text-blue-900">
-                  {competency.score} <span className="text-sm text-gray-400 font-normal">pontos</span>
+                  {competency.score}{' '}
+                  <span className="text-sm text-gray-400 font-normal">pontos</span>
                 </p>
 
                 <button

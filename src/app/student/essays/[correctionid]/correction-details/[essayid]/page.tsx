@@ -40,7 +40,6 @@ const EssayViewPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8]">
       <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:py-10 space-y-6">
-        
         {/* header */}
         <div className="relative flex items-center justify-center">
           <Link
@@ -50,9 +49,7 @@ const EssayViewPage: React.FC = () => {
             <Image src="/images/img_arrow_left.svg" alt="Voltar" width={22} height={22} />
             <span className="text-sm">Voltar</span>
           </Link>
-          <h1 className="text-center text-2xl sm:text-3xl font-bold text-[#0f2752]">
-            Ver redação
-          </h1>
+          <h1 className="text-center text-2xl sm:text-3xl font-bold text-[#0f2752]">Ver redação</h1>
         </div>
 
         {/* conteúdo da redação */}
@@ -76,7 +73,7 @@ const EssayViewPage: React.FC = () => {
               className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-800"
             />
           </div>
-          
+
           {/* texto */}
           <div>
             <label className="text-sm text-gray-600">Texto</label>

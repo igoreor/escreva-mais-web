@@ -4,7 +4,18 @@ import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiUsers, FiCalendar, FiEye, FiFileMinus, FiMessageCircle } from 'react-icons/fi';
+import {
+  FiHome,
+  FiBookOpen,
+  FiFileText,
+  FiUser,
+  FiArrowLeft,
+  FiUsers,
+  FiCalendar,
+  FiEye,
+  FiFileMinus,
+  FiMessageCircle,
+} from 'react-icons/fi';
 import EssayService, { AssignmentDetailsResponse, Submission } from '@/services/EssayService';
 
 const EssayPage: React.FC = () => {
@@ -36,7 +47,9 @@ const EssayPage: React.FC = () => {
       if (!essayid) return;
       try {
         setLoading(true);
-        const data = await EssayService.getAssignmentDetailsForTeacherWithPermissionCheck(essayid as string);
+        const data = await EssayService.getAssignmentDetailsForTeacherWithPermissionCheck(
+          essayid as string,
+        );
         setAssignment(data);
       } catch (error) {
         console.error(error);
@@ -75,7 +88,9 @@ const EssayPage: React.FC = () => {
           {/* Voltar */}
           <button
             type="button"
-            onClick={() => (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)}
+            onClick={() =>
+              (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)
+            }
             className="flex items-center text-blue-600 mb-4 hover:underline"
           >
             <FiArrowLeft className="mr-1" /> Voltar
@@ -93,7 +108,7 @@ const EssayPage: React.FC = () => {
             </div>
 
             <h2 className="text-lg font-semibold text-blue-700 mb-4">Textos motivadores</h2>
-            
+
             <div className="flex flex-col gap-6 mb-6">
               {/* Texto 1 */}
               {assignment.motivational_content.text1 && (
@@ -138,12 +153,13 @@ const EssayPage: React.FC = () => {
 
             <div className="border-t pt-4">
               <p className="text-gray-600 text-sm">
-                📅 Prazo: {new Date(assignment.due_date).toLocaleString('pt-BR', { 
-                  day: '2-digit', 
-                  month: '2-digit', 
-                  year: 'numeric', 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
+                📅 Prazo:{' '}
+                {new Date(assignment.due_date).toLocaleString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </p>
               <p className="text-gray-600 text-sm">
@@ -167,12 +183,13 @@ const EssayPage: React.FC = () => {
                       {sub.user.first_name} {sub.user.last_name}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Enviado em: {new Date(sub.submitted_at).toLocaleString('pt-BR', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
+                      Enviado em:{' '}
+                      {new Date(sub.submitted_at).toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </p>
                   </div>

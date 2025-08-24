@@ -1,4 +1,4 @@
-import AuthService from "./authService";
+import AuthService from './authService';
 
 export interface EssayWithStatus {
   id: string;
@@ -70,13 +70,18 @@ class StudentEssayService {
 
   static async getStudentFeedbackDetails(essayId: string): Promise<StudentFeedbackDetails> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/${essayId}/student-feedback-details`, {
-        method: 'GET',
-        headers: this.getHeaders(),
-      });
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/${essayId}/student-feedback-details`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
 
       if (!response.ok) {
-        throw new Error(`Erro ao buscar detalhes do feedback: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Erro ao buscar detalhes do feedback: ${response.status} ${response.statusText}`,
+        );
       }
 
       const feedbackDetails: StudentFeedbackDetails = await response.json();

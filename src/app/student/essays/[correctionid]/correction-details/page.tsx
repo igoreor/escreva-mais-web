@@ -4,32 +4,34 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useParams, useRouter } from 'next/navigation';
-import StudentEssayService, { StudentFeedbackDetails, Competency } from '@/services/StudentEssayService';
+import StudentEssayService, {
+  StudentFeedbackDetails,
+  Competency,
+} from '@/services/StudentEssayService';
 import html2pdf from 'html2pdf.js';
 
 const COMPETENCIES_MAP: Record<string, { title: string; description: string }> = {
   C1: {
-    title: "Competência 1",
-    description: "Domínio da norma padrão da Língua Portuguesa",
+    title: 'Competência 1',
+    description: 'Domínio da norma padrão da Língua Portuguesa',
   },
   C2: {
-    title: "Competência 2",
-    description: "Compreensão da proposta de redação",
+    title: 'Competência 2',
+    description: 'Compreensão da proposta de redação',
   },
   C3: {
-    title: "Competência 3",
+    title: 'Competência 3',
     description:
-      "Capacidade de selecionar, relacionar, organizar e interpretar informações para defender um ponto de vista",
+      'Capacidade de selecionar, relacionar, organizar e interpretar informações para defender um ponto de vista',
   },
   C4: {
-    title: "Competência 4",
+    title: 'Competência 4',
     description:
-      "Conhecimento dos mecanismos linguísticos necessários para a construção da argumentação",
+      'Conhecimento dos mecanismos linguísticos necessários para a construção da argumentação',
   },
   C5: {
-    title: "Competência 5",
-    description:
-      "Elaboração de proposta de intervenção para o problema abordado",
+    title: 'Competência 5',
+    description: 'Elaboração de proposta de intervenção para o problema abordado',
   },
 };
 
@@ -76,7 +78,7 @@ const CorrectionDetailsPage: React.FC = () => {
         filename: `relatorio-redacao.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
       };
       html2pdf().set(opt).from(element).save();
     }
@@ -167,9 +169,7 @@ const CorrectionDetailsPage: React.FC = () => {
 
           {/* desempenho por competência */}
           <div className="space-y-3">
-            <h3 className="text-[15px] font-semibold text-[#1d4b8f]">
-              Desempenho por competência
-            </h3>
+            <h3 className="text-[15px] font-semibold text-[#1d4b8f]">Desempenho por competência</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {feedback.competencies.map((c: Competency) => {
                 const comp = COMPETENCIES_MAP[c.competency];

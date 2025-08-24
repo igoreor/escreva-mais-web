@@ -150,7 +150,7 @@ const TextAreaWithLineNumbers: React.FC<{
   // Intercepta mudanças para respeitar limite de linhas
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
-    const newLineCount = newValue.split("\n").length;
+    const newLineCount = newValue.split('\n').length;
 
     if (maxLines && newLineCount > maxLines) return;
     onChange(e);
@@ -171,7 +171,7 @@ const TextAreaWithLineNumbers: React.FC<{
 
       const lineCount = Math.max(1, renderedLineCount, newlineCount);
       const newNumbers = Array.from({ length: lineCount }, (_, i) =>
-        String(i + 1).padStart(2, '0')
+        String(i + 1).padStart(2, '0'),
       ).join('\n');
 
       if (newNumbers !== lineNumbers) setLineNumbers(newNumbers);
@@ -195,7 +195,7 @@ const TextAreaWithLineNumbers: React.FC<{
           value={lineNumbers}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
-        
+
         {/* Textarea principal */}
         <textarea
           ref={textAreaRef}
@@ -208,18 +208,18 @@ const TextAreaWithLineNumbers: React.FC<{
           className="flex-1 p-2 font-mono text-sm focus:outline-none leading-6 resize-none overflow-y-auto"
           style={{
             overflowX: 'hidden',
-            overflowY: 'auto'
+            overflowY: 'auto',
           }}
         />
       </div>
-      
+
       {/* Contador de linhas */}
       {maxLines && (
         <div className="text-right text-xs text-gray-400 mt-1">
-          {value.split("\n").length}/{maxLines} linhas
+          {value.split('\n').length}/{maxLines} linhas
         </div>
       )}
-      
+
       {/* Contador de caracteres (se habilitado) */}
       {showCharCount && maxLength && (
         <div className="text-right text-xs text-gray-400 mt-1">
@@ -233,10 +233,16 @@ const TextAreaWithLineNumbers: React.FC<{
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
   const { logout } = useAuth();
-  
-  const classId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
-  const essayId = typeof params?.essayid === 'string' ? params.essayid : Array.isArray(params?.essayid) ? params.essayid[0] : '';
-  
+
+  const classId =
+    typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
+  const essayId =
+    typeof params?.essayid === 'string'
+      ? params.essayid
+      : Array.isArray(params?.essayid)
+        ? params.essayid[0]
+        : '';
+
   const [assignmentTheme, setAssignmentTheme] = useState('');
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [title, setTitle] = useState('');
@@ -258,7 +264,7 @@ const SubmitEssayPage: React.FC = () => {
         const assignmentData = JSON.parse(assignmentDataStr);
         setAssignmentTheme(assignmentData.theme || '');
         setAssignmentTitle(assignmentData.title || '');
-        
+
         // Limpar dados do sessionStorage após uso
         sessionStorage.removeItem('assignmentData');
       } catch (error) {
@@ -304,12 +310,13 @@ const SubmitEssayPage: React.FC = () => {
       setTimeout(() => {
         window.location.href = `/student/classes/${classId}/dashboard`;
       }, 2000);
-
     } catch (error: any) {
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
-        message: error.message || 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
+        message:
+          error.message ||
+          'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
       });
       console.error('Erro ao enviar redação:', error);
     } finally {
@@ -331,14 +338,13 @@ const SubmitEssayPage: React.FC = () => {
           >
             <FiArrowLeft className="mr-1" /> Voltar
           </button>
-          
+
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
             Enviar nova redação
           </h1>
 
           <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
             <div className="bg-global-3 border border-gray-300 rounded-2xl p-6 sm:p-7 md:p-8 flex flex-col gap-6">
-              
               {/* Tema do Assignment (readonly) */}
               {assignmentTheme && (
                 <div className="flex flex-col gap-2">
@@ -361,7 +367,9 @@ const SubmitEssayPage: React.FC = () => {
 
               {/* Título da redação (opcional) */}
               <div className="flex flex-col gap-2">
-                <label className="text-global-1 font-semibold">Título da sua redação (opcional)</label>
+                <label className="text-global-1 font-semibold">
+                  Título da sua redação (opcional)
+                </label>
                 <EditText
                   placeholder="Insira aqui o título da sua redação, caso deseje"
                   value={title}
@@ -380,7 +388,6 @@ const SubmitEssayPage: React.FC = () => {
                   showCharCount
                   maxLength={3450}
                   maxLines={30}
-
                 />
               </div>
             </div>
@@ -395,27 +402,17 @@ const SubmitEssayPage: React.FC = () => {
 
             {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={handleSaveDraft}
-                disabled={loading}
-              >
+              <Button variant="outline" size="lg" onClick={handleSaveDraft} disabled={loading}>
                 Salvar rascunho
               </Button>
-              <Button 
-                variant="primary" 
-                size="lg" 
-                onClick={handleSubmit}
-                disabled={loading}
-              >
+              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>
           </div>
         </div>
       </div>
-      
+
       {popupConfig && (
         <Popup
           type={popupConfig.type}
