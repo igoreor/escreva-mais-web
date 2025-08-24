@@ -122,7 +122,6 @@ const ActivityDetailPage: React.FC = () => {
     );
   };
 
-  // Função para renderizar botões baseado no status
   const renderActionButtons = () => {
     if (!assignment) return null;
 
@@ -146,14 +145,31 @@ const ActivityDetailPage: React.FC = () => {
         </div>
       );
     } else if (status === 'Não enviado' || status === 'Pendente') {
+      const handleSubmitEssay = () => {
+        // Criar objeto com dados do assignment para enviar via sessionStorage
+        const assignmentData = {
+          assignmentId: essayId,
+          theme: assignment.motivational_content.theme,
+          title: assignment.title,
+          description: assignment.description,
+          dueDate: assignment.due_date
+        };
+        
+        // Armazenar dados temporariamente
+        sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
+        
+        // Navegar para página de envio
+        window.location.href = `/student/classes/${classId}/dashboard/${essayId}/submit-essay`;
+      };
+
       return (
         <div className="flex justify-center mt-8">
-          <a
-            href={`/student/classes/${classId}/dashboard/${essayId}/submit-essay`}
+          <button
+            onClick={handleSubmitEssay}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
           >
             ➤ Enviar redação
-          </a>
+          </button>
         </div>
       );
     }

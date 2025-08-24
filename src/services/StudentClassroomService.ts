@@ -35,6 +35,24 @@ interface ClassroomDetailsForStudent {
   assignments: Assignment[];
 }
 
+interface CreateEssayRequest {
+  assignment_id: string;
+  title?: string;
+  content?: string;
+  image?: File;
+}
+
+interface CreateEssayResponse {
+  id: string;
+  assignment_id: string;
+  author_id: string;
+  title: string;
+  theme: string;
+  image_key?: string;
+  content: string;
+  created_at: string;
+}
+
 class StudentClassroomService {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
@@ -44,6 +62,13 @@ class StudentClassroomService {
     const token = AuthService.getToken();
     return {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  private static getMultipartHeaders() {
+    const token = AuthService.getToken();
+    return {
       Authorization: `Bearer ${token}`,
     };
   }
@@ -91,6 +116,75 @@ class StudentClassroomService {
       throw error;
     }
   }
+
+  static async createEssayInAssignment(essayData: CreateEssayRequest): Promise<CreateEssayResponse> {
+    try {
+      const formData = new FormData();
+      formData.append('assignment_id', essayData.assignment_id);
+      
+      if (essayData.title) {
+        formData.append('title', essayData.title);
+      }
+      
+      if (essayData.content) {
+        formData.append('content', essayData.content);
+      }
+      
+      if (essayData.image) {
+        formData.append('image', essayData.image);
+      }
+
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/create-in-assignment`,
+        {
+          method: 'POST',
+          headers: this.getMultipartHeaders(),
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erro ao criar redação: ${response.status} - ${errorText}`);
+      }
+
+      const createdEssay = await response.json();
+
+      await this.evaluateEssay(createdEssay.id)
+        .then((result) => {
+          console.log('Feedback gerado:', result);
+        })
+        .catch((err) => {
+          console.error('Erro ao avaliar redação:', err);
+        });
+
+      return createdEssay;
+    } catch (error) {
+      console.error('Erro ao criar redação no assignment:', error);
+      throw error;
+    }
+  }
+
+
+  static async evaluateEssay(essayId: string) {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/essays/${essayId}/feedbacks/evaluate`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao avaliar redação:', error);
+      throw error;
+    }
+  }
 }
 
 export default StudentClassroomService;
+export type { CreateEssayRequest, CreateEssayResponse };

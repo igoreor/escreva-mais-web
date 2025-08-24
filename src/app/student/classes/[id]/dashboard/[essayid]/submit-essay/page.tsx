@@ -2,7 +2,6 @@
 import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
-import Dropdown from '@/components/ui/Dropdown';
 import EditText from '@/components/ui/EditText';
 import RouteGuard from '@/components/auth/RouterGuard';
 import {
@@ -17,11 +16,8 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
-
-interface DropdownOption {
-  value: string;
-  label: string;
-}
+import { useParams } from 'next/navigation';
+import StudentClassroomService, { CreateEssayRequest } from '@/services/StudentClassroomService';
 
 const getMenuItems = (id: string) => [
   {
@@ -57,6 +53,7 @@ const getMenuItems = (id: string) => [
     href: '/student/profile',
   },
 ];
+
 const FileUpload: React.FC<{ onFileSelect: (file: File) => void }> = ({ onFileSelect }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState('');
@@ -137,8 +134,9 @@ const TextAreaWithLineNumbers: React.FC<{
   placeholder: string;
   rows?: number;
   maxLength?: number;
+  maxLines?: number;
   showCharCount?: boolean;
-}> = ({ value, onChange, placeholder, rows = 10, maxLength, showCharCount }) => {
+}> = ({ value, onChange, placeholder, rows = 10, maxLength, maxLines, showCharCount }) => {
   const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [lineNumbers, setLineNumbers] = useState('01');
@@ -149,30 +147,34 @@ const TextAreaWithLineNumbers: React.FC<{
     }
   }, []);
 
+  // Intercepta mudanças para respeitar limite de linhas
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    const newLineCount = newValue.split("\n").length;
+
+    if (maxLines && newLineCount > maxLines) return;
+    onChange(e);
+  };
+
   useLayoutEffect(() => {
     if (textAreaRef.current) {
       const textarea = textAreaRef.current;
-      const computedStyle = getComputedStyle(textarea);
       const lineHeight = 24;
-
+      const computedStyle = getComputedStyle(textarea);
       const paddingTop = parseFloat(computedStyle.paddingTop);
       const paddingBottom = parseFloat(computedStyle.paddingBottom);
       const verticalPadding = paddingTop + paddingBottom;
 
       const contentHeight = textarea.scrollHeight - verticalPadding;
       const renderedLineCount = Math.round(contentHeight / lineHeight);
-
       const newlineCount = value.split('\n').length;
 
       const lineCount = Math.max(1, renderedLineCount, newlineCount);
-
       const newNumbers = Array.from({ length: lineCount }, (_, i) =>
-        String(i + 1).padStart(2, '0'),
+        String(i + 1).padStart(2, '0')
       ).join('\n');
 
-      if (newNumbers !== lineNumbers) {
-        setLineNumbers(newNumbers);
-      }
+      if (newNumbers !== lineNumbers) setLineNumbers(newNumbers);
     }
   }, [value, lineNumbers]);
 
@@ -182,45 +184,65 @@ const TextAreaWithLineNumbers: React.FC<{
 
   return (
     <div className="relative w-full">
-      <div className="flex w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
+      {/* Container principal - sem overflow */}
+      <div className="flex w-full bg-white border border-gray-300 rounded-lg">
+        {/* Textarea de números das linhas */}
         <textarea
           readOnly
           ref={lineNumbersRef}
           rows={rows}
-          className="w-12 text-center p-2 bg-gray-100 text-gray-400 resize-none font-mono text-sm select-none border-r border-gray-200 focus:outline-none leading-6"
+          className="w-12 text-center p-2 bg-gray-100 text-gray-400 font-mono text-sm select-none border-r border-gray-200 focus:outline-none leading-6 resize-none overflow-hidden"
           value={lineNumbers}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
+        
+        {/* Textarea principal */}
         <textarea
           ref={textAreaRef}
           rows={rows}
           placeholder={placeholder}
           value={value}
-          onChange={onChange}
+          onChange={handleChange}
           onScroll={syncScroll}
           maxLength={maxLength}
-          className="flex-1 p-2 resize-none font-mono text-sm focus:outline-none leading-6"
+          className="flex-1 p-2 font-mono text-sm focus:outline-none leading-6 resize-none overflow-y-auto"
+          style={{
+            overflowX: 'hidden',
+            overflowY: 'auto'
+          }}
         />
       </div>
+      
+      {/* Contador de linhas */}
+      {maxLines && (
+        <div className="text-right text-xs text-gray-400 mt-1">
+          {value.split("\n").length}/{maxLines} linhas
+        </div>
+      )}
+      
+      {/* Contador de caracteres (se habilitado) */}
       {showCharCount && maxLength && (
         <div className="text-right text-xs text-gray-400 mt-1">
-          {value.length}/{maxLength}
+          {value.length}/{maxLength} caracteres
         </div>
       )}
     </div>
   );
 };
 
-import { useParams } from 'next/navigation';
-
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
-  const classId =
-    typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
-  const [selectedTheme, setSelectedTheme] = useState('');
+  const { logout } = useAuth();
+  
+  const classId = typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
+  const essayId = typeof params?.essayid === 'string' ? params.essayid : Array.isArray(params?.essayid) ? params.essayid[0] : '';
+  
+  const [assignmentTheme, setAssignmentTheme] = useState('');
+  const [assignmentTitle, setAssignmentTitle] = useState('');
   const [title, setTitle] = useState('');
   const [essayText, setEssayText] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -228,53 +250,72 @@ const SubmitEssayPage: React.FC = () => {
     message: string;
   } | null>(null);
 
-  const themeOptions: DropdownOption[] = [
-    { value: 'education', label: 'Educação no Brasil' },
-    { value: 'environment', label: 'Meio Ambiente' },
-    { value: 'technology', label: 'Tecnologia e Sociedade' },
-    { value: 'health', label: 'Saúde Pública' },
-    { value: 'politics', label: 'Política Nacional' },
-    { value: 'culture', label: 'Cultura Brasileira' },
-    { value: 'economy', label: 'Economia' },
-    { value: 'social', label: 'Questões Sociais' },
-  ];
+  // Carregar dados do assignment do sessionStorage
+  useEffect(() => {
+    const assignmentDataStr = sessionStorage.getItem('assignmentData');
+    if (assignmentDataStr) {
+      try {
+        const assignmentData = JSON.parse(assignmentDataStr);
+        setAssignmentTheme(assignmentData.theme || '');
+        setAssignmentTitle(assignmentData.title || '');
+        
+        // Limpar dados do sessionStorage após uso
+        sessionStorage.removeItem('assignmentData');
+      } catch (error) {
+        console.error('Erro ao carregar dados do assignment:', error);
+      }
+    }
+  }, []);
 
-  const handleSaveDraft = () => alert('Rascunho salvo com sucesso!');
+  const handleSaveDraft = () => {
+    // TODO: Implementar salvamento de rascunho
+    alert('Rascunho salvo com sucesso!');
+  };
 
   const handleSubmit = async () => {
-    if (!selectedTheme || (!essayText && !file)) {
+    if (!essayText && !file) {
       setPopupConfig({
         type: 'error',
         title: 'Campos Incompletos',
-        message:
-          'Por favor, selecione um tema e digite sua redação ou anexe um arquivo para continuar.',
+        message: 'Por favor, digite sua redação ou anexe um arquivo para continuar.',
       });
       return;
     }
 
     try {
-      // Simulação de chamada ao back-end (sempre com sucesso por enquanto)
-      // TODO: Substitua este bloco pela sua chamada de API real (ex: usando fetch ou axios)
-      console.log('Enviando dados:', { selectedTheme, title, essayText, file });
-      // const response = await api.post('/essays', formData);
+      setLoading(true);
 
-      // Simulação de sucesso (status 200)
+      const essayData: CreateEssayRequest = {
+        assignment_id: essayId,
+        title: title || undefined,
+        content: essayText || undefined,
+        image: file || undefined,
+      };
+
+      await StudentClassroomService.createEssayInAssignment(essayData);
+
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
-    } catch (error) {
+
+      // Redirecionar após sucesso
+      setTimeout(() => {
+        window.location.href = `/student/classes/${classId}/dashboard`;
+      }, 2000);
+
+    } catch (error: any) {
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
-        message: 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
+        message: error.message || 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
       });
       console.error('Erro ao enviar redação:', error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const { logout } = useAuth();
 
   return (
     <RouteGuard allowedRoles={['student']}>
@@ -284,31 +325,43 @@ const SubmitEssayPage: React.FC = () => {
         <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
           <button
             onClick={() =>
-              (window.location.href = `/student/classes/${classId}/dashboard/${params.essayid}`)
+              (window.location.href = `/student/classes/${classId}/dashboard/${essayId}`)
             }
-            className="flex items-center text-blue-600 mb-4 hover:underline"
+            className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
             <FiArrowLeft className="mr-1" /> Voltar
           </button>
+          
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
             Enviar nova redação
           </h1>
 
           <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
             <div className="bg-global-3 border border-gray-300 rounded-2xl p-6 sm:p-7 md:p-8 flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-global-1 font-semibold">Tema</label>
-                <Dropdown
-                  options={themeOptions}
-                  placeholder="tema da redação que o aluno selecionou"
-                  value={selectedTheme}
-                  onChange={setSelectedTheme}
-                  className="w-full"
-                />
-              </div>
+              
+              {/* Tema do Assignment (readonly) */}
+              {assignmentTheme && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-global-1 font-semibold">Tema da Atividade</label>
+                  <div className="w-full p-3 bg-blue-50 border border-blue-200 rounded-lg text-gray-700">
+                    {assignmentTheme}
+                  </div>
+                </div>
+              )}
 
+              {/* Título do Assignment (readonly) */}
+              {assignmentTitle && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-global-1 font-semibold">Atividade</label>
+                  <div className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                    {assignmentTitle}
+                  </div>
+                </div>
+              )}
+
+              {/* Título da redação (opcional) */}
               <div className="flex flex-col gap-2">
-                <label className="text-global-1 font-semibold">Título (opcional)</label>
+                <label className="text-global-1 font-semibold">Título da sua redação (opcional)</label>
                 <EditText
                   placeholder="Insira aqui o título da sua redação, caso deseje"
                   value={title}
@@ -316,6 +369,7 @@ const SubmitEssayPage: React.FC = () => {
                 />
               </div>
 
+              {/* Texto da redação */}
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">Texto</label>
                 <TextAreaWithLineNumbers
@@ -325,10 +379,13 @@ const SubmitEssayPage: React.FC = () => {
                   rows={10}
                   showCharCount
                   maxLength={3450}
+                  maxLines={30}
+
                 />
               </div>
             </div>
 
+            {/* Upload de imagem */}
             <div className="flex flex-col gap-4 w-full">
               <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                 Ou faça o upload de uma foto
@@ -336,17 +393,29 @@ const SubmitEssayPage: React.FC = () => {
               <FileUpload onFileSelect={setFile} />
             </div>
 
+            {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
-              <Button variant="outline" size="lg" onClick={handleSaveDraft}>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handleSaveDraft}
+                disabled={loading}
+              >
                 Salvar rascunho
               </Button>
-              <Button variant="primary" size="lg" onClick={handleSubmit}>
-                Enviar
+              <Button 
+                variant="primary" 
+                size="lg" 
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>
           </div>
         </div>
       </div>
+      
       {popupConfig && (
         <Popup
           type={popupConfig.type}
