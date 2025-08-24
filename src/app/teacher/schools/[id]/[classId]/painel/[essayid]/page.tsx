@@ -75,7 +75,7 @@ const EssayPage: React.FC = () => {
           {/* Voltar */}
           <button
             type="button"
-            onClick={() => (window.location.href = `/teacher/schools/${schoolId}/${classId}`)}
+            onClick={() => (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)}
             className="flex items-center text-blue-600 mb-4 hover:underline"
           >
             <FiArrowLeft className="mr-1" /> Voltar
