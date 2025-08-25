@@ -198,12 +198,12 @@ const EssayPage: React.FC = () => {
                     <span
                       className={`px-3 py-1 text-sm font-bold rounded-lg border ${getNotaColor(sub.grade)}`}
                     >
-                      {sub.grade ?? 'Não avaliada'}/{sub.grade ? '1000' : '---'}
+                      {sub.grade ?? 'Não avaliada'}/{sub.grade ? '1000' : '1000'}
                     </span>
 
                     <button
                       onClick={() => {
-                        window.location.href = `/teacher/schools/${schoolId}/${classId}/essays/${essayid}/${sub.essay_id}`;
+                        window.location.href = `/teacher/schools/${schoolId}/${classId}/painel/${essayid}/${sub.essay_id}`;
                       }}
                       className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                     >

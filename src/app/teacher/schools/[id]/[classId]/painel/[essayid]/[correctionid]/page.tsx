@@ -24,9 +24,36 @@ export default function RedacaoPage() {
   const [essayData, setEssayData] = useState<EssayDetailsForTeacherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [comment, setComment] = useState("");
+  const [message, setMessage] = useState("");
 
   const router = useRouter();
   const { id: schoolId, classId, essayid, correctionid } = useParams();
+
+  const handleSendComment = async () => {
+    if (!comment.trim()) {
+      setMessage("Escreva um comentário antes de enviar.");
+      return;
+    }
+
+    try {
+      setMessage("Enviando...");
+      await EssayService.updateEssayFeedbackWithPermissionCheck(
+        correctionid as string,
+        { general_feedback: comment }
+      );
+      setMessage("Feedback enviado com sucesso! ✅");
+
+      setEssayData((prev) =>
+        prev ? { ...prev, general_feedback: comment } : prev
+      );
+
+      setComment("");
+    } catch (err: any) {
+      console.error("Erro ao enviar feedback:", err);
+      setMessage(err.message || "Erro ao enviar feedback.");
+    }
+  };
 
   // Fetch dos dados da redação
   useEffect(() => {
@@ -39,7 +66,7 @@ export default function RedacaoPage() {
 
       try {
         setLoading(true);
-        const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(essayid);
+        const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(correctionid as string);
         setEssayData(data);
       } catch (err: any) {
         console.error('Erro ao carregar dados da redação:', err);
@@ -207,7 +234,7 @@ export default function RedacaoPage() {
               className="text-blue-600 text-sm mt-2 text-left"
               onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback })}
             >
-              Feedback da IA
+              Feedback do professor
             </button>
             <p className="text-sm text-gray-700 mt-2 flex-grow">
               {preview(essayData.general_feedback).text}{' '}
@@ -234,12 +261,18 @@ export default function RedacaoPage() {
           <textarea
             className="w-full mt-2 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none resize-none h-40"
             placeholder="Dê feedback ao aluno."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
           />
           <div className="flex justify-end">
-            <button className="mt-2 bg-blue-600 text-white px-8 py-1.5 rounded-md opacity-80 hover:opacity-100">
+            <button
+              onClick={handleSendComment}
+              className="mt-2 bg-blue-600 text-white px-8 py-1.5 rounded-md opacity-80 hover:opacity-100"
+            >
               Enviar
             </button>
           </div>
+          {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
         </div>
       </div>
 
@@ -287,7 +320,7 @@ export default function RedacaoPage() {
                 </>
               ) : (
                 <div className="mb-6">
-                  <h4 className="text-sm font-normal text-blue-600 mb-1">Feedback da IA</h4>
+                  <h4 className="text-sm font-normal text-blue-600 mb-1">Feedback do professor</h4>
                   <p className="text-sm text-gray-900">{popup.feedback}</p>
                 </div>
               )}

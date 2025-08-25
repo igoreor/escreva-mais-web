@@ -63,6 +63,14 @@ interface EssayDetailsForTeacherResponse {
   competency_feedbacks: CompetencyFeedback[];
 }
 
+interface UpdateEssayFeedbackRequest {
+  general_feedback: string;
+}
+
+interface UpdateEssayFeedbackResponse {
+  status: string;
+}
+
 interface ApiError {
   message: string;
   status: number;
@@ -137,6 +145,37 @@ class EssayService {
     }
   }
 
+  static async updateEssayFeedback(
+    essayId: string,
+    feedbackData: UpdateEssayFeedbackRequest,
+  ): Promise<UpdateEssayFeedbackResponse> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/${essayId}/feedback`,
+        {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify(feedbackData),
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`, response.status);
+      }
+
+      const data: UpdateEssayFeedbackResponse = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      console.error('Erro ao atualizar feedback da redação:', error);
+      throw new ApiError('Erro de conexão com o servidor', 500);
+    }
+  }
+
   private static isTeacher(): boolean {
     const userRole = AuthService.getUserRole();
     return userRole === 'teacher';
@@ -167,6 +206,20 @@ class EssayService {
 
     return this.getEssayDetailsForTeacher(essayId);
   }
+
+  static async updateEssayFeedbackWithPermissionCheck(
+    essayId: string,
+    feedbackData: UpdateEssayFeedbackRequest,
+  ): Promise<UpdateEssayFeedbackResponse> {
+    if (!this.isTeacher()) {
+      throw new ApiError(
+        'Acesso negado: apenas professores podem acessar esta funcionalidade',
+        403,
+      );
+    }
+
+    return this.updateEssayFeedback(essayId, feedbackData);
+  }
 }
 
 class ApiError extends Error {
@@ -188,5 +241,7 @@ export type {
   EssayDetailsForTeacherResponse,
   EvaluationPoint,
   CompetencyFeedback,
+  UpdateEssayFeedbackRequest,
+  UpdateEssayFeedbackResponse,
   ApiError,
 };
