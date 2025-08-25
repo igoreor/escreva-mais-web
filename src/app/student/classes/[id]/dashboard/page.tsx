@@ -22,7 +22,7 @@ interface Atividade {
   id: string;
   titulo: string;
   prazo: string;
-  status: 'pendente' | 'entregue' | 'não enviado';
+  status: 'Pendente' | 'Entregue' | 'Não enviado';
 }
 
 interface ClassroomData {
@@ -70,30 +70,37 @@ const getMenuItems = (id: string) => [
   { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/student/profile' },
 ];
 
-const mapApiStatusToLocal = (apiStatus: string): 'pendente' | 'entregue' | 'não enviado' => {
-  const statusMap: { [key: string]: 'pendente' | 'entregue' | 'não enviado' } = {
-    pending: 'pendente',
-    submitted: 'entregue',
-    not_submitted: 'não enviado',
-    completed: 'entregue',
-    overdue: 'não enviado',
+const mapApiStatusToLocal = (apiStatus: string): 'Pendente' | 'Entregue' | 'Não enviado' => {
+  const statusMap: { [key: string]: 'Pendente' | 'Entregue' | 'Não enviado' } = {
+    // Status em inglês (caso a API mude no futuro)
+    pending: 'Pendente',
+    submitted: 'Entregue',
+    not_submitted: 'Não enviado',
+    completed: 'Entregue',
+    overdue: 'Não enviado',
+    
+    'Pendente': 'Pendente',
+    'Entregue': 'Entregue',
+    'Não enviado': 'Não enviado',
+    'pendente': 'Pendente',
+    'entregue': 'Entregue',
+    'não enviado': 'Não enviado',
   };
 
-  return statusMap[apiStatus.toLowerCase()] || 'não enviado';
+  return statusMap[apiStatus] || statusMap[apiStatus.toLowerCase()] || 'Não enviado';
 };
 
-// Função para renderizar o badge de status
-const renderStatusBadge = (status: 'pendente' | 'entregue' | 'não enviado') => {
+const renderStatusBadge = (status: 'Pendente' | 'Entregue' | 'Não enviado') => {
   const statusConfig = {
-    pendente: {
+    Pendente: {
       className: 'bg-yellow-100 text-yellow-700',
       label: 'Pendente',
     },
-    entregue: {
+    Entregue: {
       className: 'bg-green-100 text-green-700',
       label: 'Entregue',
     },
-    'não enviado': {
+    'Não enviado': {
       className: 'bg-red-100 text-red-700',
       label: 'Não enviado',
     },
@@ -125,7 +132,7 @@ const ClassDetailPage: React.FC = () => {
           id: a.id,
           titulo: a.title,
           prazo: a.due_date,
-          status: mapApiStatusToLocal(a.status),
+          status: a.status as 'Pendente' | 'Entregue' | 'Não enviado',
         }));
         setClassroom({ ...data, assignments });
       } catch (err: any) {
