@@ -25,6 +25,16 @@ export interface CreateAssignmentRequest {
   due_date: string;
 }
 
+export interface CreateAssignmentResponse {
+  id: string;
+  title: string;
+  due_date: string;
+  classroom_id: string;
+  motivational_content_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 class ClassroomService {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
@@ -77,7 +87,7 @@ class ClassroomService {
     }
   }
 
-  static async createAssignment(assignmentData: CreateAssignmentRequest): Promise<any> {
+  static async createAssignment(assignmentData: CreateAssignmentRequest): Promise<CreateAssignmentResponse> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/essays/assignment`, {
         method: 'POST',

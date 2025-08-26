@@ -15,8 +15,6 @@ const RegistrationForm: React.FC = () => {
     validateField,
     isFormValid,
     getPasswordValidationMessages,
-    getFormValidationMessages,
-    setErrors,
   } = useFormValidation();
 
   const [formData, setFormData] = useState<FormData>({

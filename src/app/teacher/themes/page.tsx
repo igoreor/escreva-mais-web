@@ -15,6 +15,20 @@ interface Tema {
   textos: string[];
 }
 
+interface ThemeApiResponse {
+  id: string | number;
+  theme: string;
+  created_at: string;
+  text1: string;
+  text2: string;
+  text3: string;
+  text4: string;
+}
+
+interface ThemesApiData {
+  items: ThemeApiResponse[];
+}
+
 export default function MeusTemasPage() {
   const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
@@ -34,9 +48,9 @@ export default function MeusTemasPage() {
         const teacherId = AuthService.getUserId();
         if (!teacherId) return;
 
-        const data = await ThemeServices.getThemesByTeacher(teacherId);
+        const data: ThemesApiData = await ThemeServices.getThemesByTeacher(teacherId);
 
-        const adaptados: Tema[] = data.items.map((item: any) => ({
+        const adaptados: Tema[] = data.items.map((item: ThemeApiResponse) => ({
           id: item.id,
           titulo: item.theme,
           criado: new Date(item.created_at).toLocaleDateString('pt-BR'),
@@ -75,14 +89,14 @@ export default function MeusTemasPage() {
 
     try {
       setLoading(true);
-      const novoTema = await ThemeServices.createTheme(payload);
+      const novoTema: ThemeApiResponse = await ThemeServices.createTheme(payload);
 
       const temaAdaptado: Tema = {
         id: novoTema.id || Date.now(),
         titulo: novoTema.theme,
         criado: new Date().toLocaleDateString('pt-BR'),
         textos: [novoTema.text1, novoTema.text2, novoTema.text3, novoTema.text4].filter(
-          (t: string) => t,
+          (t: string) => Boolean(t),
         ),
       };
 

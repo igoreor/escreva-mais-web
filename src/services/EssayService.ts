@@ -71,10 +71,6 @@ interface UpdateEssayFeedbackResponse {
   status: string;
 }
 
-interface ApiError {
-  message: string;
-  status: number;
-}
 
 class EssayService {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -230,7 +226,7 @@ class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
-}
+}   
 
 export default EssayService;
 export type {
@@ -242,6 +238,5 @@ export type {
   EvaluationPoint,
   CompetencyFeedback,
   UpdateEssayFeedbackRequest,
-  UpdateEssayFeedbackResponse,
-  ApiError,
+  UpdateEssayFeedbackResponse
 };

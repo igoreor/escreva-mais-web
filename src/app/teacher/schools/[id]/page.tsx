@@ -66,6 +66,17 @@ interface Classroom {
   teacher_id?: string;
 }
 
+interface School {
+  id: string;
+  name: string;
+  classrooms?: Classroom[];
+}
+
+interface ClassroomCardProps {
+  turma: Classroom;
+  onCopied: () => void;
+}
+
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -77,7 +88,7 @@ function LoadingSpinner() {
   );
 }
 
-function ClassroomCard({ turma, onCopied }: { turma: Classroom; onCopied: () => void }) {
+function ClassroomCard({ turma, onCopied }: ClassroomCardProps) {
   const [showCode, setShowCode] = useState(false);
 
   const copiarCodigo = () => {
@@ -133,7 +144,7 @@ export default function SchoolDetailsPage() {
   const { logout } = useAuth();
   const router = useRouter();
 
-  const [school, setSchool] = useState<any>(null);
+  const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
 
   // estado para popup
@@ -142,9 +153,9 @@ export default function SchoolDetailsPage() {
   useEffect(() => {
     const fetchSchool = async () => {
       try {
-        const data = await getSchoolWithClassroomsById(id as string);
+        const data: School = await getSchoolWithClassroomsById(id as string);
         setSchool(data);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Erro ao buscar escola:', error);
       } finally {
         setLoading(false);

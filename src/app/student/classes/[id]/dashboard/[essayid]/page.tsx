@@ -86,8 +86,9 @@ const ActivityDetailPage: React.FC = () => {
         setLoading(true);
         const data = await StudentClassroomService.getAssignmentDetailsForStudent(essayId);
         setAssignment(data);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar a atividade.');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar a atividade.';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -106,16 +107,15 @@ const ActivityDetailPage: React.FC = () => {
     }
   };
 
-  // Função para renderizar apenas textos que existem
   const renderMotivationalTexts = (): React.ReactNode => {
     const texts: React.ReactElement[] = [];
     const motivationalContent = assignment?.motivational_content;
 
     if (!motivationalContent) return null;
 
-    ['text1', 'text2', 'text3', 'text4'].forEach((key, index) => {
-      const textContent = (motivationalContent as any)[key];
-      if (textContent && textContent.trim()) {
+    (['text1', 'text2', 'text3', 'text4'] as const).forEach((key, index) => {
+      const textContent = motivationalContent[key as keyof typeof motivationalContent];
+      if (textContent && typeof textContent === 'string' && textContent.trim()) {
         texts.push(
           <div key={index} className="mb-6">
             <h3 className="font-medium mb-2 text-gray-800">TEXTO {index + 1}</h3>

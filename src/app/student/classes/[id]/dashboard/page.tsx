@@ -123,27 +123,28 @@ const ClassDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchClassroomDetails = async () => {
-      try {
-        setLoading(true);
-        const data = await StudentClassroomService.getClassroomDetailsForStudent(classId as string);
-        const assignments: Atividade[] = data.assignments.map((a) => ({
-          id: a.id,
-          titulo: a.title,
-          prazo: a.due_date,
-          status: a.status as 'Pendente' | 'Entregue' | 'Não enviado',
-        }));
-        setClassroom({ ...data, assignments });
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar dados da turma.');
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchClassroomDetails = async () => {
+    try {
+      setLoading(true);
+      const data = await StudentClassroomService.getClassroomDetailsForStudent(classId as string);
+      const assignments: Atividade[] = data.assignments.map((a) => ({
+        id: a.id,
+        titulo: a.title,
+        prazo: a.due_date,
+        status: a.status as 'Pendente' | 'Entregue' | 'Não enviado',
+      }));
+      setClassroom({ ...data, assignments });
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados da turma.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchClassroomDetails();
-  }, [classId]);
+  fetchClassroomDetails();
+}, [classId]);
 
   if (loading)
     return (

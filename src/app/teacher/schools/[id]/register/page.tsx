@@ -16,6 +16,12 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import { createClassroom } from '@/services/TeacherServices'; // função que criamos
 
+interface ClassroomForm {
+  name: string;
+  description: string;
+  shift: string;
+}
+
 const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'home',
@@ -41,12 +47,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
     href: '/teacher/profile',
   },
 ];
+
 export default function CreateClassPage() {
   const router = useRouter();
   const { id: schoolId } = useParams();
   const { logout } = useAuth();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<ClassroomForm>({
     name: '',
     description: '',
     shift: 'Matutino',
@@ -55,7 +62,7 @@ export default function CreateClassPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: keyof ClassroomForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -67,8 +74,9 @@ export default function CreateClassPage() {
     try {
       await createClassroom(schoolId as string, form);
       router.push(`/teacher/schools/${schoolId}`);
-    } catch (err: any) {
-      setError(err.message || 'Erro ao cadastrar turma');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao cadastrar turma';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

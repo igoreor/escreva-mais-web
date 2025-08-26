@@ -25,6 +25,7 @@ class AuthService {
 
       return data;
     } catch (error) {
+      console.error('Erro no login:', error);
       throw new Error('Erro ao fazer login. Verifique suas credenciais.');
     }
   }

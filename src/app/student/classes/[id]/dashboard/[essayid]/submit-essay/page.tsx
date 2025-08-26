@@ -310,13 +310,14 @@ const SubmitEssayPage: React.FC = () => {
       setTimeout(() => {
         window.location.href = `/student/classes/${classId}/dashboard`;
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 
+        'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
+      
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
-        message:
-          error.message ||
-          'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.',
+        message: errorMessage,
       });
       console.error('Erro ao enviar redação:', error);
     } finally {

@@ -18,6 +18,19 @@ import { useState } from 'react';
 import { createSchool } from '@/services/TeacherServices';
 import { Toast } from '@/components/common/ToastAlert';
 
+interface SchoolForm {
+  nome: string;
+  cnpj: string;
+  endereco: string;
+  complemento: string;
+  imagem: File | null;
+}
+
+interface ToastMessage {
+  title: string;
+  description: string;
+}
+
 const menuItems: SidebarItem[] = [
   {
     id: 'home',
@@ -47,15 +60,15 @@ const menuItems: SidebarItem[] = [
 
 export default function CreateSchoolPage() {
   const { logout } = useAuth();
-  const [toast, setToast] = useState<{ title: string; description: string } | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
   const router = useRouter();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<SchoolForm>({
     nome: '',
     cnpj: '',
     endereco: '',
     complemento: '',
-    imagem: null as File | null,
+    imagem: null,
   });
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -93,11 +106,12 @@ export default function CreateSchoolPage() {
       setTimeout(() => {
         router.push('/teacher/schools');
       }, 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro inesperado.';
       setToast({
         title: 'Erro ao criar escola',
-        description: error.message || 'Erro inesperado.',
+        description: errorMessage,
       });
     }
   }

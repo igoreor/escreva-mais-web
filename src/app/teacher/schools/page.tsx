@@ -65,10 +65,11 @@ export default function TeacherClassesPage() {
     const loadSchools = async () => {
       try {
         setLoading(true);
-        const data = await listSchools();
+        const data: School[] = await listSchools();
         setSchools(data);
-      } catch (err: any) {
-        setError(err.message || 'Erro ao carregar escolas');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar escolas';
+        setError(errorMessage);
         console.error('Erro ao carregar escolas:', err);
       } finally {
         setLoading(false);
@@ -95,7 +96,7 @@ export default function TeacherClassesPage() {
       await deleteSchool(showDeleteModal);
       setSchools(schools.filter((school) => school.id !== showDeleteModal));
       setShowDeleteModal(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao deletar escola:', err);
     }
   };

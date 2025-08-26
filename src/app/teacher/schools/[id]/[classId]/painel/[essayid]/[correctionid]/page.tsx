@@ -19,6 +19,15 @@ type PopupData =
     }
   | null;
 
+interface CompetencyMap {
+  [key: string]: string;
+}
+
+interface PreviewResult {
+  text: string;
+  truncated: boolean;
+}
+
 export default function RedacaoPage() {
   const [popup, setPopup] = useState<PopupData>(null);
   const [essayData, setEssayData] = useState<EssayDetailsForTeacherResponse | null>(null);
@@ -49,9 +58,10 @@ export default function RedacaoPage() {
       );
 
       setComment("");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro ao enviar feedback:", err);
-      setMessage(err.message || "Erro ao enviar feedback.");
+      const errorMessage = err instanceof Error ? err.message : "Erro ao enviar feedback.";
+      setMessage(errorMessage);
     }
   };
 
@@ -68,20 +78,21 @@ export default function RedacaoPage() {
         setLoading(true);
         const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(correctionid as string);
         setEssayData(data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Erro ao carregar dados da redação:', err);
-        setError(err.message || 'Erro ao carregar dados da redação');
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados da redação';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEssayData();
-  }, [essayid]);
+  }, [essayid, correctionid]);
 
   // Função para mapear competências para formato do componente
-  const getCompetenciaDisplay = (competency: string) => {
-    const competencyMap: { [key: string]: string } = {
+  const getCompetenciaDisplay = (competency: string): { titulo: string; descricao: string } => {
+    const competencyMap: CompetencyMap = {
       C1: 'Domínio da norma padrão',
       C2: 'Compreensão da proposta',
       C3: 'Capacidade de argumentação',
@@ -96,7 +107,7 @@ export default function RedacaoPage() {
   };
 
   // Preview atualizado
-  const preview = (text: string) => {
+  const preview = (text: string): PreviewResult => {
     if (text.length > 50) {
       return { text: text.substring(0, 50) + '...', truncated: true };
     }
