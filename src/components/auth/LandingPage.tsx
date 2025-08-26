@@ -1,4 +1,3 @@
-// components/pages/LandingPage.tsx
 'use client';
 import React from 'react';
 import Image from 'next/image';
@@ -7,8 +6,11 @@ import Button from '@/components/ui/Button';
 import LoginForm from '@/components/auth/LoginForm';
 
 const LandingPage: React.FC = () => {
+
   const handleDownloadSheet = () => {
-    console.log('Download sheet clicked');
+    const url = "https://escreva-mais-812386266414.us-east1.run.app/static/pdfs/redacao-modelo-escrevamais.pdf";
+
+    window.open(url, "_blank");
   };
 
   const scrollToLogin = () => {
