@@ -23,3 +23,14 @@ export interface FocusStates {
   password: boolean;
   confirmPassword: boolean;
 }
+
+export interface User {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: 'teacher' | 'student';
+  profile_picture_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}

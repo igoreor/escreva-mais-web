@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FiBookOpen,
   FiCamera,
@@ -10,13 +10,65 @@ import {
   FiHome,
   FiUpload,
   FiUser,
+  FiKey,
 } from 'react-icons/fi';
+import { X } from 'lucide-react';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
+import { User } from '@/services/EssayService';
+import UserService from '@/services/registrationService';
 
-const menuItems = [
+interface SuccessPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  message: string;
+}
+
+const SuccessPopup: React.FC<SuccessPopupProps> = ({
+  isOpen,
+  onClose,
+  title,
+  message,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="relative mx-4 max-w-md w-full rounded-2xl shadow-2xl p-8 text-center bg-white">
+        <h2 className="text-2xl font-bold mb-4 text-green-600">{title}</h2>
+        <p className="text-gray-600 mb-8 leading-relaxed">{message}</p>
+        <button
+          onClick={onClose}
+          className="w-full py-3 px-6 rounded-lg font-semibold text-white transition-all duration-200 hover:opacity-90 active:scale-95 bg-green-600"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Componente de popup de erro
+interface ErrorPopupProps {
+  message: string;
+  onClose: () => void;
+}
+
+const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, onClose }) => {
+  return (
+    <div className="fixed top-5 right-5 z-50 bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-lg flex items-start gap-3 max-w-sm">
+      <div className="flex-1 text-sm sm:text-base">{message}</div>
+      <button onClick={onClose} aria-label="Fechar alerta">
+        <X className="w-5 h-5 text-red-700 hover:text-red-900" />
+      </button>
+    </div>
+  );
+};
+
+const menuItems: SidebarItem[] = [
   {
     id: 'student',
     label: 'Início',
@@ -54,25 +106,46 @@ const ProfilePage = () => {
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
-    confirmPassword: '',
   });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Estados para popups
+  const [successPopup, setSuccessPopup] = useState({ isOpen: false, title: '', message: '' });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { logout } = useAuth();
 
   useEffect(() => {
     const user = AuthService.getUser();
     if (user) {
-      setForm((prevForm) => ({
-        ...prevForm,
+      setForm({
         firstName: user.first_name || '',
         lastName: user.last_name || '',
         email: user.email || '',
-      }));
+      });
+      
+      // Se o usuário tem foto de perfil, mostrar (verificação segura)
+      const userWithPhoto = user as User & { profile_picture_url?: string };
+      if (userWithPhoto.profile_picture_url) {
+        setProfileImagePreview(userWithPhoto.profile_picture_url);
+      }
     }
   }, []);
 
@@ -80,52 +153,109 @@ const ProfilePage = () => {
     setForm({ ...form, [field]: value });
   };
 
+  const handlePasswordChange = (field: string, value: string) => {
+    setPasswordForm({ ...passwordForm, [field]: value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setProfileImagePreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-
-    if (form.password && form.password !== form.confirmPassword) {
-      alert('As senhas não coincidem.');
+      setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
     setLoading(true);
 
     try {
-      // Aqui você faria a chamada para a API para atualizar os dados
-      // const updatedData = {
-      //   first_name: form.firstName,
-      //   last_name: form.lastName,
-      //   email: form.email,
-      //   ...(form.password && { password: form.password })
-      // };
-      //
-      // const response = await updateUserProfile(updatedData);
-
-      // Por enquanto, vamos atualizar apenas localmente
-      AuthService.updateUserData({
+      const updateData = {
         first_name: form.firstName,
         last_name: form.lastName,
         email: form.email,
-      });
+        profile_picture: profileImage,
+      };
 
-      // Limpar campos de senha após salvar
-      setForm((prevForm) => ({
-        ...prevForm,
-        password: '',
-        confirmPassword: '',
-      }));
+      const result = await UserService.updateUserProfile(updateData);
 
-      alert('Perfil atualizado com sucesso!');
+      if (result.success) {
+        setSuccessPopup({
+          isOpen: true,
+          title: 'Perfil atualizado!',
+          message: result.message || 'Perfil atualizado com sucesso!'
+        });
+        // Reset image state after successful upload
+        setProfileImage(null);
+      } else {
+        setErrorMessage(result.error || 'Erro ao atualizar perfil');
+      }
     } catch (error) {
       console.error('Erro ao atualizar perfil:', error);
-      alert('Erro ao atualizar perfil. Tente novamente.');
+      setErrorMessage('Erro ao atualizar perfil. Tente novamente.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!passwordForm.oldPassword || !passwordForm.newPassword) {
+      setErrorMessage('Por favor, preencha todos os campos de senha.');
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      setErrorMessage('As senhas não coincidem.');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      setErrorMessage('A nova senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    setPasswordLoading(true);
+
+    try {
+      const result = await UserService.changePassword({
+        old_password: passwordForm.oldPassword,
+        new_password: passwordForm.newPassword,
+      });
+
+      if (result.success) {
+        setSuccessPopup({
+          isOpen: true,
+          title: 'Senha alterada!',
+          message: result.message || 'Senha alterada com sucesso!'
+        });
+        setPasswordForm({
+          oldPassword: '',
+          newPassword: '',
+          confirmNewPassword: '',
+        });
+        setShowPasswordModal(false);
+      } else {
+        setErrorMessage(result.error || 'Erro ao alterar senha');
+      }
+    } catch (error) {
+      console.error('Erro ao alterar senha:', error);
+      setErrorMessage('Erro ao alterar senha. Tente novamente.');
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -151,13 +281,27 @@ const ProfilePage = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">Meu perfil</h1>
 
           <div className="relative mb-8">
-            {/* Avatar com iniciais se não houver imagem */}
-            <div className="w-32 h-32 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-white text-2xl font-bold">
-              {getInitials()}
+            {/* Avatar com iniciais ou imagem */}
+            <div className="w-32 h-32 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+              {profileImagePreview ? (
+                <img
+                  src={profileImagePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitials()
+              )}
             </div>
-            <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow cursor-pointer">
+            <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow cursor-pointer hover:bg-gray-50 transition">
               <FiCamera className="text-gray-700" />
-              <input type="file" className="hidden" accept="image/*" />
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
             </label>
           </div>
 
@@ -196,55 +340,24 @@ const ProfilePage = () => {
               />
             </div>
 
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
-              <div className="flex-1 flex items-center gap-2">
-                <div className="flex-1">
-                  <label className="text-sm text-global-1">Nova senha (opcional)</label>
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={form.password}
-                    placeholder="Digite sua nova senha"
-                    onChange={(e) => handleChange('password', e.target.value)}
-                    className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-500 hover:text-gray-700 mt-5"
-                >
-                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-                </button>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white py-3 px-6 rounded-md transition flex-1"
+              >
+                {loading ? 'Salvando...' : 'Salvar alterações'}
+              </button>
 
-              <div className="flex-1 flex items-center gap-2">
-                <div className="flex-1">
-                  <label className="text-sm text-global-1">Confirmar nova senha</label>
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={form.confirmPassword}
-                    placeholder="Confirme sua nova senha"
-                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                    className="w-full border-2 border-blue-700 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-700"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-gray-500 hover:text-gray-700 mt-5"
-                >
-                  {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowPasswordModal(true)}
+                className="bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-md transition flex-1 flex items-center justify-center gap-2"
+              >
+                <FiKey size={16} />
+                Alterar senha
+              </button>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white py-3 px-6 rounded-md mt-6 w-full transition"
-            >
-              {loading ? 'Salvando...' : 'Salvar alterações'}
-            </button>
 
             <button
               type="button"
@@ -255,6 +368,115 @@ const ProfilePage = () => {
             </button>
           </form>
         </main>
+
+        {/* Modal de alteração de senha */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-md p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Alterar Senha</h2>
+              
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="text-sm text-gray-600">Senha atual *</label>
+                    <input
+                      type={showOldPassword ? 'text' : 'password'}
+                      value={passwordForm.oldPassword}
+                      onChange={(e) => handlePasswordChange('oldPassword', e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowOldPassword(!showOldPassword)}
+                    className="text-gray-500 hover:text-gray-700 mt-5"
+                  >
+                    {showOldPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="text-sm text-gray-600">Nova senha *</label>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={passwordForm.newPassword}
+                      onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="text-gray-500 hover:text-gray-700 mt-5"
+                  >
+                    {showNewPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="text-sm text-gray-600">Confirmar nova senha *</label>
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={passwordForm.confirmNewPassword}
+                      onChange={(e) => handlePasswordChange('confirmNewPassword', e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="text-gray-500 hover:text-gray-700 mt-5"
+                  >
+                    {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordForm({
+                        oldPassword: '',
+                        newPassword: '',
+                        confirmNewPassword: '',
+                      });
+                    }}
+                    className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400 transition"
+                  >
+                    {passwordLoading ? 'Alterando...' : 'Alterar senha'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        {/* Popups */}
+        <SuccessPopup
+          isOpen={successPopup.isOpen}
+          onClose={() => setSuccessPopup({ isOpen: false, title: '', message: '' })}
+          title={successPopup.title}
+          message={successPopup.message}
+        />
+
+        {errorMessage && (
+          <ErrorPopup
+            message={errorMessage}
+            onClose={() => setErrorMessage(null)}
+          />
+        )}
       </div>
     </RouteGuard>
   );
