@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import {
   FiArrowLeft,
   FiUser,
@@ -69,6 +70,7 @@ interface Classroom {
 interface School {
   id: string;
   name: string;
+  image_url?: string; // Adicionando a propriedade image_url
   classrooms?: Classroom[];
 }
 
@@ -146,6 +148,7 @@ export default function SchoolDetailsPage() {
 
   const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   // estado para popup
   const [popupOpen, setPopupOpen] = useState(false);
@@ -173,12 +176,23 @@ export default function SchoolDetailsPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
-          <div className="relative">
-            <img
-              src="/images/escola.png"
-              alt="Imagem da escola"
-              className="w-full h-64 object-cover"
-            />
+          <div className="relative w-full h-64">
+            {/* Usando Next.js Image com fallback */}
+            {school.image_url && !imageError ? (
+              <Image
+                src={school.image_url}
+                alt={`Imagem da escola ${school.name}`}
+                fill
+                className="object-cover"
+                priority
+                sizes="100vw"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
+                <FaGraduationCap size={64} className="text-white opacity-50" />
+              </div>
+            )}
 
             <button
               onClick={() => router.push('/teacher/schools')}

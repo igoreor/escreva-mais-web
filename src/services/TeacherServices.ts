@@ -2,17 +2,22 @@ import AuthService from './authService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function createSchool(name: string) {
+export async function createSchool(name: string, image?: File | null) {
   const token = AuthService.getToken();
   if (!token) throw new Error('Token não encontrado');
+
+  const formData = new FormData();
+  formData.append('name', name);
+  if (image) {
+    formData.append('image', image);
+  }
 
   const response = await fetch(`${API_BASE_URL}/classroom/schools`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ name }),
+    body: formData,
   });
 
   if (!response.ok) {

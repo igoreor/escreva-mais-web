@@ -18,6 +18,7 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { listSchools, deleteSchool } from '@/services/TeacherServices';
+import Image from 'next/image';
 
 const menuItems: SidebarItem[] = [
   {
@@ -49,7 +50,7 @@ const menuItems: SidebarItem[] = [
 interface School {
   id: string;
   name: string;
-  // image?: string;
+  image_url?: string;
 }
 
 export default function TeacherClassesPage() {
@@ -60,6 +61,7 @@ export default function TeacherClassesPage() {
   const [error, setError] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const loadSchools = async () => {
@@ -104,6 +106,40 @@ export default function TeacherClassesPage() {
   const toggleMenu = (schoolId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setOpenMenuId(openMenuId === schoolId ? null : schoolId);
+  };
+
+  const handleImageError = (schoolId: string) => {
+    setImageErrors(prev => new Set(prev).add(schoolId));
+  };
+
+  const renderSchoolImage = (school: School) => {
+    const hasImageError = imageErrors.has(school.id);
+    const hasValidImageUrl = school.image_url && school.image_url.trim() !== '' && !hasImageError;
+
+    if (hasValidImageUrl) {
+      return (
+        <div className="relative w-full h-40 overflow-hidden">
+          <Image
+            src={school.image_url!}
+            alt={`Imagem da escola ${school.name}`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            onError={() => handleImageError(school.id)}
+            priority={false}
+          />
+        </div>
+      );
+    }
+
+    // Fallback quando não há imagem ou ocorreu erro
+    return (
+      <div className="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+        <span className="text-blue-600 font-semibold text-lg">
+          {school.name.charAt(0).toUpperCase()}
+        </span>
+      </div>
+    );
   };
 
   if (loading) {
@@ -157,7 +193,7 @@ export default function TeacherClassesPage() {
                 <div className="absolute top-2 right-2 z-10">
                   <button
                     onClick={(e) => toggleMenu(school.id, e)}
-                    className="p-1 rounded-full hover:bg-gray-100 transition"
+                    className="p-1 rounded-full hover:bg-gray-100 transition bg-white/80 backdrop-blur-sm"
                   >
                     <FiMoreVertical size={20} className="text-gray-600" />
                   </button>
@@ -175,15 +211,11 @@ export default function TeacherClassesPage() {
                   )}
                 </div>
 
-                {/* Placeholder para imagem - você pode adicionar depois se a API retornar */}
-                <div className="w-full h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <span className="text-blue-600 font-semibold text-lg">
-                    {school.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                {/* Imagem da escola */}
+                {renderSchoolImage(school)}
+
                 <div className="p-4">
                   <h2 className="text-lg font-semibold text-gray-800">{school.name}</h2>
-                  {/* Removi a contagem de alunos por enquanto, você pode adicionar se a API retornar */}
                   <p className="text-gray-500 text-sm">Escola cadastrada</p>
                 </div>
               </div>
