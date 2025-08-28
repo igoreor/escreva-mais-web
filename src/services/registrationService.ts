@@ -1,7 +1,5 @@
-
 import AuthService from './authService';
 import { FormData } from '@/types/registration';
-
 
 interface UpdateUserData {
   first_name?: string;
@@ -21,6 +19,17 @@ interface ApiRegistrationData {
   email: string;
   password: string;
   role: 'teacher' | 'student';
+}
+
+interface UpdatedUserData {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: 'teacher' | 'student';
+  profile_picture?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export class RegistrationService {
@@ -88,7 +97,7 @@ export class UserService {
 
   static async updateUserProfile(
     data: UpdateUserData
-  ): Promise<{ success: boolean; error?: string; message?: string; data?: any }> {
+  ): Promise<{ success: boolean; error?: string; message?: string; data?: UpdatedUserData }> {
     try {
       const user = AuthService.getUser();
       if (!user?.id) {
