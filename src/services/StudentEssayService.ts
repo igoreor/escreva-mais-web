@@ -15,7 +15,8 @@ export interface Essay {
   author_id: string;
   title: string;
   theme: string;
-  image_key: string;
+  image_key?: string; 
+  image_url?: string; 
   content: string;
   created_at: string;
 }
@@ -104,6 +105,7 @@ class StudentEssayService {
       }
 
       const essay: Essay = await response.json();
+      console.log('Fetched essay:', essay);
       return essay;
     } catch (error) {
       console.error('Erro ao buscar ensaio:', error);

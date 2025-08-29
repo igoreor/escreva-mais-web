@@ -37,6 +37,9 @@ const EssayViewPage: React.FC = () => {
     return <p className="text-center text-red-500 py-10">Não foi possível carregar a redação.</p>;
   }
 
+  const imageUrl = essay.image_key || essay.image_url;
+  const hasImage = Boolean(imageUrl);
+
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8]">
       <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:py-10 space-y-6">
@@ -64,6 +67,8 @@ const EssayViewPage: React.FC = () => {
               className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-800"
             />
           </div>
+          
+          {/* tema */}
           <div>
             <label className="text-sm text-gray-600">Tema</label>
             <input
@@ -74,24 +79,30 @@ const EssayViewPage: React.FC = () => {
             />
           </div>
 
-          {/* texto */}
+          {/* texto ou imagem */}
           <div>
-            <label className="text-sm text-gray-600">Texto</label>
-            {essay.image_key ? (
+            <label className="text-sm text-gray-600">
+              {hasImage ? 'Imagem da Redação' : 'Texto'}
+            </label>
+            {hasImage && imageUrl ? (
               <div className="mt-2 flex justify-center">
-                <Image
-                  src={essay.image_key}
-                  alt="Imagem da redação"
-                  width={600}
-                  height={800}
-                  className="rounded-lg border"
-                />
+                <div className="relative">
+                  <Image
+                    src={imageUrl}
+                    alt="Imagem da redação"
+                    width={600}
+                    height={800}
+                    className="rounded-lg border shadow-sm max-w-full h-auto"
+                    style={{ maxHeight: '800px', objectFit: 'contain' }}
+                  />
+                </div>
               </div>
             ) : (
               <textarea
                 value={essay.content}
                 readOnly
-                className="mt-2 w-full min-h-[400px] rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-800"
+                className="mt-2 w-full min-h-[400px] rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-800 resize-none"
+                style={{ fontFamily: 'inherit' }}
               />
             )}
           </div>

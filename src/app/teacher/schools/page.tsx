@@ -50,7 +50,7 @@ const menuItems: SidebarItem[] = [
 interface School {
   id: string;
   name: string;
-  image_url?: string;
+  image_signed_url?: string;
 }
 
 export default function TeacherClassesPage() {
@@ -114,13 +114,13 @@ export default function TeacherClassesPage() {
 
   const renderSchoolImage = (school: School) => {
     const hasImageError = imageErrors.has(school.id);
-    const hasValidImageUrl = school.image_url && school.image_url.trim() !== '' && !hasImageError;
+    const hasValidImageUrl = school.image_signed_url && school.image_signed_url.trim() !== '' && !hasImageError;
 
     if (hasValidImageUrl) {
       return (
         <div className="relative w-full h-40 overflow-hidden">
           <Image
-            src={school.image_url!}
+            src={school.image_signed_url!}
             alt={`Imagem da escola ${school.name}`}
             fill
             className="object-cover"

@@ -70,7 +70,7 @@ interface Classroom {
 interface School {
   id: string;
   name: string;
-  image_url?: string; // Adicionando a propriedade image_url
+  image_signed_url?: string;
   classrooms?: Classroom[];
 }
 
@@ -141,6 +141,67 @@ function ClassroomCard({ turma, onCopied }: ClassroomCardProps) {
   );
 }
 
+// Componente separado para o cabeçalho da escola
+function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  console.log('URL da imagem:', school.image_signed_url); // Para debug
+
+  return (
+    <div className="relative w-full h-64">
+      {/* Renderização condicional da imagem */}
+      {school.image_signed_url && !imageError ? (
+        <>
+          <Image
+            src={school.image_signed_url}
+            alt={`Imagem da escola ${school.name}`}
+            fill
+            className={`object-cover transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            priority
+            sizes="100vw"
+            onLoad={() => setImageLoading(false)}
+            onError={(e) => {
+              console.error('Erro ao carregar imagem:', e);
+              setImageError(true);
+              setImageLoading(false);
+            }}
+            unoptimized={school.image_signed_url.startsWith('http')}
+          />
+          
+          {/* Loading state */}
+          {imageLoading && (
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          )}
+        </>
+      ) : (
+        // Fallback quando não há imagem ou erro
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
+          <FaGraduationCap size={64} className="text-white opacity-50" />
+        </div>
+      )}
+
+      {/* Botão voltar */}
+      <button
+        onClick={onBack}
+        className="absolute top-4 left-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition z-10"
+      >
+        <FiArrowLeft className="inline-block mr-2" />
+        Voltar
+      </button>
+
+      {/* Nome da escola */}
+      <div className="absolute bottom-6 left-6 text-white text-3xl font-bold drop-shadow-lg z-10">
+        {school.name}
+      </div>
+    </div>
+  );
+}
+
 export default function SchoolDetailsPage() {
   const { id } = useParams();
   const { logout } = useAuth();
@@ -148,15 +209,13 @@ export default function SchoolDetailsPage() {
 
   const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
-
-  // estado para popup
   const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     const fetchSchool = async () => {
       try {
         const data: School = await getSchoolWithClassroomsById(id as string);
+        console.log('Dados da escola recebidos:', data); // Para debug
         setSchool(data);
       } catch (error: unknown) {
         console.error('Erro ao buscar escola:', error);
@@ -176,35 +235,10 @@ export default function SchoolDetailsPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
-          <div className="relative w-full h-64">
-            {/* Usando Next.js Image com fallback */}
-            {school.image_url && !imageError ? (
-              <Image
-                src={school.image_url}
-                alt={`Imagem da escola ${school.name}`}
-                fill
-                className="object-cover"
-                priority
-                sizes="100vw"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
-                <FaGraduationCap size={64} className="text-white opacity-50" />
-              </div>
-            )}
-
-            <button
-              onClick={() => router.push('/teacher/schools')}
-              className="absolute top-4 left-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition"
-            >
-              <FiArrowLeft className="inline-block mr-2" />
-              Voltar
-            </button>
-            <div className="absolute bottom-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
-              {school.name}
-            </div>
-          </div>
+          <SchoolHeader 
+            school={school} 
+            onBack={() => router.push('/teacher/schools')} 
+          />
 
           <section className="px-10 py-8">
             <h2 className="text-lg text-gray-800 font-semibold mb-4">Turmas</h2>
