@@ -35,6 +35,7 @@ export default function RedacaoPage() {
   const [error, setError] = useState<string | null>(null);
   const [comment, setComment] = useState("");
   const [message, setMessage] = useState("");
+  const [imageZoomed, setImageZoomed] = useState(false);
 
   const router = useRouter();
   const { id: schoolId, classId, essayid, correctionid } = useParams();
@@ -108,10 +109,53 @@ export default function RedacaoPage() {
 
   // Preview atualizado
   const preview = (text: string): PreviewResult => {
+    if (!text) {
+      return { text: 'Nenhum feedback disponível', truncated: false };
+    }
     if (text.length > 50) {
       return { text: text.substring(0, 50) + '...', truncated: true };
     }
     return { text, truncated: false };
+  };
+
+  // Componente para renderizar o conteúdo da redação
+  const renderEssayContent = () => {
+    // Se houver image_url, renderiza a imagem
+    if (essayData?.image_url) {
+      return (
+        <div className="flex justify-center items-center h-full">
+          <img 
+            src={essayData.image_url} 
+            alt="Redação do aluno" 
+            className="max-w-full max-h-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => setImageZoomed(true)}
+            onError={(e) => {
+              console.error('Erro ao carregar imagem da redação');
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      );
+    }
+
+    // Se houver conteúdo de texto, renderiza o texto
+    if (essayData?.content) {
+      return (
+        <div className="p-4">
+          {essayData.title && (
+            <h3 className="font-semibold text-lg mb-3">{essayData.title}</h3>
+          )}
+          <div className="text-gray-700 whitespace-pre-wrap">{essayData.content}</div>
+        </div>
+      );
+    }
+
+    // Caso não tenha nem imagem nem conteúdo
+    return (
+      <div className="flex justify-center items-center h-full text-gray-500">
+        <p>Conteúdo da redação não disponível</p>
+      </div>
+    );
   };
 
   if (loading) {
@@ -160,10 +204,7 @@ export default function RedacaoPage() {
           {essayData.student.first_name} {essayData.student.last_name}
         </h2>
         <div className="bg-white border rounded-md h-[600px] overflow-y-scroll">
-          <div className="p-4">
-            <h3 className="font-semibold text-lg mb-3">{essayData.title}</h3>
-            <div className="text-gray-700 whitespace-pre-wrap">{essayData.content}</div>
-          </div>
+          {renderEssayContent()}
         </div>
       </div>
 
@@ -243,16 +284,16 @@ export default function RedacaoPage() {
             <button
               type="button"
               className="text-blue-600 text-sm mt-2 text-left"
-              onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback })}
+              onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback || 'Nenhum feedback disponível' })}
             >
               Feedback do professor
             </button>
             <p className="text-sm text-gray-700 mt-2 flex-grow">
-              {preview(essayData.general_feedback).text}{' '}
-              {preview(essayData.general_feedback).truncated && (
+              {preview(essayData.general_feedback || '').text}{' '}
+              {preview(essayData.general_feedback || '').truncated && (
                 <button
                   type="button"
-                  onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback })}
+                  onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback || 'Nenhum feedback disponível' })}
                   className="text-sm font-normal text-gray-400"
                 >
                   Ver mais
@@ -286,6 +327,58 @@ export default function RedacaoPage() {
           {message && <p className="mt-2 text-sm text-gray-700">{message}</p>}
         </div>
       </div>
+
+      {/* POPUP DE ZOOM DA IMAGEM - VERSÃO CORRIGIDA */}
+      {imageZoomed && essayData?.image_url && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <div className="relative w-full h-full flex justify-center items-center">
+            {/* Botão de fechar */}
+            <button
+              onClick={() => setImageZoomed(false)}
+              className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 z-20 transition-all shadow-lg"
+            >
+              <svg 
+                className="w-6 h-6 text-gray-800" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M6 18L18 6M6 6l12 12" 
+                />
+              </svg>
+            </button>
+            
+            {/* Container da imagem com scroll */}
+            <div 
+              className="w-full h-full overflow-auto bg-white bg-opacity-5 rounded-lg flex justify-center items-start p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={essayData.image_url} 
+                alt="Redação do aluno - Zoom" 
+                className="max-w-none h-auto min-w-full object-contain shadow-2xl rounded-lg"
+                style={{ 
+                  minHeight: '100%',
+                  width: 'auto',
+                  maxWidth: 'none'
+                }}
+              />
+            </div>
+            
+            {/* Instruções de uso */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg text-sm">
+              Use o scroll para navegar • Clique fora da imagem ou no X para fechar
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* POPUP */}
       {popup && (

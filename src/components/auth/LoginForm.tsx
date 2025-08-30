@@ -1,6 +1,6 @@
 // components/auth/LoginForm.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/hooks/userAuth';
@@ -50,6 +50,23 @@ const LoginForm: React.FC = () => {
       });
     }
   };
+
+  // Função para lidar com a tecla Enter
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !isLoading) {
+      event.preventDefault();
+      handleLogin();
+    }
+  };
+
+  // Effect para adicionar/remover o event listener
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [email, password, isLoading]); // Dependencies para que a função sempre tenha os valores atuais
 
   const handleForgotPassword = () => {
     console.log('Forgot password clicked');

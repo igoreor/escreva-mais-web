@@ -58,6 +58,7 @@ interface EssayDetailsForTeacherResponse {
   student: User;
   title: string;
   content: string;
+  image_url?: string;
   general_feedback: string;
   evaluation_points: EvaluationPoint[];
   competency_feedbacks: CompetencyFeedback[];

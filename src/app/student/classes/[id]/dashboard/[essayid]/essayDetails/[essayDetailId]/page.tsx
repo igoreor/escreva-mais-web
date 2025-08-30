@@ -60,6 +60,7 @@ const EssayViewPage: React.FC = () => {
   const [essay, setEssay] = useState<Essay | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageZoomed, setImageZoomed] = useState(false);
 
   useEffect(() => {
     const fetchEssay = async () => {
@@ -163,7 +164,7 @@ const EssayViewPage: React.FC = () => {
                 </label>
                 {hasImage && imageUrl ? (
                   <div className="flex justify-center">
-                    <div className="relative border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="relative border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
                       <Image
                         src={imageUrl}
                         alt="Imagem da redação"
@@ -171,6 +172,7 @@ const EssayViewPage: React.FC = () => {
                         height={800}
                         className="rounded-lg shadow-sm max-w-full h-auto"
                         style={{ maxHeight: '800px', objectFit: 'contain' }}
+                        onClick={() => setImageZoomed(true)}
                       />
                     </div>
                   </div>
@@ -203,6 +205,58 @@ const EssayViewPage: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* POPUP DE ZOOM DA IMAGEM */}
+      {imageZoomed && hasImage && imageUrl && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-8"
+          onClick={() => setImageZoomed(false)}
+        >
+          <div className="relative w-full h-full flex justify-center items-center">
+            {/* Botão de fechar */}
+            <button
+              onClick={() => setImageZoomed(false)}
+              className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 z-20 transition-all shadow-lg"
+            >
+              <svg 
+                className="w-6 h-6 text-gray-800" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M6 18L18 6M6 6l12 12" 
+                />
+              </svg>
+            </button>
+            
+            {/* Container da imagem com scroll */}
+            <div 
+              className="w-full h-full overflow-auto bg-white bg-opacity-5 rounded-lg flex justify-center items-start p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={imageUrl} 
+                alt="Redação - Zoom" 
+                className="max-w-none h-auto min-w-full object-contain shadow-2xl rounded-lg"
+                style={{ 
+                  minHeight: '100%',
+                  width: 'auto',
+                  maxWidth: 'none'
+                }}
+              />
+            </div>
+            
+            {/* Instruções de uso */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg text-sm">
+              Use o scroll para navegar • Clique fora da imagem ou no X para fechar
+            </div>
+          </div>
+        </div>
+      )}
     </RouteGuard>
   );
 };
