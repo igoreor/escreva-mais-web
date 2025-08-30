@@ -17,6 +17,7 @@ interface User {
   last_name: string;
   email: string;
   role: 'student' | 'teacher';
+  profile_picture_url?: string;
 }
 
 interface Submission {

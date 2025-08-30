@@ -7,12 +7,9 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
   FiHome,
   FiBookOpen,
-  FiFileText,
   FiUser,
   FiArrowLeft,
   FiUsers,
-  FiCalendar,
-  FiEye,
   FiFileMinus,
   FiMessageCircle,
 } from 'react-icons/fi';
@@ -65,6 +62,33 @@ const EssayPage: React.FC = () => {
     if (nota >= 800) return 'bg-green-100 text-green-700 border-green-300';
     if (nota >= 500) return 'bg-yellow-100 text-yellow-700 border-yellow-300';
     return 'bg-red-100 text-red-700 border-red-300';
+  };
+
+  const renderUserAvatar = (user: { first_name: string; last_name: string; profile_picture_url?: string }) => {
+    const initials = `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase();
+    
+    if (user.profile_picture_url) {
+      return (
+        <img
+          src={user.profile_picture_url}
+          alt={`${user.first_name} ${user.last_name}`}
+          className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+          onError={(e) => {
+            // Fallback para iniciais se a imagem falhar ao carregar
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = target.nextElementSibling as HTMLDivElement;
+            if (fallback) fallback.style.display = 'flex';
+          }}
+        />
+      );
+    }
+
+    return (
+      <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+        {initials}
+      </div>
+    );
   };
 
   if (loading) {
@@ -178,20 +202,34 @@ const EssayPage: React.FC = () => {
                   key={sub.essay_id}
                   className="flex items-center justify-between border rounded-lg p-4 bg-gray-50"
                 >
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      {sub.user.first_name} {sub.user.last_name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Enviado em:{' '}
-                      {new Date(sub.submitted_at).toLocaleString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    {/* Avatar do usuário */}
+                    <div className="relative">
+                      {renderUserAvatar(sub.user)}
+                      <div 
+                        className="w-10 h-10 bg-blue-500 text-white rounded-full items-center justify-center text-sm font-semibold hidden"
+                        style={{ display: 'none' }}
+                      >
+                        {`${sub.user.first_name.charAt(0)}${sub.user.last_name.charAt(0)}`.toUpperCase()}
+                      </div>
+                    </div>
+                    
+                    {/* Informações do usuário */}
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {sub.user.first_name} {sub.user.last_name}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Enviado em:{' '}
+                        {new Date(sub.submitted_at).toLocaleString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-3">

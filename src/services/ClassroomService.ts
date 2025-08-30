@@ -35,6 +35,43 @@ export interface CreateAssignmentResponse {
   updated_at: string;
 }
 
+export interface User {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  profile_picture_url: string | null;
+}
+
+export interface Submission {
+  user: User;
+  submitted_at: string;
+  grade: number;
+  essay_id: string;
+}
+
+export interface MotivationalContent {
+  id: string;
+  theme: string;
+  text1: string;
+  text2: string;
+  text3: string;
+  text4: string;
+  created_at: string;
+  creator_id: string;
+}
+
+export interface AssignmentDetails {
+  id: string;
+  description: string | null;
+  due_date: string;
+  motivational_content: MotivationalContent;
+  submissions_count: number;
+  students_count: number;
+  submissions: Submission[];
+}
+
 class ClassroomService {
   private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
@@ -65,6 +102,27 @@ class ClassroomService {
       return await response.json();
     } catch (error) {
       console.error('Erro ao buscar detalhes da turma:', error);
+      throw error;
+    }
+  }
+
+  static async getAssignmentDetails(assignmentId: string): Promise<AssignmentDetails> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/assignment/${assignmentId}/details`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar detalhes da atividade: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da atividade:', error);
       throw error;
     }
   }
