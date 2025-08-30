@@ -5,6 +5,7 @@ export interface User {
   last_name: string;
   email: string;
   role: 'teacher' | 'student';
+  profile_picture_url?: string;
 }
 
 export interface Tokens {

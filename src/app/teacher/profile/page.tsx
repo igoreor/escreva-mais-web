@@ -67,6 +67,15 @@ const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, onClose }) => {
   );
 };
 
+interface UserApiResponse {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: 'teacher' | 'student';
+  profile_picture_url?: string;
+}
+
 const menuItems: SidebarItem[] = [
   {
     id: 'home',
@@ -118,6 +127,7 @@ export default function ProfilePage() {
   
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Estados para popups
   const [successPopup, setSuccessPopup] = useState({ isOpen: false, title: '', message: '' });
@@ -125,21 +135,77 @@ export default function ProfilePage() {
 
   const { logout } = useAuth();
 
-  useEffect(() => {
-    const user = AuthService.getUser();
-    if (user) {
-      setForm({
-        firstName: user.first_name || '',
-        lastName: user.last_name || '',
-        email: user.email || '',
-      });
-      
-      // Se o usuário tem foto de perfil, mostrar (verificação segura)
-      const userWithPhoto = user as User & { profile_picture_url?: string };
-      if (userWithPhoto.profile_picture_url) {
-        setProfileImagePreview(userWithPhoto.profile_picture_url);
+  // Função para buscar dados do usuário pela API
+  const fetchUserData = async () => {
+    try {
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        throw new Error('ID do usuário não encontrado');
       }
+
+      const token = AuthService.getToken();
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar dados do usuário');
+      }
+
+      const userData: UserApiResponse = await response.json();
+      
+      // Preencher o formulário com os dados da API
+      setForm({
+        firstName: userData.first_name || '',
+        lastName: userData.last_name || '',
+        email: userData.email || '',
+      });
+
+      // Se há foto de perfil, definir a preview
+      if (userData.profile_picture_url) {
+        setProfileImagePreview(userData.profile_picture_url);
+      }
+
+      AuthService.updateUserData({
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        email: userData.email,
+        profile_picture_url: userData.profile_picture_url,
+      });
+
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
+      setErrorMessage('Erro ao carregar dados do perfil. Tente novamente.');
+      
+      // Fallback para dados locais se a API falhar
+      const localUser = AuthService.getUser();
+      if (localUser) {
+        setForm({
+          firstName: localUser.first_name || '',
+          lastName: localUser.last_name || '',
+          email: localUser.email || '',
+        });
+        
+        const userWithPhoto = localUser as User & { profile_picture_url?: string };
+        if (userWithPhoto.profile_picture_url) {
+          setProfileImagePreview(userWithPhoto.profile_picture_url);
+        }
+      }
+    } finally {
+      setInitialLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchUserData();
   }, []);
 
   const handleChange = (field: string, value: string) => {
@@ -153,6 +219,18 @@ export default function ProfilePage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        setErrorMessage('Por favor, selecione apenas arquivos de imagem.');
+        return;
+      }
+
+      // Validar tamanho do arquivo (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage('A imagem deve ter no máximo 5MB.');
+        return;
+      }
+
       setProfileImage(file);
       
       // Create preview
@@ -169,6 +247,13 @@ export default function ProfilePage() {
 
     if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
       setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    // Validação de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setErrorMessage('Por favor, insira um email válido.');
       return;
     }
 
@@ -190,8 +275,12 @@ export default function ProfilePage() {
           title: 'Perfil atualizado!',
           message: result.message || 'Perfil atualizado com sucesso!'
         });
+        
         // Reset image state after successful upload
         setProfileImage(null);
+        
+        // Recarregar os dados do usuário para garantir sincronização
+        await fetchUserData();
       } else {
         setErrorMessage(result.error || 'Erro ao atualizar perfil');
       }
@@ -265,6 +354,21 @@ export default function ProfilePage() {
     return `${firstInitial}${lastInitial}`;
   };
 
+  // Loading state enquanto busca os dados
+  if (initialLoading) {
+    return (
+      <RouteGuard allowedRoles={['teacher']}>
+        <div className="flex min-h-screen bg-[#f8f8f8]">
+          <Sidebar menuItems={menuItems} onLogout={logout} />
+          <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600">Carregando perfil...</p>
+          </main>
+        </div>
+      </RouteGuard>
+    );
+  }
+
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-[#f8f8f8]">
@@ -275,7 +379,7 @@ export default function ProfilePage() {
 
           <div className="relative mb-8">
             {/* Avatar com iniciais ou imagem */}
-            <div className="w-32 h-32 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+            <div className="w-32 h-32 rounded-full border-4 border-white bg-blue-600 flex items-center justify-center text-white text-2xl font-bold overflow-hidden shadow-lg">
               {profileImagePreview ? (
                 <img
                   src={profileImagePreview}
@@ -286,7 +390,7 @@ export default function ProfilePage() {
                 getInitials()
               )}
             </div>
-            <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow cursor-pointer hover:bg-gray-50 transition">
+            <label className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer hover:bg-gray-50 transition border-2 border-gray-100">
               <FiCamera className="text-gray-700" />
               <input
                 ref={fileInputRef}
@@ -301,35 +405,38 @@ export default function ProfilePage() {
           <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto flex flex-col gap-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
-                <label className="text-sm text-global-1">Nome *</label>
+                <label className="text-sm text-global-1 font-medium">Nome *</label>
                 <input
                   type="text"
                   value={form.firstName}
                   onChange={(e) => handleChange('firstName', e.target.value)}
-                  className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+                  className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-transparent transition"
                   required
+                  placeholder="Digite seu nome"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-sm text-global-1">Sobrenome *</label>
+                <label className="text-sm text-global-1 font-medium">Sobrenome *</label>
                 <input
                   type="text"
                   value={form.lastName}
                   onChange={(e) => handleChange('lastName', e.target.value)}
-                  className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+                  className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-transparent transition"
                   required
+                  placeholder="Digite seu sobrenome"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm text-global-1">E-mail *</label>
+              <label className="text-sm text-global-1 font-medium">E-mail *</label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => handleChange('email', e.target.value)}
-                className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-700"
+                className="w-full border border-blue-700 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-transparent transition"
                 required
+                placeholder="Digite seu e-mail"
               />
             </div>
 
@@ -337,7 +444,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white py-3 px-6 rounded-md transition flex-1"
+                className="bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 disabled:cursor-not-allowed text-white py-3 px-6 rounded-md transition flex-1 font-semibold"
               >
                 {loading ? 'Salvando...' : 'Salvar alterações'}
               </button>
@@ -345,7 +452,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setShowPasswordModal(true)}
-                className="bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-md transition flex-1 flex items-center justify-center gap-2"
+                className="bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-md transition flex-1 flex items-center justify-center gap-2 font-semibold"
               >
                 <FiKey size={16} />
                 Alterar senha
@@ -355,7 +462,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={handleDeleteAccount}
-              className="text-red-500 text-sm mt-2 text-center hover:text-red-700 transition"
+              className="text-red-500 text-sm mt-2 text-center hover:text-red-700 transition underline"
             >
               Excluir dados da conta
             </button>
@@ -371,13 +478,14 @@ export default function ProfilePage() {
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <label className="text-sm text-gray-600">Senha atual *</label>
+                    <label className="text-sm text-gray-600 font-medium">Senha atual *</label>
                     <input
                       type={showOldPassword ? 'text' : 'password'}
                       value={passwordForm.oldPassword}
                       onChange={(e) => handlePasswordChange('oldPassword', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
+                      placeholder="Digite sua senha atual"
                     />
                   </div>
                   <button
@@ -391,13 +499,14 @@ export default function ProfilePage() {
 
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <label className="text-sm text-gray-600">Nova senha *</label>
+                    <label className="text-sm text-gray-600 font-medium">Nova senha *</label>
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       value={passwordForm.newPassword}
                       onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
+                      placeholder="Digite sua nova senha"
                     />
                   </div>
                   <button
@@ -411,13 +520,14 @@ export default function ProfilePage() {
 
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <label className="text-sm text-gray-600">Confirmar nova senha *</label>
+                    <label className="text-sm text-gray-600 font-medium">Confirmar nova senha *</label>
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={passwordForm.confirmNewPassword}
                       onChange={(e) => handlePasswordChange('confirmNewPassword', e.target.value)}
-                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
+                      placeholder="Confirme sua nova senha"
                     />
                   </div>
                   <button
@@ -440,14 +550,14 @@ export default function ProfilePage() {
                         confirmNewPassword: '',
                       });
                     }}
-                    className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition"
+                    className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition font-semibold"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400 transition"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition font-semibold"
                   >
                     {passwordLoading ? 'Alterando...' : 'Alterar senha'}
                   </button>
