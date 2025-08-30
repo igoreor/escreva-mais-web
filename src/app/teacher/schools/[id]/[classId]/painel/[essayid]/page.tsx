@@ -69,23 +69,31 @@ const EssayPage: React.FC = () => {
     
     if (user.profile_picture_url) {
       return (
-        <img
-          src={user.profile_picture_url}
-          alt={`${user.first_name} ${user.last_name}`}
-          className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
-          onError={(e) => {
-            // Fallback para iniciais se a imagem falhar ao carregar
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            const fallback = target.nextElementSibling as HTMLDivElement;
-            if (fallback) fallback.style.display = 'flex';
-          }}
-        />
+        <div className="relative">
+          <img
+            src={user.profile_picture_url}
+            alt={`${user.first_name} ${user.last_name}`}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-200 flex-shrink-0"
+            onError={(e) => {
+              // Fallback para iniciais se a imagem falhar ao carregar
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLDivElement;
+              if (fallback) {
+                fallback.style.display = 'flex';
+                fallback.classList.remove('hidden');
+              }
+            }}
+          />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold absolute top-0 left-0 hidden flex-shrink-0">
+            {initials}
+          </div>
+        </div>
       );
     }
 
     return (
-      <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold flex-shrink-0">
         {initials}
       </div>
     );
@@ -108,25 +116,25 @@ const EssayPage: React.FC = () => {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 lg:ml-[270px] p-6 lg:p-10">
+        <main className="flex-1 lg:ml-[270px] p-4 sm:p-6 lg:p-10">
           {/* Voltar */}
           <button
             type="button"
             onClick={() =>
               (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)
             }
-            className="flex items-center text-blue-600 mb-4 hover:underline"
+            className="flex items-center text-blue-600 mb-4 hover:underline text-sm sm:text-base"
           >
             <FiArrowLeft className="mr-1" /> Voltar
           </button>
 
           {/* Título */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 break-words">
                 📝 {assignment.motivational_content.theme}
               </h1>
-              <div className="flex items-center text-gray-700 text-sm gap-2">
+              <div className="flex items-center text-gray-700 text-sm gap-2 flex-shrink-0">
                 <FiUsers /> {assignment.students_count} alunos
               </div>
             </div>
@@ -193,33 +201,25 @@ const EssayPage: React.FC = () => {
           </div>
 
           {/* Entregas */}
-          <div className="bg-white rounded-lg shadow p-6 mt-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 mt-8">
             <h2 className="text-lg font-semibold text-blue-700 mb-4">Entregas</h2>
 
             <div className="flex flex-col gap-4">
               {assignment.submissions.map((sub: Submission) => (
                 <div
                   key={sub.essay_id}
-                  className="flex items-center justify-between border rounded-lg p-4 bg-gray-50"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between border rounded-lg p-4 bg-gray-50 gap-4"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     {/* Avatar do usuário */}
-                    <div className="relative">
-                      {renderUserAvatar(sub.user)}
-                      <div 
-                        className="w-10 h-10 bg-blue-500 text-white rounded-full items-center justify-center text-sm font-semibold hidden"
-                        style={{ display: 'none' }}
-                      >
-                        {`${sub.user.first_name.charAt(0)}${sub.user.last_name.charAt(0)}`.toUpperCase()}
-                      </div>
-                    </div>
+                    {renderUserAvatar(sub.user)}
                     
                     {/* Informações do usuário */}
-                    <div>
-                      <p className="font-semibold text-gray-900">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-gray-900 truncate">
                         {sub.user.first_name} {sub.user.last_name}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs sm:text-sm text-gray-500">
                         Enviado em:{' '}
                         {new Date(sub.submitted_at).toLocaleString('pt-BR', {
                           day: '2-digit',
@@ -232,20 +232,22 @@ const EssayPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-3">
                     <span
-                      className={`px-3 py-1 text-sm font-bold rounded-lg border ${getNotaColor(sub.grade)}`}
+                      className={`px-2 sm:px-3 py-1 text-xs sm:text-sm font-bold rounded-lg border ${getNotaColor(sub.grade)} whitespace-nowrap`}
                     >
-                      {sub.grade ?? 'Não avaliada'}/{sub.grade ? '1000' : '1000'}
+                      {sub.grade ?? 'Não avaliada'}/1000
                     </span>
 
                     <button
                       onClick={() => {
                         window.location.href = `/teacher/schools/${schoolId}/${classId}/painel/${essayid}/${sub.essay_id}`;
                       }}
-                      className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                      className="flex items-center justify-center gap-1 sm:gap-2 bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
                     >
-                      <FiMessageCircle size={18} /> Ver redação
+                      <FiMessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" /> 
+                      <span className="hidden sm:inline">Ver redação</span>
+                      <span className="sm:hidden">Ver</span>
                     </button>
                   </div>
                 </div>
