@@ -4,7 +4,7 @@ import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
 import EditText from '@/components/ui/EditText';
 import RouteGuard from '@/components/auth/RouterGuard';
-import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen } from 'react-icons/fi';
+import {FiUpload, FiPaperclip} from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
 
@@ -12,13 +12,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
   },
   {
@@ -30,13 +30,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];
@@ -319,7 +319,7 @@ const SubmitEssayPage: React.FC = () => {
       <div className="flex min-h-screen bg-global-2">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
 
-        <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
+        <div className="ml-0 sm:ml-0 md:ml-20 lg:ml-64 flex flex-col flex-1 px-4 sm:px-6 md:px-12 py-6 sm:py-8 md:py-10 overflow-y-auto">
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
             Enviar nova redação
           </h1>

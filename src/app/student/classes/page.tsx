@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiPlus, FiFileText, FiUpload } from 'react-icons/fi';
+import Sidebar from '@/components/common/SideBar';
+import {FiBookOpen, FiPlus, FiUpload } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
@@ -12,13 +12,13 @@ const menuItems = [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
   },
   {
@@ -30,13 +30,13 @@ const menuItems = [
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];
@@ -170,8 +170,11 @@ export default function StudentClassesPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 lg:ml-[270px] p-10 relative">
-          <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas turmas</h1>
+        <main className="flex-1 lg:ml-[350px] pt-24 px-10 relative">
+          <h1 className="text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-700 mb-16">
+            Selecione uma turma
+          </h1>
+          <h2 className="text-2xl font-bold text-blue-600 mb-4">Minhas turmas</h2>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">

@@ -2,16 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  FiBookOpen,
   FiCamera,
   FiEye,
   FiEyeOff,
-  FiFileText,
-  FiHome,
   FiUpload,
-  FiUser,
 } from 'react-icons/fi';
-import Sidebar, { SidebarItem } from '@/components/common/SideBar';
+import Sidebar from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
@@ -20,13 +16,13 @@ const menuItems = [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon:<img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
   },
   {
@@ -38,13 +34,13 @@ const menuItems = [
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon:<img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];
@@ -147,7 +143,7 @@ const ProfilePage = () => {
       <div className="flex min-h-screen bg-[#f8f8f8]">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 py-10">
+        <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:pl-48 md:pr-12 py-10">
           <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">Meu perfil</h1>
 
           <div className="relative mb-8">
