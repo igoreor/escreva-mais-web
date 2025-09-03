@@ -20,25 +20,25 @@ export default function TeacherPage() {
     {
       id: 'home',
       label: 'Início',
-      icon: <FiHome size={34} />,
+      icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
       href: '/teacher/home',
     },
     {
       id: 'management',
       label: 'Minhas Turmas',
-      icon: <FiBookOpen size={34} />,
+      icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
       href: '/teacher/schools',
     },
     {
       id: 'temas',
       label: 'Meus Temas',
-      icon: <FiFileMinus size={34} />,
+      icon: <img src="/images/meus-temas.png" alt="Minhas Turmas" className="w-10 h-10" />,
       href: '/teacher/themes',
     },
     {
       id: 'profile',
       label: 'Meu Perfil',
-      icon: <FiUser size={34} />,
+      icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
       href: '/teacher/profile',
     },
   ];
