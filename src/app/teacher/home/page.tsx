@@ -4,13 +4,9 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
-  FiHome,
-  FiBookOpen,
-  FiUser,
   FiTrendingUp,
   FiCheckCircle,
   FiAlertCircle,
-  FiFileMinus,
 } from 'react-icons/fi';
 
 export default function TeacherPage() {
