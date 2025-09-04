@@ -120,7 +120,7 @@ export class UserService {
       }
 
       const token = AuthService.getToken();
-      const response = await fetch(`${this.API_BASE_URL}/users/${user.id}`, {
+      const response = await fetch(`${this.API_BASE_URL}/users/${user.id}/`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,

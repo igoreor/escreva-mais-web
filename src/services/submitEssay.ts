@@ -36,7 +36,7 @@ class SubmitEssayService {
         formData.append('image', essayData.image);
       }
 
-      const response = await fetch(`${this.API_BASE_URL}/essays/create-stand-alone`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/create-stand-alone`, {
         method: 'POST',
         headers: this.getMultipartHeaders(),
         body: formData,
@@ -66,7 +66,7 @@ class SubmitEssayService {
 
   static async evaluateEssay(essayId: string) {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/${essayId}/feedbacks/evaluate`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`, {
         method: 'POST',
         headers: this.getHeaders(),
       });

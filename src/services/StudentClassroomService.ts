@@ -104,7 +104,7 @@ class StudentClassroomService {
   ): Promise<AssignmentDetailsForStudent> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/assignment/${assignmentId}/student-view`,
+        `${this.API_BASE_URL}/essays/assignments/${assignmentId}/student-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
@@ -144,7 +144,7 @@ class StudentClassroomService {
         formData.append('image', essayData.image);
       }
 
-      const response = await fetch(`${this.API_BASE_URL}/essays/create-in-assignment`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/create-in-assignment`, {
         method: 'POST',
         headers: this.getMultipartHeaders(),
         body: formData,
@@ -174,7 +174,7 @@ class StudentClassroomService {
 
   static async evaluateEssay(essayId: string) {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/${essayId}/feedbacks/evaluate`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`, {
         method: 'POST',
         headers: this.getHeaders(),
       });

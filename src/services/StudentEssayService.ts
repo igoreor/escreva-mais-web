@@ -52,7 +52,7 @@ class StudentEssayService {
 
   static async getMyEssaysWithStatus(): Promise<EssayWithStatus[]> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/my-essays-with-status/`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/my-essays-with-status/`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -72,7 +72,7 @@ class StudentEssayService {
   static async getStudentFeedbackDetails(essayId: string): Promise<StudentFeedbackDetails> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/${essayId}/student-feedback-details`,
+        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/student-feedback-details`,
         {
           method: 'GET',
           headers: this.getHeaders(),
@@ -95,7 +95,7 @@ class StudentEssayService {
 
   static async getEssay(essayId: string): Promise<Essay> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/${essayId}`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/${essayId}`, {
         method: 'GET',
         headers: this.getHeaders(),
       });

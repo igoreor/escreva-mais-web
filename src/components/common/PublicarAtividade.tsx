@@ -18,6 +18,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
   const [aba, setAba] = useState<'original' | 'existente'>('original');
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
   const [myThemes, setMyThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
       setSelectedTheme('');
       setData('');
       setHora('');
+      setDescricao('');
     }
   }, [isOpen]);
 
@@ -56,7 +58,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
   };
 
   const handleCreateAssignment = async () => {
-    if (!selectedTheme || !data || !hora) {
+    if (!selectedTheme || !data || !hora || !descricao.trim()) {
       alert('Por favor, preencha todos os campos');
       return;
     }
@@ -71,6 +73,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
         classroom_id: classroomId,
         motivational_content_id: selectedTheme,
         due_date: dueDateTime,
+        description: descricao.trim(),
       });
 
       onAssignmentCreated();
@@ -159,9 +162,23 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
           )}
         </div>
 
+        {/* Descrição */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Descrição da atividade *
+          </label>
+          <textarea
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            className="w-full border rounded-lg p-2 min-h-[80px]"
+            placeholder="Descreva a atividade e instruções para os alunos..."
+            disabled={creating}
+          />
+        </div>
+
         {/* Data e hora */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Data de entrega</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Data de entrega *</label>
           <div className="flex gap-2">
             <input
               type="date"
@@ -191,7 +208,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
           </button>
           <button
             onClick={handleCreateAssignment}
-            disabled={creating || !selectedTheme || !data || !hora}
+            disabled={creating || !selectedTheme || !data || !hora || !descricao.trim()}
             className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {creating ? 'Criando...' : 'Confirmar publicação'}

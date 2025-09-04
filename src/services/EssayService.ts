@@ -92,7 +92,7 @@ class EssayService {
   ): Promise<AssignmentDetailsResponse> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/assignment/${assignmentId}/teacher-view`,
+        `${this.API_BASE_URL}/essays/assignments/${assignmentId}/teacher-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
@@ -119,7 +119,7 @@ class EssayService {
   static async getEssayDetailsForTeacher(essayId: string): Promise<EssayDetailsForTeacherResponse> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/${essayId}/feedbacks/teacher-view`,
+        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/teacher-view`,
         {
           method: 'GET',
           headers: this.getHeaders(),
@@ -149,7 +149,7 @@ class EssayService {
   ): Promise<UpdateEssayFeedbackResponse> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/${essayId}/feedback`,
+        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedback`,
         {
           method: 'PATCH',
           headers: this.getHeaders(),

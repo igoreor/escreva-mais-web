@@ -23,6 +23,7 @@ export interface CreateAssignmentRequest {
   classroom_id: string;
   motivational_content_id: string;
   due_date: string;
+  description?: string;
 }
 
 export interface CreateAssignmentResponse {
@@ -129,7 +130,7 @@ class ClassroomService {
 
   static async getMyThemes(): Promise<Theme[]> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/my-themes/`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/motivational-content/my-themes/`, {
         method: 'GET',
         headers: this.getHeaders(),
       });
@@ -147,7 +148,7 @@ class ClassroomService {
 
   static async createAssignment(assignmentData: CreateAssignmentRequest): Promise<CreateAssignmentResponse> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/assignment`, {
+      const response = await fetch(`${this.API_BASE_URL}/essays/assignments`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(assignmentData),
