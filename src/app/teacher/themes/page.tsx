@@ -133,7 +133,7 @@ export default function MeusTemasPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 lg:ml-[270px] p-6 lg:p-10">
+        <main className="flex-1 lg:ml-[270px] p-6 lg:p-10 pt-24 lg:pt-10">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Meus temas</h1>
           </div>
