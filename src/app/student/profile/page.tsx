@@ -382,7 +382,7 @@ const ProfilePage = () => {
       <div className="flex min-h-screen bg-[#f8f8f8]">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 py-10">
+        <main className="flex-1 flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 pt-24 lg:pt-10">
           <h1 className="text-3xl md:text-4xl font-bold text-global-1 mb-8">Meu perfil</h1>
 
           <div className="relative mb-8">
