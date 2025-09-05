@@ -12,31 +12,31 @@ const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <FiHome size={28} />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <FiBookOpen size={28} />,
     href: '/student/classes',
   },
   {
     id: 'submit',
     label: 'Enviar Nova Redação',
-    icon: <FiUpload size={34} />,
+    icon: <FiUpload size={28} />,
     href: `/student/submit-essay`,
   },
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
+    icon: <FiFileText size={28} />,
     href: `/student/essays`,
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <FiUser size={28} />,
     href: '/student/profile',
   },
 ];
@@ -91,7 +91,6 @@ const FileUpload: React.FC<{
     fileInputRef.current?.click();
   };
 
-  // Clear fileName when component is reset
   useEffect(() => {
     if (!disabled && !isBlocked) {
       setFileName('');
@@ -102,7 +101,7 @@ const FileUpload: React.FC<{
 
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full p-6 sm:p-8 border-2 border-dashed rounded-2xl transition-all duration-200 ease-in-out
+      className={`flex flex-col items-center justify-center w-full p-4 sm:p-6 border-2 border-dashed rounded-xl transition-all duration-200 ease-in-out
         ${isDisabledStyle 
           ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60' 
           : isDragging 
@@ -123,8 +122,8 @@ const FileUpload: React.FC<{
         disabled={disabled || isBlocked}
       />
       <div className="flex flex-col items-center justify-center text-center">
-        <FiUpload className={`w-10 h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`} />
-        <p className={`${isDisabledStyle ? 'text-gray-400' : 'text-gray-500'}`}>
+        <FiUpload className={`w-8 h-8 sm:w-10 sm:h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`} />
+        <p className={`${isDisabledStyle ? 'text-gray-400' : 'text-gray-500'} text-sm sm:text-base`}>
           <span className={`font-semibold ${isDisabledStyle ? 'text-gray-400' : 'text-blue-600'}`}>
             {isDisabledStyle ? 'Upload bloqueado' : 'Clique para enviar'}
           </span>
@@ -136,7 +135,7 @@ const FileUpload: React.FC<{
           <p className="text-xs text-gray-400 mt-1">Remova o texto para habilitar o upload</p>
         )}
         {fileName && !isDisabledStyle && (
-          <div className="mt-4 flex items-center text-sm text-gray-600">
+          <div className="mt-3 flex items-center text-xs sm:text-sm text-gray-600">
             <FiPaperclip className="mr-2" />
             <span>{fileName}</span>
           </div>
@@ -168,11 +167,8 @@ const TextAreaWithLineNumbers: React.FC<{
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (disabled) return;
-    
     const newValue = e.target.value;
     const lines = newValue.split('\n');
-
-    // Limita o número de linhas
     if (lines.length <= maxLines) {
       onChange(e);
     }
@@ -181,24 +177,17 @@ const TextAreaWithLineNumbers: React.FC<{
   useLayoutEffect(() => {
     if (textAreaRef.current) {
       const textarea = textAreaRef.current;
-      const computedStyle = getComputedStyle(textarea);
       const lineHeight = 24;
-
-      const paddingTop = parseFloat(computedStyle.paddingTop);
-      const paddingBottom = parseFloat(computedStyle.paddingBottom);
+      const paddingTop = parseFloat(getComputedStyle(textarea).paddingTop);
+      const paddingBottom = parseFloat(getComputedStyle(textarea).paddingBottom);
       const verticalPadding = paddingTop + paddingBottom;
-
       const contentHeight = textarea.scrollHeight - verticalPadding;
       const renderedLineCount = Math.round(contentHeight / lineHeight);
-
       const newlineCount = value.split('\n').length;
-
       const lineCount = Math.max(1, renderedLineCount, newlineCount);
-
       const newNumbers = Array.from({ length: lineCount }, (_, i) =>
         String(i + 1).padStart(2, '0'),
       ).join('\n');
-
       if (newNumbers !== lineNumbers) {
         setLineNumbers(newNumbers);
       }
@@ -218,9 +207,8 @@ const TextAreaWithLineNumbers: React.FC<{
           readOnly
           ref={lineNumbersRef}
           rows={rows}
-          className={`w-12 text-center p-2 text-gray-400 resize-none font-mono text-sm select-none border-r border-gray-200 focus:outline-none leading-6 ${disabled ? 'bg-gray-200' : 'bg-gray-100'}`}
+          className={`w-10 sm:w-12 text-center p-2 text-gray-400 resize-none font-mono text-xs sm:text-sm select-none border-r border-gray-200 focus:outline-none leading-6 ${disabled ? 'bg-gray-200' : 'bg-gray-100'}`}
           value={lineNumbers}
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
         <textarea
           ref={textAreaRef}
@@ -231,10 +219,10 @@ const TextAreaWithLineNumbers: React.FC<{
           onScroll={syncScroll}
           maxLength={maxLength}
           disabled={disabled}
-          className={`flex-1 p-2 resize-none font-mono text-sm focus:outline-none leading-6 ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
+          className={`flex-1 p-2 resize-none font-mono text-xs sm:text-sm focus:outline-none leading-6 ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
         />
       </div>
-      <div className="flex justify-between items-center text-xs text-gray-400 mt-1">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs text-gray-400 mt-1 gap-1">
         <div>
           Linhas: {currentLines}/{maxLines}
         </div>
@@ -267,7 +255,6 @@ const SubmitEssayPage: React.FC = () => {
     message: string;
   } | null>(null);
 
-  // Lógica para determinar se texto ou imagem estão bloqueados
   const hasText = essayText.trim().length > 0;
   const hasImage = image !== null;
   const textDisabled = hasImage;
@@ -294,9 +281,7 @@ const SubmitEssayPage: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    // Validação usando o service
     const validation = SubmitEssayService.validateEssayData(theme, essayText, image);
-
     if (!validation.isValid) {
       setPopupConfig({
         type: 'error',
@@ -305,9 +290,7 @@ const SubmitEssayPage: React.FC = () => {
       });
       return;
     }
-
     setIsLoading(true);
-
     try {
       const result = await SubmitEssayService.createStandAloneEssay({
         theme: theme.trim(),
@@ -315,25 +298,19 @@ const SubmitEssayPage: React.FC = () => {
         content: essayText.trim() || null,
         image: image,
       });
-
       console.log('Redação enviada com sucesso:', result);
-
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
-
-      // Limpa o formulário após o envio bem-sucedido
       setTheme('');
       setTitle('');
       setEssayText('');
       setImage(null);
     } catch (error) {
       console.error('Erro ao enviar redação:', error);
-
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
@@ -348,16 +325,16 @@ const SubmitEssayPage: React.FC = () => {
 
   return (
     <RouteGuard allowedRoles={['student']}>
-      <div className="flex min-h-screen bg-global-2">
-        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-
-        <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
-          <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
+      <div className="flex flex-col md:flex-row min-h-screen bg-global-2">
+        <div className="w-full md:w-64 flex-shrink-0">
+          <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        </div>
+        <div className="flex flex-col flex-1 px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14 overflow-y-auto">
+          <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-8">
             Enviar nova redação
           </h1>
-
-          <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
-            <div className="bg-global-3 border border-gray-300 rounded-2xl p-6 sm:p-7 md:p-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
+            <div className="bg-global-3 border border-gray-300 rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">
                   Tema <span className="text-red-500">*</span>
@@ -369,7 +346,6 @@ const SubmitEssayPage: React.FC = () => {
                   disabled={isLoading}
                 />
               </div>
-
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">Título (opcional)</label>
                 <EditText
@@ -379,9 +355,8 @@ const SubmitEssayPage: React.FC = () => {
                   disabled={isLoading}
                 />
               </div>
-
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="text-global-1 font-semibold">
                     Texto {hasImage && <span className="text-sm text-gray-500 font-normal">(desabilitado - imagem selecionada)</span>}
                   </label>
@@ -396,7 +371,7 @@ const SubmitEssayPage: React.FC = () => {
                   )}
                 </div>
                 {imageBlocked && (
-                  <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+                  <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-xs sm:text-sm">
                     <FiAlertCircle className="w-4 h-4" />
                     <span>Upload de imagem bloqueado enquanto houver texto digitado</span>
                   </div>
@@ -413,9 +388,8 @@ const SubmitEssayPage: React.FC = () => {
                 />
               </div>
             </div>
-
             <div className="flex flex-col gap-4 w-full">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                   Ou faça o upload de uma foto
                   {hasText && <span className="text-sm text-gray-500 font-normal ml-2">(bloqueado - há texto digitado)</span>}
@@ -430,22 +404,19 @@ const SubmitEssayPage: React.FC = () => {
                   </button>
                 )}
               </div>
-              
               {textDisabled && (
-                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-xs sm:text-sm">
                   <FiAlertCircle className="w-4 h-4" />
                   <span>Modo imagem ativado - texto desabilitado</span>
                 </div>
               )}
-              
               <FileUpload 
                 onFileSelect={handleImageSelect} 
                 disabled={isLoading}
                 isBlocked={imageBlocked}
               />
             </div>
-
-            <div className="flex justify-end gap-5 mt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
               <Button
                 variant="outline"
                 size="lg"
