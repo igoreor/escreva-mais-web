@@ -188,7 +188,7 @@ function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }
       {/* Botão voltar */}
       <button
         onClick={onBack}
-        className="absolute top-4 left-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition z-10"
+        className="absolute top-4 right-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition z-10"
       >
         <FiArrowLeft className="inline-block mr-2" />
         Voltar
