@@ -147,7 +147,7 @@ export default function TeacherClassesPage() {
       <RouteGuard allowedRoles={['teacher']}>
         <div className="flex min-h-screen bg-gray-50">
           <Sidebar menuItems={menuItems} onLogout={logout} />
-          <main className="flex-1 lg:ml-[270px] p-10">
+          <main className="flex-1 lg:ml-[270px] pt-20 lg:pt-10 p-10">
             <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas escolas</h1>
             <div className="flex items-center justify-center h-64">
               <div className="text-gray-500">Carregando escolas...</div>
@@ -163,7 +163,7 @@ export default function TeacherClassesPage() {
       <RouteGuard allowedRoles={['teacher']}>
         <div className="flex min-h-screen bg-gray-50">
           <Sidebar menuItems={menuItems} onLogout={logout} />
-          <main className="flex-1 lg:ml-[270px] p-10">
+          <main className="flex-1 lg:ml-[270px] pt-20 lg:pt-10 p-10">
             <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas escolas</h1>
             <div className="flex items-center justify-center h-64">
               <div className="text-red-500">Erro: {error}</div>
@@ -179,7 +179,7 @@ export default function TeacherClassesPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        <main className="flex-1 lg:ml-[270px] p-10">
+        <main className="flex-1 lg:ml-[270px] pt-20 lg:pt-10 p-10">
           <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas escolas</h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
