@@ -141,11 +141,11 @@ const StudentDashboard: React.FC = () => {
           <div className="flex justify-between items-center mb-10">
             <div className="flex items-center gap-4">
               <div>
-                <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px]">
+                <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px] py-7">
                   Olá, {user?.first_name || 'Estudante'}!
                 </h1>
                 {turmaSelecionada && (
-                  <p className="text-blue-700 text-lg font-medium mt-2">
+                  <p className="text-blue-700 text-lg font-medium mt-2 -mt-8">
                     {turmaSelecionada.nome} - {turmaSelecionada.alunos} alunos
                   </p>
                 )}
@@ -177,7 +177,7 @@ const StudentDashboard: React.FC = () => {
             </div>
 
             {/* MELHOR E PIOR REDAÇÃO */}
-            <div className="flex gap-8 w-full">
+            <div className="flex flex-col sm:flex-row gap-8 w-full">
               {/* Melhor Redação */}
               <div className="flex-1 bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between">
                 <div>
