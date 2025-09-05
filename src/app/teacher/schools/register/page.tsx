@@ -138,7 +138,7 @@ export default function CreateSchoolPage() {
       // Redirecionar após o toast sumir (exemplo: 3 segundos)
       setTimeout(() => {
         router.push('/teacher/schools');
-      }, 3000);
+      }, 1000);
     } catch (error: unknown) {
       console.error(error);
       const errorMessage = error instanceof Error ? error.message : 'Erro inesperado.';
@@ -168,7 +168,7 @@ export default function CreateSchoolPage() {
           <Sidebar menuItems={menuItems} onLogout={logout} />
         </div>
 
-        <main className="flex-1 lg:ml-[270px] p-10">
+        <main className="flex-1 lg:ml-[270px] pt-24 lg:pt-10 p-10">
           <button
             onClick={handleCancel}
             disabled={isLoading}
