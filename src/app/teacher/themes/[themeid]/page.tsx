@@ -66,7 +66,7 @@ export default function TemaDetalhesPage() {
       });
       setTimeout(() => {
         router.push('/teacher/themes');
-      }, 1500);
+      }, 1000);
     } catch (err) {
       console.error('Erro ao excluir tema:', err);
       setToast({
