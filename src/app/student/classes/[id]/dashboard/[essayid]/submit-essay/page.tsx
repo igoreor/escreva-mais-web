@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
 import { useParams } from 'next/navigation';
 import StudentClassroomService, { CreateEssayRequest } from '@/services/StudentClassroomService';
+import router from 'next/router';
 
 const getMenuItems = (id: string) => [
   {
@@ -370,8 +371,8 @@ const SubmitEssayPage: React.FC = () => {
 
       // Redirecionar após sucesso
       setTimeout(() => {
-        window.location.href = `/student/classes/${classId}/dashboard`;
-      }, 2000);
+        router.push(`/student/classes/${classId}/dashboard`);
+      }, 1000);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 
         'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
