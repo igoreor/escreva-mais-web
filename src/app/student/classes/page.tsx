@@ -171,7 +171,7 @@ export default function StudentClassesPage() {
         <Sidebar menuItems={menuItems} onLogout={logout} />
 
         <main className="flex-1 lg:ml-[270px] p-10 relative">
-          <h1 className="text-2xl font-bold text-gray-800 mb-8">Minhas turmas</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-8 pl-6">Minhas turmas</h1>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
