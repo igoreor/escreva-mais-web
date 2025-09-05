@@ -50,7 +50,7 @@ export default function TeacherPage() {
 
         <main className="flex-1 lg:ml-[270px] p-6 lg:p-10">
           {/* Cabeçalho */}
-          <div className="mb-6">
+          <div className="mb-6 py-10">
             <h1 className="text-2xl font-bold text-gray-900">
               Olá, {user?.first_name ?? 'Professor'}!
             </h1>
