@@ -14,6 +14,7 @@ import {
   FiTrello,
 } from 'react-icons/fi';
 import StudentClassroomService from '@/services/StudentClassroomService';
+import router from 'next/router';
 
 const getMenuItems = (id: string) => [
   {
@@ -209,10 +210,10 @@ const ActivityDetailPage: React.FC = () => {
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
+        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           {/* Botão voltar */}
           <button
-            onClick={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
+            onClick={() => (router.push(`/student/classes/${classId}/dashboard`))}
             className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
             <FiArrowLeft className="mr-1" />
