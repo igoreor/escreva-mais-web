@@ -17,6 +17,7 @@ import StudentEssayService, {
   Competency,
 } from '@/services/StudentEssayService';
 import html2pdf from 'html2pdf.js';
+import router from 'next/router';
 
 const getMenuItems = (id: string) => [
   {
@@ -159,12 +160,12 @@ const CorrectionDetailsPage: React.FC = () => {
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
+        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           <div className="mx-auto w-full max-w-5xl space-y-6">
             {/* Header com botão voltar */}
             <div className="relative flex items-center justify-center">
               <button
-                onClick={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
+                onClick={() => (router.push(`/student/classes/${classId}/dashboard`))}
                 className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-blue-600 hover:underline transition-colors"
               >
                 <FiArrowLeft size={22} />
