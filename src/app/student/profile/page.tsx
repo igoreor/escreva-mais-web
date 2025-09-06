@@ -17,8 +17,7 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
-import { User } from '@/services/EssayService';
-import UserService from '@/services/registrationService';
+import { User } from '@/types/user';
 
 interface SuccessPopupProps {
   isOpen: boolean;
@@ -50,8 +49,6 @@ const SuccessPopup: React.FC<SuccessPopupProps> = ({
     </div>
   );
 };
-
-// Componente de popup de erro
 interface ErrorPopupProps {
   message: string;
   onClose: () => void;
@@ -136,13 +133,11 @@ const ProfilePage = () => {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  // Estados para popups
   const [successPopup, setSuccessPopup] = useState({ isOpen: false, title: '', message: '' });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { logout } = useAuth();
 
-  // Função para buscar dados do usuário pela API
   const fetchUserData = async () => {
     try {
       const userId = AuthService.getUserId();
@@ -169,19 +164,16 @@ const ProfilePage = () => {
 
       const userData: UserApiResponse = await response.json();
       
-      // Preencher o formulário com os dados da API
       setForm({
         firstName: userData.first_name || '',
         lastName: userData.last_name || '',
         email: userData.email || '',
       });
 
-      // Se há foto de perfil, definir a preview
       if (userData.profile_picture_url) {
         setProfileImagePreview(userData.profile_picture_url);
       }
 
-      // Atualizar dados locais
       AuthService.updateUserData({
         first_name: userData.first_name,
         last_name: userData.last_name,
@@ -193,7 +185,6 @@ const ProfilePage = () => {
       console.error('Erro ao buscar dados do usuário:', error);
       setErrorMessage('Erro ao carregar dados do perfil. Tente novamente.');
       
-      // Fallback para dados locais se a API falhar
       const localUser = AuthService.getUser();
       if (localUser) {
         setForm({
@@ -227,13 +218,11 @@ const ProfilePage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         setErrorMessage('Por favor, selecione apenas arquivos de imagem.');
         return;
       }
 
-      // Validar tamanho do arquivo (máximo 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setErrorMessage('A imagem deve ter no máximo 5MB.');
         return;
@@ -241,7 +230,6 @@ const ProfilePage = () => {
 
       setProfileImage(file);
       
-      // Create preview
       const reader = new FileReader();
       reader.onload = (event) => {
         setProfileImagePreview(event.target?.result as string);
@@ -258,7 +246,6 @@ const ProfilePage = () => {
       return;
     }
 
-    // Validação de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
       setErrorMessage('Por favor, insira um email válido.');
@@ -275,7 +262,7 @@ const ProfilePage = () => {
         profile_picture: profileImage,
       };
 
-      const result = await UserService.updateUserProfile(updateData);
+      const result = await AuthService.updateUserProfile(updateData);
 
       if (result.success) {
         setSuccessPopup({
@@ -284,10 +271,8 @@ const ProfilePage = () => {
           message: result.message || 'Perfil atualizado com sucesso!'
         });
         
-        // Reset image state after successful upload
         setProfileImage(null);
         
-        // Recarregar os dados do usuário para garantir sincronização
         await fetchUserData();
       } else {
         setErrorMessage(result.error || 'Erro ao atualizar perfil');
@@ -321,7 +306,7 @@ const ProfilePage = () => {
     setPasswordLoading(true);
 
     try {
-      const result = await UserService.changePassword({
+      const result = await AuthService.changePassword({
         old_password: passwordForm.oldPassword,
         new_password: passwordForm.newPassword,
       });
@@ -351,7 +336,6 @@ const ProfilePage = () => {
 
   const handleDeleteAccount = () => {
     if (confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
-      // Aqui você implementaria a lógica para excluir a conta
       console.log('Excluir conta');
     }
   };
@@ -362,7 +346,6 @@ const ProfilePage = () => {
     return `${firstInitial}${lastInitial}`;
   };
 
-  // Loading state enquanto busca os dados
   if (initialLoading) {
     return (
       <RouteGuard allowedRoles={['student']}>

@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import EssayService, { EssayDetailsForTeacherResponse } from '@/services/EssayService';
+import { EssayDetailsForTeacherResponse } from '@/types/essay';
+import EssayService from '@/services/EssayService';
 
 type PopupData =
   | {

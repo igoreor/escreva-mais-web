@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import StudentEssayService, { Essay } from '@/services/StudentEssayService';
+import { CreateEssayResponse } from '@/types/essay';
+import StudentEssayService from '@/services/StudentEssayService';
 
 const EssayViewPage: React.FC = () => {
   const params = useParams();
   const essayId = params.essayid as string;
 
-  const [essay, setEssay] = useState<Essay | null>(null);
+  const [essay, setEssay] = useState<CreateEssayResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

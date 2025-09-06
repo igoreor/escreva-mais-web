@@ -18,7 +18,8 @@ import {
   FiFileMinus,
 } from 'react-icons/fi';
 import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
-import ClassroomService, { Assignment, ClassroomDetails } from '@/services/ClassroomService';
+import ClassroomService from '@/services/ClassroomService';
+import { Assignment, ClassroomDetails } from '@/types/classroom';
 
 const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
@@ -95,7 +96,7 @@ const TeacherClassPage: React.FC = () => {
   }, [classId]);
 
   const handleAssignmentCreated = () => {
-    fetchClassroom(); // Recarrega as atividades
+    fetchClassroom();
   };
 
   if (loading) {

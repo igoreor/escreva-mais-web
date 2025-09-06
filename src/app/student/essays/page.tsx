@@ -16,7 +16,8 @@ import Sidebar from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import { useParams } from 'next/navigation';
-import StudentEssayService, { EssayWithStatus } from '@/services/StudentEssayService';
+import { EssayWithStatus } from '@/types/essay';
+import StudentEssayService from '@/services/StudentEssayService';
 
 const getMenuItems = (id: string) => [
   { id: 'student', label: 'Início', icon: <FiHome size={34} />, href: '/student/home' },

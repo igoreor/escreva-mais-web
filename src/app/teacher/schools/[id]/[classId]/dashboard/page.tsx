@@ -6,13 +6,10 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
   FiCheckCircle,
   FiAlertCircle,
-  FiBarChart2,
   FiFileText,
   FiHome,
   FiBookOpen,
   FiUser,
-  FiArrowLeft,
-  FiGrid,
   FiPlusSquare,
   FiTrendingUp,
   FiFileMinus,

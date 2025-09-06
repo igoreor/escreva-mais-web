@@ -16,8 +16,7 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
-import { User } from '@/services/EssayService';
-import UserService from '@/services/registrationService';
+import { User } from '@/types/user';
 
 interface SuccessPopupProps {
   isOpen: boolean;
@@ -267,7 +266,7 @@ export default function ProfilePage() {
         profile_picture: profileImage,
       };
 
-      const result = await UserService.updateUserProfile(updateData);
+      const result = await AuthService.updateUserProfile(updateData);
 
       if (result.success) {
         setSuccessPopup({
@@ -313,7 +312,7 @@ export default function ProfilePage() {
     setPasswordLoading(true);
 
     try {
-      const result = await UserService.changePassword({
+      const result = await AuthService.changePassword({
         old_password: passwordForm.oldPassword,
         new_password: passwordForm.newPassword,
       });

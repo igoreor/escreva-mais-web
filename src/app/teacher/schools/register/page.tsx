@@ -14,8 +14,8 @@ import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { createSchool } from '@/services/TeacherServices';
 import { Toast } from '@/components/common/ToastAlert';
+import SchoolService from '@/services/schoolService';
 
 interface SchoolForm {
   nome: string;
@@ -103,14 +103,14 @@ export default function CreateSchoolPage() {
   }
 
   function handleCancel() {
-    if (isLoading) return; // Prevenir cancelamento durante loading
+    if (isLoading) return;
     router.back();
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (isLoading) return; // Prevenir múltiplos submits
+    if (isLoading) return;
 
     setIsLoading(true);
 
@@ -120,14 +120,12 @@ export default function CreateSchoolPage() {
         return;
       }
 
-      // Verificar se a imagem é obrigatória
       if (!form.imagem) {
         setToast({ title: 'Erro', description: 'A imagem da escola é obrigatória.' });
         return;
       }
 
-      // Passar tanto o nome quanto a imagem para a função createSchool
-      const created = await createSchool(form.nome, form.imagem);
+      const created = await SchoolService.createSchool(form.nome, form.imagem);
       console.log('Escola criada:', created);
 
       setToast({
@@ -135,7 +133,6 @@ export default function CreateSchoolPage() {
         description: 'A escola foi criada e está disponível para uso.',
       });
 
-      // Redirecionar após o toast sumir (exemplo: 3 segundos)
       setTimeout(() => {
         router.push('/teacher/schools');
       }, 1000);

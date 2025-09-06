@@ -9,16 +9,14 @@ import {
   FiPlus,
   FiMoreVertical,
   FiTrash2,
-  FiGrid,
-  FiPlusSquare,
   FiFileMinus,
 } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { listSchools, deleteSchool } from '@/services/TeacherServices';
 import Image from 'next/image';
+import SchoolService from '@/services/schoolService';
 
 const menuItems: SidebarItem[] = [
   {
@@ -67,7 +65,7 @@ export default function TeacherClassesPage() {
     const loadSchools = async () => {
       try {
         setLoading(true);
-        const data: School[] = await listSchools();
+        const data: School[] = await SchoolService.listSchools();
         setSchools(data);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar escolas';
@@ -95,7 +93,7 @@ export default function TeacherClassesPage() {
     if (!showDeleteModal) return;
 
     try {
-      await deleteSchool(showDeleteModal);
+      await SchoolService.deleteSchool(showDeleteModal);
       setSchools(schools.filter((school) => school.id !== showDeleteModal));
       setShowDeleteModal(null);
     } catch (err: unknown) {

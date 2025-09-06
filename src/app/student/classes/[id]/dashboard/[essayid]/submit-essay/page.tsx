@@ -17,6 +17,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
+import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StudentClassroomService, { CreateEssayRequest } from '@/services/StudentClassroomService';
 import router from 'next/router';
@@ -341,6 +342,8 @@ const SubmitEssayPage: React.FC = () => {
     alert('Rascunho salvo com sucesso!');
   };
 
+  const router = useRouter();
+
   const handleSubmit = async () => {
     if (!essayText && !file) {
       setPopupConfig({
@@ -369,12 +372,12 @@ const SubmitEssayPage: React.FC = () => {
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
 
-      // Redirecionar após sucesso
-      setTimeout(() => {
-        router.push(`/student/classes/${classId}/dashboard`);
-      }, 1000);
+    setTimeout(() => {
+      router.push(`/student/classes/${classId}/dashboard`);
+    }, 2000);
+      
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 
+      const errorMessage = error instanceof Error ? error.message :
         'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
       
       setPopupConfig({

@@ -6,7 +6,7 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiUser, FiPlus, FiFileText, FiUpload } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
-import { getStudentClassrooms, joinClassroom } from '@/services/StudentServices';
+import SchoolService from '@/services/schoolService';
 
 const menuItems = [
   {
@@ -73,7 +73,7 @@ export default function StudentClassesPage() {
       setLoading(true);
       setError(null);
 
-      const data = await getStudentClassrooms();
+      const data = await SchoolService.getStudentClassrooms();
       setClassrooms(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Erro ao buscar turmas:', err);
@@ -106,7 +106,7 @@ export default function StudentClassesPage() {
     try {
       setJoiningClassroom(true);
 
-      const response = await joinClassroom(codigoTurma.trim());
+      const response = await SchoolService.joinClassroom(codigoTurma.trim());
 
       if (response.status) {
         fecharModal();

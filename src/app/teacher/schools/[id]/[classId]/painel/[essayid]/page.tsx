@@ -13,7 +13,9 @@ import {
   FiFileMinus,
   FiMessageCircle,
 } from 'react-icons/fi';
-import EssayService, { AssignmentDetailsResponse, Submission } from '@/services/EssayService';
+import { AssignmentDetailsResponse } from '@/types/essay';
+import EssayService from '@/services/EssayService';
+import { Submission } from '@/types/classroom';
 
 const EssayPage: React.FC = () => {
   const { logout } = useAuth();
@@ -212,7 +214,14 @@ const EssayPage: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     {/* Avatar do usuário */}
-                    {renderUserAvatar(sub.user)}
+                    {renderUserAvatar(sub.user.profile_picture_url ? {
+                      first_name: sub.user.first_name,
+                      last_name: sub.user.last_name,
+                      profile_picture_url: sub.user.profile_picture_url,
+                    } : {
+                      first_name: sub.user.first_name,
+                      last_name: sub.user.last_name,
+                    })}
                     
                     {/* Informações do usuário */}
                     <div className="min-w-0 flex-1">

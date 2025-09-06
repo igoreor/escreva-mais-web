@@ -12,12 +12,10 @@ import {
   FiArrowLeft,
   FiTrello,
 } from 'react-icons/fi';
-import StudentEssayService, {
-  StudentFeedbackDetails,
-  Competency,
-} from '@/services/StudentEssayService';
 import html2pdf from 'html2pdf.js';
 import router from 'next/router';
+import { Competency, StudentFeedbackDetails } from '@/types/essay';
+import StudentEssayService from '@/services/StudentEssayService';
 
 const getMenuItems = (id: string) => [
   {

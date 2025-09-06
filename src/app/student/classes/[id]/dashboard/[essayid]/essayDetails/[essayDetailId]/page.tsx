@@ -12,8 +12,9 @@ import {
   FiArrowLeft,
   FiTrello,
 } from 'react-icons/fi';
-import StudentEssayService, { Essay } from '@/services/StudentEssayService';
 import Image from 'next/image';
+import { CreateEssayResponse } from '@/types/essay';
+import StudentEssayService from '@/services/StudentEssayService';
 
 const getMenuItems = (id: string) => [
   {
@@ -57,7 +58,7 @@ const EssayViewPage: React.FC = () => {
   const essayId = params.essayid as string;
   const essayDetailId = params.essayDetailId as string;
 
-  const [essay, setEssay] = useState<Essay | null>(null);
+  const [essay, setEssay] = useState<CreateEssayResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageZoomed, setImageZoomed] = useState(false);

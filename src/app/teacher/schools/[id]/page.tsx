@@ -11,7 +11,6 @@ import {
   FiPlus,
   FiEye,
   FiEyeOff,
-  FiGrid,
   FiPlusSquare,
   FiFileMinus,
 } from 'react-icons/fi';
@@ -20,8 +19,8 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Link from 'next/link';
-import { getSchoolWithClassroomsById } from '@/services/TeacherServices';
 import Popup from '@/components/ui/Popup';
+import SchoolService from '@/services/schoolService';
 
 const getMenuItems = (id?: string): SidebarItem[] => [
   {
@@ -141,12 +140,9 @@ function ClassroomCard({ turma, onCopied }: ClassroomCardProps) {
   );
 }
 
-// Componente separado para o cabeçalho da escola
 function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
-
-  console.log('URL da imagem:', school.image_signed_url); // Para debug
 
   return (
     <div className="relative w-full h-64">
@@ -214,8 +210,8 @@ export default function SchoolDetailsPage() {
   useEffect(() => {
     const fetchSchool = async () => {
       try {
-        const data: School = await getSchoolWithClassroomsById(id as string);
-        console.log('Dados da escola recebidos:', data); // Para debug
+        const data: School = await SchoolService.getSchoolWithClassroomsById(id as string);
+        console.log('Dados da escola recebidos:', data);
         setSchool(data);
       } catch (error: unknown) {
         console.error('Erro ao buscar escola:', error);

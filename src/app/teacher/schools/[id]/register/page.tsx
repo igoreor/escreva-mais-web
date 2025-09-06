@@ -14,8 +14,7 @@ import {
 } from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
-import { createClassroom } from '@/services/TeacherServices'; // função que criamos
-
+import SchoolService from '@/services/schoolService';
 interface ClassroomForm {
   name: string;
   description: string;
@@ -72,7 +71,7 @@ export default function CreateClassPage() {
     setError(null);
 
     try {
-      await createClassroom(schoolId as string, form);
+      await SchoolService.createClassroom(schoolId as string, form);
       router.push(`/teacher/schools/${schoolId}`);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao cadastrar turma';

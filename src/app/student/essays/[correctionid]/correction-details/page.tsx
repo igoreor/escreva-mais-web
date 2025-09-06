@@ -4,11 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useParams, useRouter } from 'next/navigation';
-import StudentEssayService, {
-  StudentFeedbackDetails,
-  Competency,
-} from '@/services/StudentEssayService';
 import html2pdf from 'html2pdf.js';
+import { Competency, StudentFeedbackDetails } from '@/types/essay';
+import StudentEssayService from '@/services/StudentEssayService';
 
 const COMPETENCIES_MAP: Record<string, { title: string; description: string }> = {
   C1: {

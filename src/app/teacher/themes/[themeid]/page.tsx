@@ -11,14 +11,13 @@ import {
   FiArrowLeft,
   FiLoader,
   FiFileText,
-  FiX,
-  FiAlertTriangle,
 } from 'react-icons/fi';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import ThemeServices, { ThemeResponse } from '@/services/ThemeServices';
 import { ConfirmDeleteModal } from '@/components/DeleteConfirms';
-import { Toast } from '@/components/common/ToastAlert';
+import { ThemeServices } from '@/services';
+import { ThemeResponse } from '@/types/theme';
+
 
 export default function TemaDetalhesPage() {
   const { logout } = useAuth();
@@ -44,11 +43,18 @@ export default function TemaDetalhesPage() {
       setLoading(true);
       setError('');
 
-      const data = await ThemeServices.getThemeById(themeId);
-      setTema(data);
+      const response = await ThemeServices.getThemeById(themeId);
+
+      if (response.success && response.data) {
+        setTema(response.data);
+      } else {
+        setError(response.error || 'Erro ao carregar tema');
+        setTema(null);
+      }
     } catch (err) {
       console.error('Erro ao buscar tema:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar tema');
+      setTema(null);
     } finally {
       setLoading(false);
     }
@@ -103,7 +109,6 @@ export default function TemaDetalhesPage() {
     { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
   ];
 
-  // Função para verificar se o texto contém URL de imagem
   const isImageUrl = (text: string) => {
     if (!text) return false;
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
@@ -116,7 +121,6 @@ export default function TemaDetalhesPage() {
     );
   };
 
-  // Função para extrair URL de imagem do texto
   const extractImageUrl = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const match = text.match(urlRegex);

@@ -5,29 +5,10 @@ import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiUser, FiFileMinus, FiCalendar, FiEye, FiPlus } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
-import ThemeServices, { ThemePayload } from '@/services/ThemeServices';
-import AuthService from '@/services/authService';
+import { Tema, ThemePayload, ThemeResponse, ThemesApiData } from '@/types/theme';
+import { AuthService, ThemeServices } from '@/services';
 
-interface Tema {
-  id: string | number;
-  titulo: string;
-  criado: string;
-  textos: string[];
-}
 
-interface ThemeApiResponse {
-  id: string | number;
-  theme: string;
-  created_at: string;
-  text1: string;
-  text2: string;
-  text3: string;
-  text4: string;
-}
-
-interface ThemesApiData {
-  items: ThemeApiResponse[];
-}
 
 export default function MeusTemasPage() {
   const { user, logout } = useAuth();
@@ -48,9 +29,18 @@ export default function MeusTemasPage() {
         const teacherId = AuthService.getUserId();
         if (!teacherId) return;
 
-        const data: ThemesApiData = await ThemeServices.getThemesByTeacher(teacherId);
+        const response = await ThemeServices.getThemesByTeacher(teacherId);
 
-        const adaptados: Tema[] = data.items.map((item: ThemeApiResponse) => ({
+        if (!response.success || !response.data) {
+          console.error('Erro ao buscar temas:', response.error);
+          return;
+        }
+
+        const data: ThemesApiData = {
+          items: response.data.items,
+        };
+
+        const adaptados: Tema[] = data.items.map((item: ThemeResponse) => ({
           id: item.id,
           titulo: item.theme,
           criado: new Date(item.created_at).toLocaleDateString('pt-BR'),
@@ -89,15 +79,21 @@ export default function MeusTemasPage() {
 
     try {
       setLoading(true);
-      const novoTema: ThemeApiResponse = await ThemeServices.createTheme(payload);
+
+      const response = await ThemeServices.createTheme(payload);
+
+      if (!response.success || !response.data) {
+        setError(response.error || '❌ Erro ao criar tema.');
+        return;
+      }
+
+      const novoTema: ThemeResponse = response.data;
 
       const temaAdaptado: Tema = {
-        id: novoTema.id || Date.now(),
+        id: novoTema.id,
         titulo: novoTema.theme,
-        criado: new Date().toLocaleDateString('pt-BR'),
-        textos: [novoTema.text1, novoTema.text2, novoTema.text3, novoTema.text4].filter(
-          (t: string) => Boolean(t),
-        ),
+        criado: new Date(novoTema.created_at || Date.now()).toLocaleDateString('pt-BR'),
+        textos: [novoTema.text1, novoTema.text2, novoTema.text3, novoTema.text4].filter(Boolean),
       };
 
       setTemas([temaAdaptado, ...temas]);
@@ -109,12 +105,13 @@ export default function MeusTemasPage() {
       setError('');
       setShowModal(false);
     } catch (err) {
-      console.error(err);
+      console.error('Erro ao criar tema:', err);
       setError('❌ Erro ao criar tema.');
     } finally {
       setLoading(false);
     }
   };
+
 
   const menuItems: SidebarItem[] = [
     { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
