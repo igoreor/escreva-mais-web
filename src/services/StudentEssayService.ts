@@ -1,46 +1,10 @@
+import env from '@/config/env';
 import AuthService from './authService';
+import { CreateEssayResponse, EssayWithStatus, StudentFeedbackDetails } from '@/types/essay';
 
-export interface EssayWithStatus {
-  id: string;
-  title: string;
-  theme: string;
-  is_draft: boolean;
-  status: string;
-  created_at: string;
-}
-
-export interface Essay {
-  id: string;
-  assignment_id: string;
-  author_id: string;
-  title: string;
-  theme: string;
-  image_key?: string; 
-  image_url?: string; 
-  content: string;
-  created_at: string;
-}
-
-export interface Competency {
-  id: string;
-  competency: string;
-  score: number;
-  feedback: string;
-}
-
-export interface StudentFeedbackDetails {
-  total_score: number;
-  best_competency: Competency;
-  worst_competency: Competency;
-  competencies: Competency[];
-  teacher_comment: string;
-  ai_strengths: string[];
-  ai_weaknesses: string[];
-}
 
 class StudentEssayService {
-  private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-  private static USER_ID = AuthService.getUserId();
+  private static readonly API_BASE_URL: string = env.apiUrl;
 
   private static getHeaders() {
     const token = AuthService.getToken();
@@ -93,7 +57,7 @@ class StudentEssayService {
     }
   }
 
-  static async getEssay(essayId: string): Promise<Essay> {
+  static async getEssay(essayId: string): Promise<CreateEssayResponse> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/essays/essays/${essayId}`, {
         method: 'GET',
@@ -104,7 +68,7 @@ class StudentEssayService {
         throw new Error(`Erro ao buscar ensaio: ${response.status} ${response.statusText}`);
       }
 
-      const essay: Essay = await response.json();
+      const essay: CreateEssayResponse = await response.json();
       console.log('Fetched essay:', essay);
       return essay;
     } catch (error) {

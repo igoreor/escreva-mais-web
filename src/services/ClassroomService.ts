@@ -1,82 +1,10 @@
+import env from '@/config/env';
 import AuthService from './authService';
-
-export interface Theme {
-  id: string;
-  theme: string;
-}
-
-export interface Assignment {
-  id: string;
-  title: string;
-  due_date: string;
-  submission_status: string;
-}
-
-export interface ClassroomDetails {
-  name: string;
-  description: string;
-  student_count: number;
-  assignments: Assignment[];
-}
-
-export interface CreateAssignmentRequest {
-  classroom_id: string;
-  motivational_content_id: string;
-  due_date: string;
-  description?: string;
-}
-
-export interface CreateAssignmentResponse {
-  id: string;
-  title: string;
-  due_date: string;
-  classroom_id: string;
-  motivational_content_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-  profile_picture_url: string | null;
-}
-
-export interface Submission {
-  user: User;
-  submitted_at: string;
-  grade: number;
-  essay_id: string;
-}
-
-export interface MotivationalContent {
-  id: string;
-  theme: string;
-  text1: string;
-  text2: string;
-  text3: string;
-  text4: string;
-  created_at: string;
-  creator_id: string;
-}
-
-export interface AssignmentDetails {
-  id: string;
-  description: string | null;
-  due_date: string;
-  motivational_content: MotivationalContent;
-  submissions_count: number;
-  students_count: number;
-  submissions: Submission[];
-}
+import { AssignmentDetails, ClassroomDetails, CreateAssignmentRequest, CreateAssignmentResponse } from '@/types/classroom';
+import { Theme } from '@/types/theme';
 
 class ClassroomService {
-  private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-
-  private static USER_ID = AuthService.getUserId();
+  private static readonly API_BASE_URL: string = env.apiUrl;
 
   private static getHeaders() {
     const token = AuthService.getToken();

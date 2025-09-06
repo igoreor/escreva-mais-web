@@ -1,9 +1,10 @@
+import env from '@/config/env';
 import AuthService from './authService';
+import { CreateEssayResponse, CreateStandAloneEssayRequest, EssayValidationResult, EvaluateEssayResponse } from '@/types/essay';
+
 
 class SubmitEssayService {
-  private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-
-  private static USER_ID = AuthService.getUserId();
+  private static readonly API_BASE_URL: string = env.apiUrl;
 
   private static getHeaders() {
     const token = AuthService.getToken();
@@ -20,12 +21,7 @@ class SubmitEssayService {
     };
   }
 
-  static async createStandAloneEssay(essayData: {
-    theme: string;
-    title?: string | null;
-    content?: string | null;
-    image?: File | null;
-  }) {
+  static async createStandAloneEssay(essayData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
     try {
       const formData = new FormData();
 
@@ -47,7 +43,7 @@ class SubmitEssayService {
         throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
-      const createdEssay = await response.json();
+      const createdEssay: CreateEssayResponse = await response.json();
 
       this.evaluateEssay(createdEssay.id)
         .then((result) => {
@@ -64,7 +60,7 @@ class SubmitEssayService {
     }
   }
 
-  static async evaluateEssay(essayId: string) {
+  static async evaluateEssay(essayId: string): Promise<EvaluateEssayResponse> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`, {
         method: 'POST',
@@ -83,12 +79,7 @@ class SubmitEssayService {
     }
   }
 
-  // static async saveDraft(draftData: {
-  //     theme: string;
-  //     title?: string | null;
-  //     content?: string | null;
-  //     image?: File | null;
-  // }) {
+  // static async saveDraft(draftData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
   //     try {
   //         const formData = new FormData();
 
@@ -121,7 +112,7 @@ class SubmitEssayService {
   //     }
   // }
 
-  static validateEssayData(theme: string, content: string, image: File | null) {
+  static validateEssayData(theme: string, content: string, image: File | null): EssayValidationResult {
     const errors: string[] = [];
 
     if (!theme || !theme.trim()) {
@@ -153,7 +144,7 @@ class SubmitEssayService {
     };
   }
 
-  static clearFormData() {
+  static clearFormData(): CreateStandAloneEssayRequest {
     return {
       theme: '',
       title: '',

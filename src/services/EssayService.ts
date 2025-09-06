@@ -1,83 +1,10 @@
+import env from '@/config/env';
 import AuthService from './authService';
-
-interface MotivationalContent {
-  id: string;
-  theme: string;
-  text1: string;
-  text2: string;
-  text3: string;
-  text4: string;
-  created_at: string;
-  creator_id: string;
-}
-
-interface User {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: 'student' | 'teacher';
-  profile_picture_url?: string;
-}
-
-interface Submission {
-  user: User;
-  submitted_at: string;
-  grade: number;
-  essay_id: string;
-}
-
-interface AssignmentDetailsResponse {
-  id: string;
-  description: string;
-  due_date: string;
-  motivational_content: MotivationalContent;
-  submissions_count: number;
-  students_count: number;
-  submissions: Submission[];
-}
-
-interface EvaluationPoint {
-  id: string;
-  essay_feedback_id?: string;
-  competency_feedback_id?: string;
-  is_strength: boolean;
-  comment: string;
-}
-
-interface CompetencyFeedback {
-  id: string;
-  competency: string;
-  essay_feedback_id: string;
-  score: number;
-  feedback: string;
-  evaluation_points: EvaluationPoint[];
-}
-
-interface EssayDetailsForTeacherResponse {
-  essay_id: string;
-  student: User;
-  title: string;
-  content: string;
-  image_url?: string;
-  general_feedback: string;
-  evaluation_points: EvaluationPoint[];
-  competency_feedbacks: CompetencyFeedback[];
-}
-
-interface UpdateEssayFeedbackRequest {
-  general_feedback: string;
-}
-
-interface UpdateEssayFeedbackResponse {
-  status: string;
-}
+import { ApiError, AssignmentDetailsResponse, EssayDetailsForTeacherResponse, UpdateEssayFeedbackRequest, UpdateEssayFeedbackResponse } from '@/types/essay';
 
 
 class EssayService {
-  private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-
-  private static USER_ID = AuthService.getUserId();
+  private static readonly API_BASE_URL: string = env.apiUrl;
 
   private static getHeaders() {
     const token = AuthService.getToken();
@@ -220,25 +147,4 @@ class EssayService {
   }
 }
 
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}   
-
 export default EssayService;
-export type {
-  AssignmentDetailsResponse,
-  Submission,
-  User,
-  MotivationalContent,
-  EssayDetailsForTeacherResponse,
-  EvaluationPoint,
-  CompetencyFeedback,
-  UpdateEssayFeedbackRequest,
-  UpdateEssayFeedbackResponse
-};

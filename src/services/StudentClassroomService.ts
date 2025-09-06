@@ -1,62 +1,10 @@
+import env from '@/config/env';
 import AuthService from './authService';
-
-interface Assignment {
-  id: string;
-  title: string;
-  due_date: string;
-  status: string;
-}
-
-interface MotivationalContent {
-  id: string;
-  theme: string;
-  text1: string;
-  text2: string;
-  text3: string;
-  text4: string;
-  created_at: string;
-  creator_id: string;
-}
-
-interface AssignmentDetailsForStudent {
-  title: string;
-  description: string;
-  motivational_content: MotivationalContent;
-  due_date: string;
-  assignment_status: string;
-  essay_id: string;
-}
-
-interface ClassroomDetailsForStudent {
-  name: string;
-  student_count: number;
-  description: string;
-  teacher_name: string;
-  assignments: Assignment[];
-}
-
-interface CreateEssayRequest {
-  assignment_id: string;
-  title?: string;
-  content?: string;
-  image?: File;
-}
-
-interface CreateEssayResponse {
-  id: string;
-  assignment_id: string;
-  author_id: string;
-  title: string;
-  theme: string;
-  image_key?: string;
-  content: string;
-  created_at: string;
-}
+import { AssignmentDetailsForStudent, ClassroomDetailsForStudent } from '@/types/classroom';
+import { CreateEssayRequest, CreateEssayResponse } from '@/types/essay';
 
 class StudentClassroomService {
-  private static readonly API_BASE_URL: string = process.env.NEXT_PUBLIC_API_BASE_URL!;
-
-  private static USER_ID = AuthService.getUserId();
+  private static readonly API_BASE_URL: string = env.apiUrl;
 
   private static getHeaders() {
     const token = AuthService.getToken();
