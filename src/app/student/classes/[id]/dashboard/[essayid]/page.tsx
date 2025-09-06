@@ -141,19 +141,19 @@ const ActivityDetailPage: React.FC = () => {
     if (status === 'Entregue') {
       return (
         <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-        <a
-          href={`/student/classes/${classId}/dashboard/${essayId}/essayDetails/${assignment.essay_id}`}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
-        >
-          📄 Ver Redação
-        </a>
+          <a
+            href={`/student/classes/${classId}/dashboard/${essayId}/essayDetails/${assignment.essay_id}`}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
+          >
+            📄 Ver Redação
+          </a>
 
-        <a
-          href={`/student/classes/${classId}/dashboard/${essayId}/analitcs/${assignment.essay_id}`}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
-        >
-          ✏️ Ver Correção
-        </a>
+          <a
+            href={`/student/classes/${classId}/dashboard/${essayId}/analitcs/${assignment.essay_id}`}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
+          >
+            ✏️ Ver Correção
+          </a>
         </div>
       );
     } else if (status === 'Não enviado' || status === 'Pendente') {
@@ -213,7 +213,7 @@ const ActivityDetailPage: React.FC = () => {
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           {/* Botão voltar */}
           <button
-            onClick={() => (router.push(`/student/classes/${classId}/dashboard`))}
+            onClick={() => router.push(`/student/classes/${classId}/dashboard`)}
             className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
             <FiArrowLeft className="mr-1" />

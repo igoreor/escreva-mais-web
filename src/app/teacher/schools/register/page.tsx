@@ -69,7 +69,7 @@ export default function CreateSchoolPage() {
     complemento: '',
     imagem: null,
   });
-  
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -81,7 +81,7 @@ export default function CreateSchoolPage() {
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] || null;
     setForm((prev) => ({ ...prev, imagem: file }));
-    
+
     // Criar preview da imagem
     if (file) {
       const reader = new FileReader();
@@ -160,7 +160,7 @@ export default function CreateSchoolPage() {
             </div>
           </div>
         )}
-        
+
         <div className={isLoading ? 'pointer-events-none opacity-50' : ''}>
           <Sidebar menuItems={menuItems} onLogout={logout} />
         </div>
@@ -179,9 +179,11 @@ export default function CreateSchoolPage() {
           <h1 className="text-2xl font-bold text-gray-800 mb-8">Cadastrar escola</h1>
 
           <form onSubmit={handleSubmit} className="max-w-3xl space-y-6 mx-auto">
-            <div className={`border border-blue-300 rounded-md h-48 flex flex-col justify-center items-center text-blue-500 cursor-pointer hover:bg-blue-50 transition relative overflow-hidden ${
-              isLoading ? 'pointer-events-none opacity-50' : ''
-            }`}>
+            <div
+              className={`border border-blue-300 rounded-md h-48 flex flex-col justify-center items-center text-blue-500 cursor-pointer hover:bg-blue-50 transition relative overflow-hidden ${
+                isLoading ? 'pointer-events-none opacity-50' : ''
+              }`}
+            >
               {imagePreview && (
                 <button
                   type="button"
@@ -192,12 +194,15 @@ export default function CreateSchoolPage() {
                   <FiX size={16} />
                 </button>
               )}
-              <label htmlFor="imagem" className="cursor-pointer flex flex-col items-center w-full h-full">
+              <label
+                htmlFor="imagem"
+                className="cursor-pointer flex flex-col items-center w-full h-full"
+              >
                 {imagePreview ? (
                   <div className="w-full h-full relative">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview da escola" 
+                    <img
+                      src={imagePreview}
+                      alt="Preview da escola"
                       className="w-full h-full object-cover rounded-md"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">

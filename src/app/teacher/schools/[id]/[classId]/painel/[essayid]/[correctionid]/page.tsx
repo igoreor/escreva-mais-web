@@ -34,8 +34,8 @@ export default function RedacaoPage() {
   const [essayData, setEssayData] = useState<EssayDetailsForTeacherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [comment, setComment] = useState("");
-  const [message, setMessage] = useState("");
+  const [comment, setComment] = useState('');
+  const [message, setMessage] = useState('');
   const [imageZoomed, setImageZoomed] = useState(false);
 
   const router = useRouter();
@@ -43,26 +43,23 @@ export default function RedacaoPage() {
 
   const handleSendComment = async () => {
     if (!comment.trim()) {
-      setMessage("Escreva um comentário antes de enviar.");
+      setMessage('Escreva um comentário antes de enviar.');
       return;
     }
 
     try {
-      setMessage("Enviando...");
-      await EssayService.updateEssayFeedbackWithPermissionCheck(
-        correctionid as string,
-        { general_feedback: comment }
-      );
-      setMessage("Feedback enviado com sucesso! ✅");
+      setMessage('Enviando...');
+      await EssayService.updateEssayFeedbackWithPermissionCheck(correctionid as string, {
+        general_feedback: comment,
+      });
+      setMessage('Feedback enviado com sucesso! ✅');
 
-      setEssayData((prev) =>
-        prev ? { ...prev, general_feedback: comment } : prev
-      );
+      setEssayData((prev) => (prev ? { ...prev, general_feedback: comment } : prev));
 
-      setComment("");
+      setComment('');
     } catch (err: unknown) {
-      console.error("Erro ao enviar feedback:", err);
-      const errorMessage = err instanceof Error ? err.message : "Erro ao enviar feedback.";
+      console.error('Erro ao enviar feedback:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao enviar feedback.';
       setMessage(errorMessage);
     }
   };
@@ -78,11 +75,14 @@ export default function RedacaoPage() {
 
       try {
         setLoading(true);
-        const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(correctionid as string);
+        const data = await EssayService.getEssayDetailsForTeacherWithPermissionCheck(
+          correctionid as string,
+        );
         setEssayData(data);
       } catch (err: unknown) {
         console.error('Erro ao carregar dados da redação:', err);
-        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados da redação';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Erro ao carregar dados da redação';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -125,9 +125,9 @@ export default function RedacaoPage() {
     if (essayData?.image_url) {
       return (
         <div className="flex justify-center items-center h-full">
-          <img 
-            src={essayData.image_url} 
-            alt="Redação do aluno" 
+          <img
+            src={essayData.image_url}
+            alt="Redação do aluno"
             className="max-w-full max-h-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => setImageZoomed(true)}
             onError={(e) => {
@@ -143,9 +143,7 @@ export default function RedacaoPage() {
     if (essayData?.content) {
       return (
         <div className="p-4">
-          {essayData.title && (
-            <h3 className="font-semibold text-lg mb-3">{essayData.title}</h3>
-          )}
+          {essayData.title && <h3 className="font-semibold text-lg mb-3">{essayData.title}</h3>}
           <div className="text-gray-700 whitespace-pre-wrap">{essayData.content}</div>
         </div>
       );
@@ -285,7 +283,12 @@ export default function RedacaoPage() {
             <button
               type="button"
               className="text-blue-600 text-sm mt-2 text-left"
-              onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback || 'Nenhum feedback disponível' })}
+              onClick={() =>
+                setPopup({
+                  type: 'geral',
+                  feedback: essayData.general_feedback || 'Nenhum feedback disponível',
+                })
+              }
             >
               Feedback do professor
             </button>
@@ -294,7 +297,12 @@ export default function RedacaoPage() {
               {preview(essayData.general_feedback || '').truncated && (
                 <button
                   type="button"
-                  onClick={() => setPopup({ type: 'geral', feedback: essayData.general_feedback || 'Nenhum feedback disponível' })}
+                  onClick={() =>
+                    setPopup({
+                      type: 'geral',
+                      feedback: essayData.general_feedback || 'Nenhum feedback disponível',
+                    })
+                  }
                   className="text-sm font-normal text-gray-400"
                 >
                   Ver mais
@@ -341,38 +349,38 @@ export default function RedacaoPage() {
               onClick={() => setImageZoomed(false)}
               className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 rounded-full p-3 z-20 transition-all shadow-lg"
             >
-              <svg 
-                className="w-6 h-6 text-gray-800" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-6 h-6 text-gray-800"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M6 18L18 6M6 6l12 12" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             </button>
-            
+
             {/* Container da imagem com scroll */}
-            <div 
+            <div
               className="w-full h-full overflow-auto bg-white bg-opacity-5 rounded-lg flex justify-center items-start p-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <img 
-                src={essayData.image_url} 
-                alt="Redação do aluno - Zoom" 
+              <img
+                src={essayData.image_url}
+                alt="Redação do aluno - Zoom"
                 className="max-w-none h-auto min-w-full object-contain shadow-2xl rounded-lg"
-                style={{ 
+                style={{
                   minHeight: '100%',
                   width: 'auto',
-                  maxWidth: 'none'
+                  maxWidth: 'none',
                 }}
               />
             </div>
-            
+
             {/* Instruções de uso */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg text-sm">
               Use o scroll para navegar • Clique fora da imagem ou no X para fechar

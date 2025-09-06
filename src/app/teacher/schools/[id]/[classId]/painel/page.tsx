@@ -195,9 +195,7 @@ const TeacherClassPage: React.FC = () => {
                           minute: '2-digit',
                         })}
                       </span>
-                      <span className="text-gray-600">
-                        {assignment.status} entregues
-                      </span>
+                      <span className="text-gray-600">{assignment.status} entregues</span>
                     </div>
                   </div>
                 </div>

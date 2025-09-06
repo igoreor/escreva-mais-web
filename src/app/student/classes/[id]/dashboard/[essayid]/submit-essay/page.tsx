@@ -57,8 +57,8 @@ const getMenuItems = (id: string) => [
   },
 ];
 
-const FileUpload: React.FC<{ 
-  onFileSelect: (file: File) => void; 
+const FileUpload: React.FC<{
+  onFileSelect: (file: File) => void;
   disabled?: boolean;
   isBlocked?: boolean;
 }> = ({ onFileSelect, disabled = false, isBlocked = false }) => {
@@ -68,7 +68,7 @@ const FileUpload: React.FC<{
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (disabled || isBlocked) return;
-    
+
     const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
@@ -76,17 +76,23 @@ const FileUpload: React.FC<{
     }
   };
 
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    if (disabled || isBlocked) return;
-    event.preventDefault();
-    setIsDragging(true);
-  }, [disabled, isBlocked]);
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      if (disabled || isBlocked) return;
+      event.preventDefault();
+      setIsDragging(true);
+    },
+    [disabled, isBlocked],
+  );
 
-  const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    if (disabled || isBlocked) return;
-    event.preventDefault();
-    setIsDragging(false);
-  }, [disabled, isBlocked]);
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      if (disabled || isBlocked) return;
+      event.preventDefault();
+      setIsDragging(false);
+    },
+    [disabled, isBlocked],
+  );
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -119,11 +125,12 @@ const FileUpload: React.FC<{
   return (
     <div
       className={`flex flex-col items-center justify-center w-full p-6 sm:p-8 border-2 border-dashed rounded-2xl transition-all duration-200 ease-in-out
-        ${isDisabledStyle 
-          ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60' 
-          : isDragging 
-            ? 'border-primary-600 bg-primary-50 cursor-pointer' 
-            : 'border-blue-400 bg-global-3 cursor-pointer'
+        ${
+          isDisabledStyle
+            ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60'
+            : isDragging
+              ? 'border-primary-600 bg-primary-50 cursor-pointer'
+              : 'border-blue-400 bg-global-3 cursor-pointer'
         }`}
       onClick={handleClick}
       onDragOver={handleDragOver}
@@ -139,7 +146,9 @@ const FileUpload: React.FC<{
         disabled={disabled || isBlocked}
       />
       <div className="flex flex-col items-center justify-center text-center">
-        <FiUpload className={`w-10 h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`} />
+        <FiUpload
+          className={`w-10 h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`}
+        />
         <p className={`${isDisabledStyle ? 'text-gray-400' : 'text-gray-500'}`}>
           <span className={`font-semibold ${isDisabledStyle ? 'text-gray-400' : 'text-blue-600'}`}>
             {isDisabledStyle ? 'Upload bloqueado' : 'Clique para enviar'}
@@ -171,7 +180,16 @@ const TextAreaWithLineNumbers: React.FC<{
   maxLines?: number;
   showCharCount?: boolean;
   disabled?: boolean;
-}> = ({ value, onChange, placeholder, rows = 10, maxLength, maxLines, showCharCount, disabled = false }) => {
+}> = ({
+  value,
+  onChange,
+  placeholder,
+  rows = 10,
+  maxLength,
+  maxLines,
+  showCharCount,
+  disabled = false,
+}) => {
   const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [lineNumbers, setLineNumbers] = useState('01');
@@ -185,7 +203,7 @@ const TextAreaWithLineNumbers: React.FC<{
   // Intercepta mudanças para respeitar limite de linhas
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (disabled) return;
-    
+
     const newValue = e.target.value;
     const newLineCount = newValue.split('\n').length;
 
@@ -222,7 +240,9 @@ const TextAreaWithLineNumbers: React.FC<{
   return (
     <div className="relative w-full">
       {/* Container principal - sem overflow */}
-      <div className={`flex w-full border border-gray-300 rounded-lg ${disabled ? 'bg-gray-100' : 'bg-white'}`}>
+      <div
+        className={`flex w-full border border-gray-300 rounded-lg ${disabled ? 'bg-gray-100' : 'bg-white'}`}
+      >
         {/* Textarea de números das linhas */}
         <textarea
           readOnly
@@ -237,7 +257,7 @@ const TextAreaWithLineNumbers: React.FC<{
         <textarea
           ref={textAreaRef}
           rows={rows}
-          placeholder={disabled ? "Upload de imagem selecionado - texto desabilitado" : placeholder}
+          placeholder={disabled ? 'Upload de imagem selecionado - texto desabilitado' : placeholder}
           value={value}
           onChange={handleChange}
           onScroll={syncScroll}
@@ -372,14 +392,15 @@ const SubmitEssayPage: React.FC = () => {
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
 
-    setTimeout(() => {
-      router.push(`/student/classes/${classId}/dashboard`);
-    }, 2000);
-      
+      setTimeout(() => {
+        router.push(`/student/classes/${classId}/dashboard`);
+      }, 2000);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message :
-        'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
-      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
+
       setPopupConfig({
         type: 'error',
         title: 'Erro no Envio',
@@ -449,7 +470,12 @@ const SubmitEssayPage: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <label className="text-global-1 font-semibold">
-                    Texto {hasImage && <span className="text-sm text-gray-500 font-normal">(desabilitado - imagem selecionada)</span>}
+                    Texto{' '}
+                    {hasImage && (
+                      <span className="text-sm text-gray-500 font-normal">
+                        (desabilitado - imagem selecionada)
+                      </span>
+                    )}
                   </label>
                   {hasText && (
                     <button
@@ -485,7 +511,11 @@ const SubmitEssayPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                   Ou faça o upload de uma foto
-                  {hasText && <span className="text-sm text-gray-500 font-normal ml-2">(bloqueado - há texto digitado)</span>}
+                  {hasText && (
+                    <span className="text-sm text-gray-500 font-normal ml-2">
+                      (bloqueado - há texto digitado)
+                    </span>
+                  )}
                 </h2>
                 {hasImage && (
                   <button
@@ -497,16 +527,16 @@ const SubmitEssayPage: React.FC = () => {
                   </button>
                 )}
               </div>
-              
+
               {textDisabled && (
                 <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
                   <FiAlertCircle className="w-4 h-4" />
                   <span>Modo imagem ativado - texto desabilitado</span>
                 </div>
               )}
-              
-              <FileUpload 
-                onFileSelect={handleImageSelect} 
+
+              <FileUpload
+                onFileSelect={handleImageSelect}
                 disabled={loading}
                 isBlocked={imageBlocked}
               />

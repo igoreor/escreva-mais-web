@@ -37,7 +37,6 @@ export interface Theme {
   theme: string;
 }
 
-
 export interface Tema {
   id: string | number;
   titulo: string;

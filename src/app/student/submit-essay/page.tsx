@@ -4,7 +4,15 @@ import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
 import EditText from '@/components/ui/EditText';
 import RouteGuard from '@/components/auth/RouterGuard';
-import { FiHome, FiUpload, FiFileText, FiUser, FiPaperclip, FiBookOpen, FiAlertCircle } from 'react-icons/fi';
+import {
+  FiHome,
+  FiUpload,
+  FiFileText,
+  FiUser,
+  FiPaperclip,
+  FiBookOpen,
+  FiAlertCircle,
+} from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
 
@@ -41,8 +49,8 @@ const getMenuItems = (id: string) => [
   },
 ];
 
-const FileUpload: React.FC<{ 
-  onFileSelect: (file: File) => void; 
+const FileUpload: React.FC<{
+  onFileSelect: (file: File) => void;
   disabled?: boolean;
   isBlocked?: boolean;
 }> = ({ onFileSelect, disabled = false, isBlocked = false }) => {
@@ -52,7 +60,7 @@ const FileUpload: React.FC<{
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (disabled || isBlocked) return;
-    
+
     const file = event.target.files?.[0];
     if (file) {
       setFileName(file.name);
@@ -60,17 +68,23 @@ const FileUpload: React.FC<{
     }
   };
 
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    if (disabled || isBlocked) return;
-    event.preventDefault();
-    setIsDragging(true);
-  }, [disabled, isBlocked]);
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      if (disabled || isBlocked) return;
+      event.preventDefault();
+      setIsDragging(true);
+    },
+    [disabled, isBlocked],
+  );
 
-  const handleDragLeave = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    if (disabled || isBlocked) return;
-    event.preventDefault();
-    setIsDragging(false);
-  }, [disabled, isBlocked]);
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      if (disabled || isBlocked) return;
+      event.preventDefault();
+      setIsDragging(false);
+    },
+    [disabled, isBlocked],
+  );
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -102,11 +116,12 @@ const FileUpload: React.FC<{
   return (
     <div
       className={`flex flex-col items-center justify-center w-full p-4 sm:p-6 border-2 border-dashed rounded-xl transition-all duration-200 ease-in-out
-        ${isDisabledStyle 
-          ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60' 
-          : isDragging 
-            ? 'border-primary-600 bg-primary-50 cursor-pointer' 
-            : 'border-blue-400 bg-global-3 cursor-pointer'
+        ${
+          isDisabledStyle
+            ? 'border-gray-300 bg-gray-100 cursor-not-allowed opacity-60'
+            : isDragging
+              ? 'border-primary-600 bg-primary-50 cursor-pointer'
+              : 'border-blue-400 bg-global-3 cursor-pointer'
         }`}
       onClick={handleClick}
       onDragOver={handleDragOver}
@@ -122,8 +137,12 @@ const FileUpload: React.FC<{
         disabled={disabled || isBlocked}
       />
       <div className="flex flex-col items-center justify-center text-center">
-        <FiUpload className={`w-8 h-8 sm:w-10 sm:h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`} />
-        <p className={`${isDisabledStyle ? 'text-gray-400' : 'text-gray-500'} text-sm sm:text-base`}>
+        <FiUpload
+          className={`w-8 h-8 sm:w-10 sm:h-10 mb-3 ${isDisabledStyle ? 'text-gray-300' : 'text-gray-400'}`}
+        />
+        <p
+          className={`${isDisabledStyle ? 'text-gray-400' : 'text-gray-500'} text-sm sm:text-base`}
+        >
           <span className={`font-semibold ${isDisabledStyle ? 'text-gray-400' : 'text-blue-600'}`}>
             {isDisabledStyle ? 'Upload bloqueado' : 'Clique para enviar'}
           </span>
@@ -154,7 +173,16 @@ const TextAreaWithLineNumbers: React.FC<{
   showCharCount?: boolean;
   maxLines?: number;
   disabled?: boolean;
-}> = ({ value, onChange, placeholder, rows = 10, maxLength, showCharCount, maxLines = 30, disabled = false }) => {
+}> = ({
+  value,
+  onChange,
+  placeholder,
+  rows = 10,
+  maxLength,
+  showCharCount,
+  maxLines = 30,
+  disabled = false,
+}) => {
   const lineNumbersRef = useRef<HTMLTextAreaElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [lineNumbers, setLineNumbers] = useState('01');
@@ -202,7 +230,9 @@ const TextAreaWithLineNumbers: React.FC<{
 
   return (
     <div className="relative w-full">
-      <div className={`flex w-full border border-gray-300 rounded-lg overflow-hidden ${disabled ? 'bg-gray-100' : 'bg-white'}`}>
+      <div
+        className={`flex w-full border border-gray-300 rounded-lg overflow-hidden ${disabled ? 'bg-gray-100' : 'bg-white'}`}
+      >
         <textarea
           readOnly
           ref={lineNumbersRef}
@@ -213,7 +243,7 @@ const TextAreaWithLineNumbers: React.FC<{
         <textarea
           ref={textAreaRef}
           rows={rows}
-          placeholder={disabled ? "Upload de imagem selecionado - texto desabilitado" : placeholder}
+          placeholder={disabled ? 'Upload de imagem selecionado - texto desabilitado' : placeholder}
           value={value}
           onChange={handleChange}
           onScroll={syncScroll}
@@ -358,7 +388,12 @@ const SubmitEssayPage: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="text-global-1 font-semibold">
-                    Texto {hasImage && <span className="text-sm text-gray-500 font-normal">(desabilitado - imagem selecionada)</span>}
+                    Texto{' '}
+                    {hasImage && (
+                      <span className="text-sm text-gray-500 font-normal">
+                        (desabilitado - imagem selecionada)
+                      </span>
+                    )}
                   </label>
                   {hasText && (
                     <button
@@ -392,7 +427,11 @@ const SubmitEssayPage: React.FC = () => {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                   Ou faça o upload de uma foto
-                  {hasText && <span className="text-sm text-gray-500 font-normal ml-2">(bloqueado - há texto digitado)</span>}
+                  {hasText && (
+                    <span className="text-sm text-gray-500 font-normal ml-2">
+                      (bloqueado - há texto digitado)
+                    </span>
+                  )}
                 </h2>
                 {hasImage && (
                   <button
@@ -410,18 +449,14 @@ const SubmitEssayPage: React.FC = () => {
                   <span>Modo imagem ativado - texto desabilitado</span>
                 </div>
               )}
-              <FileUpload 
-                onFileSelect={handleImageSelect} 
+              <FileUpload
+                onFileSelect={handleImageSelect}
                 disabled={isLoading}
                 isBlocked={imageBlocked}
               />
             </div>
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
-              <Button
-                variant="outline"
-                size="lg"
-                disabled={isLoading}
-              >
+              <Button variant="outline" size="lg" disabled={isLoading}>
                 {isLoading ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading}>

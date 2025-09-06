@@ -26,12 +26,7 @@ interface SuccessPopupProps {
   message: string;
 }
 
-const SuccessPopup: React.FC<SuccessPopupProps> = ({
-  isOpen,
-  onClose,
-  title,
-  message,
-}) => {
+const SuccessPopup: React.FC<SuccessPopupProps> = ({ isOpen, onClose, title, message }) => {
   if (!isOpen) return null;
 
   return (
@@ -128,7 +123,7 @@ const ProfilePage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -150,20 +145,23 @@ const ProfilePage = () => {
         throw new Error('Token de autenticação não encontrado');
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users/${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error('Erro ao buscar dados do usuário');
       }
 
       const userData: UserApiResponse = await response.json();
-      
+
       setForm({
         firstName: userData.first_name || '',
         lastName: userData.last_name || '',
@@ -180,11 +178,10 @@ const ProfilePage = () => {
         email: userData.email,
         profile_picture_url: userData.profile_picture_url,
       });
-
     } catch (error) {
       console.error('Erro ao buscar dados do usuário:', error);
       setErrorMessage('Erro ao carregar dados do perfil. Tente novamente.');
-      
+
       const localUser = AuthService.getUser();
       if (localUser) {
         setForm({
@@ -192,7 +189,7 @@ const ProfilePage = () => {
           lastName: localUser.last_name || '',
           email: localUser.email || '',
         });
-        
+
         const userWithPhoto = localUser as User & { profile_picture_url?: string };
         if (userWithPhoto.profile_picture_url) {
           setProfileImagePreview(userWithPhoto.profile_picture_url);
@@ -229,7 +226,7 @@ const ProfilePage = () => {
       }
 
       setProfileImage(file);
-      
+
       const reader = new FileReader();
       reader.onload = (event) => {
         setProfileImagePreview(event.target?.result as string);
@@ -268,11 +265,11 @@ const ProfilePage = () => {
         setSuccessPopup({
           isOpen: true,
           title: 'Perfil atualizado!',
-          message: result.message || 'Perfil atualizado com sucesso!'
+          message: result.message || 'Perfil atualizado com sucesso!',
         });
-        
+
         setProfileImage(null);
-        
+
         await fetchUserData();
       } else {
         setErrorMessage(result.error || 'Erro ao atualizar perfil');
@@ -315,7 +312,7 @@ const ProfilePage = () => {
         setSuccessPopup({
           isOpen: true,
           title: 'Senha alterada!',
-          message: result.message || 'Senha alterada com sucesso!'
+          message: result.message || 'Senha alterada com sucesso!',
         });
         setPasswordForm({
           oldPassword: '',
@@ -465,7 +462,7 @@ const ProfilePage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg w-full max-w-md p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Alterar Senha</h2>
-              
+
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
@@ -511,7 +508,9 @@ const ProfilePage = () => {
 
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <label className="text-sm text-gray-600 font-medium">Confirmar nova senha *</label>
+                    <label className="text-sm text-gray-600 font-medium">
+                      Confirmar nova senha *
+                    </label>
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={passwordForm.confirmNewPassword}
@@ -567,10 +566,7 @@ const ProfilePage = () => {
         />
 
         {errorMessage && (
-          <ErrorPopup
-            message={errorMessage}
-            onClose={() => setErrorMessage(null)}
-          />
+          <ErrorPopup message={errorMessage} onClose={() => setErrorMessage(null)} />
         )}
       </div>
     </RouteGuard>

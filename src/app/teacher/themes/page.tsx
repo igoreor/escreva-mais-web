@@ -8,8 +8,6 @@ import { useEffect, useState } from 'react';
 import { Tema, ThemePayload, ThemeResponse, ThemesApiData } from '@/types/theme';
 import { AuthService, ThemeServices } from '@/services';
 
-
-
 export default function MeusTemasPage() {
   const { user, logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
@@ -111,7 +109,6 @@ export default function MeusTemasPage() {
       setLoading(false);
     }
   };
-
 
   const menuItems: SidebarItem[] = [
     { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },

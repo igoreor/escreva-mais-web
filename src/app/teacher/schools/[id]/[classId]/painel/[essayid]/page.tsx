@@ -66,9 +66,13 @@ const EssayPage: React.FC = () => {
     return 'bg-red-100 text-red-700 border-red-300';
   };
 
-  const renderUserAvatar = (user: { first_name: string; last_name: string; profile_picture_url?: string }) => {
+  const renderUserAvatar = (user: {
+    first_name: string;
+    last_name: string;
+    profile_picture_url?: string;
+  }) => {
     const initials = `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase();
-    
+
     if (user.profile_picture_url) {
       return (
         <div className="relative">
@@ -214,15 +218,19 @@ const EssayPage: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     {/* Avatar do usuário */}
-                    {renderUserAvatar(sub.user.profile_picture_url ? {
-                      first_name: sub.user.first_name,
-                      last_name: sub.user.last_name,
-                      profile_picture_url: sub.user.profile_picture_url,
-                    } : {
-                      first_name: sub.user.first_name,
-                      last_name: sub.user.last_name,
-                    })}
-                    
+                    {renderUserAvatar(
+                      sub.user.profile_picture_url
+                        ? {
+                            first_name: sub.user.first_name,
+                            last_name: sub.user.last_name,
+                            profile_picture_url: sub.user.profile_picture_url,
+                          }
+                        : {
+                            first_name: sub.user.first_name,
+                            last_name: sub.user.last_name,
+                          },
+                    )}
+
                     {/* Informações do usuário */}
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-gray-900 truncate">
@@ -254,7 +262,7 @@ const EssayPage: React.FC = () => {
                       }}
                       className="flex items-center justify-center gap-1 sm:gap-2 bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
                     >
-                      <FiMessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" /> 
+                      <FiMessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
                       <span className="hidden sm:inline">Ver redação</span>
                       <span className="sm:hidden">Ver</span>
                     </button>

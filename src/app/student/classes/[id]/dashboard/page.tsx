@@ -78,12 +78,12 @@ const mapApiStatusToLocal = (apiStatus: string): 'Pendente' | 'Entregue' | 'Não
     not_submitted: 'Não enviado',
     completed: 'Entregue',
     overdue: 'Não enviado',
-    
-    'Pendente': 'Pendente',
-    'Entregue': 'Entregue',
+
+    Pendente: 'Pendente',
+    Entregue: 'Entregue',
     'Não enviado': 'Não enviado',
-    'pendente': 'Pendente',
-    'entregue': 'Entregue',
+    pendente: 'Pendente',
+    entregue: 'Entregue',
     'não enviado': 'Não enviado',
   };
 
@@ -138,13 +138,14 @@ const ClassDetailPage: React.FC = () => {
             a.status === 'Pendente'
               ? 'Pendente'
               : a.status === 'Entregue'
-              ? 'Entregue'
-              : 'Não enviado',
+                ? 'Entregue'
+                : 'Não enviado',
         }));
 
         setClassroom({ ...data, assignments });
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar dados da turma.';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Erro ao carregar dados da turma.';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -171,7 +172,7 @@ const ClassDetailPage: React.FC = () => {
       <div className="flex w-full bg-gray-50">
         <Sidebar menuItems={getMenuItems(classId as string)} onLogout={logout} />
 
-         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
+        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           {/* Header */}
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">

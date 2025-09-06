@@ -1,12 +1,7 @@
 import env from '@/config/env';
 import AuthService from './authService';
 import { ApiResponse } from '@/types/user';
-import {
-  ThemePayload,
-  ThemeUpdatePayload,
-  ThemeResponse,
-  ThemesListResponse,
-} from '@/types/theme';
+import { ThemePayload, ThemeUpdatePayload, ThemeResponse, ThemesListResponse } from '@/types/theme';
 
 class ThemeService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -137,7 +132,7 @@ class ThemeService {
 
   static async updateTheme(
     themeId: string,
-    payload: ThemeUpdatePayload
+    payload: ThemeUpdatePayload,
   ): Promise<ApiResponse<ThemeResponse>> {
     try {
       const response = await fetch(

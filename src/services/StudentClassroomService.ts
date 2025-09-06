@@ -122,10 +122,13 @@ class StudentClassroomService {
 
   static async evaluateEssay(essayId: string) {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-      });
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+        },
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

@@ -25,11 +25,12 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           <FiAlertTriangle className="text-red-500" size={24} />
           <h3 className="text-lg font-semibold text-gray-900">Confirmar Exclusão</h3>
         </div>
-        
+
         <p className="text-gray-600 mb-6">
-          Tem certeza que deseja excluir o tema &quot;{themeName}&quot;? Esta ação não pode ser desfeita.
+          Tem certeza que deseja excluir o tema &quot;{themeName}&quot;? Esta ação não pode ser
+          desfeita.
         </p>
-        
+
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}

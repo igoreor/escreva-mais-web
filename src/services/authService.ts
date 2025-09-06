@@ -1,5 +1,14 @@
 import env from '@/config/env';
-import { ApiResponse, ChangePasswordData, DecodedToken, LoginRequest, LoginResponse, UpdatedUserData, UpdateUserData, User } from '@/types/user';
+import {
+  ApiResponse,
+  ChangePasswordData,
+  DecodedToken,
+  LoginRequest,
+  LoginResponse,
+  UpdatedUserData,
+  UpdateUserData,
+  User,
+} from '@/types/user';
 
 class AuthService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -138,7 +147,7 @@ class AuthService {
 
   // Novos métodos movidos do UserService
   static async updateUserProfile(
-    data: UpdateUserData
+    data: UpdateUserData,
   ): Promise<{ success: boolean; error?: string; message?: string; data?: UpdatedUserData }> {
     try {
       const user = this.getUser();
@@ -147,7 +156,7 @@ class AuthService {
       }
 
       const formData = new window.FormData();
-      
+
       if (data.first_name) {
         formData.append('first_name', data.first_name);
       }
@@ -165,7 +174,7 @@ class AuthService {
       const response = await fetch(`${this.API_BASE_URL}/users/${user.id}/`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -174,7 +183,7 @@ class AuthService {
 
       if (response.ok) {
         this.updateUserData(responseData);
-        
+
         return {
           success: true,
           message: 'Perfil atualizado com sucesso!',
@@ -207,16 +216,14 @@ class AuthService {
     }
   }
 
-  static async changePassword(
-    data: ChangePasswordData
-  ): Promise<ApiResponse> {
+  static async changePassword(data: ChangePasswordData): Promise<ApiResponse> {
     try {
       const token = this.getToken();
       const response = await fetch(`${this.API_BASE_URL}/users/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -228,7 +235,7 @@ class AuthService {
         };
       } else {
         const responseData = await response.json();
-        
+
         if (response.status === 400 && responseData.message?.includes('password')) {
           return { success: false, error: 'Senha atual incorreta' };
         }

@@ -2,7 +2,6 @@ import env from '@/config/env';
 import AuthService from './authService';
 import { CreateEssayResponse, EssayWithStatus, StudentFeedbackDetails } from '@/types/essay';
 
-
 class StudentEssayService {
   private static readonly API_BASE_URL: string = env.apiUrl;
 

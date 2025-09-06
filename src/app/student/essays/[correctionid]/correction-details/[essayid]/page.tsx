@@ -68,7 +68,7 @@ const EssayViewPage: React.FC = () => {
               className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-800"
             />
           </div>
-          
+
           {/* tema */}
           <div>
             <label className="text-sm text-gray-600">Tema</label>

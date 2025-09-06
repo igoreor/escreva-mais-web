@@ -1,6 +1,11 @@
 import env from '@/config/env';
 import AuthService from './authService';
-import { AssignmentDetails, ClassroomDetails, CreateAssignmentRequest, CreateAssignmentResponse } from '@/types/classroom';
+import {
+  AssignmentDetails,
+  ClassroomDetails,
+  CreateAssignmentRequest,
+  CreateAssignmentResponse,
+} from '@/types/classroom';
 import { Theme } from '@/types/theme';
 
 class ClassroomService {
@@ -74,7 +79,9 @@ class ClassroomService {
     }
   }
 
-  static async createAssignment(assignmentData: CreateAssignmentRequest): Promise<CreateAssignmentResponse> {
+  static async createAssignment(
+    assignmentData: CreateAssignmentRequest,
+  ): Promise<CreateAssignmentResponse> {
     try {
       const response = await fetch(`${this.API_BASE_URL}/essays/assignments`, {
         method: 'POST',

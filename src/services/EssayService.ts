@@ -1,7 +1,12 @@
 import env from '@/config/env';
 import AuthService from './authService';
-import { ApiError, AssignmentDetailsResponse, EssayDetailsForTeacherResponse, UpdateEssayFeedbackRequest, UpdateEssayFeedbackResponse } from '@/types/essay';
-
+import {
+  ApiError,
+  AssignmentDetailsResponse,
+  EssayDetailsForTeacherResponse,
+  UpdateEssayFeedbackRequest,
+  UpdateEssayFeedbackResponse,
+} from '@/types/essay';
 
 class EssayService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -75,14 +80,11 @@ class EssayService {
     feedbackData: UpdateEssayFeedbackRequest,
   ): Promise<UpdateEssayFeedbackResponse> {
     try {
-      const response = await fetch(
-        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedback`,
-        {
-          method: 'PATCH',
-          headers: this.getHeaders(),
-          body: JSON.stringify(feedbackData),
-        },
-      );
+      const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedback`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify(feedbackData),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));

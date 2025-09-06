@@ -4,19 +4,16 @@ import { ApiResponse, FormData } from '@/types/user';
 export class RegistrationService {
   private static readonly API_BASE_URL: string = env.apiUrl;
 
-  static async registerUser(
-    data: FormData,
-    profilePicture?: File | null
-  ): Promise<ApiResponse> {
+  static async registerUser(data: FormData, profilePicture?: File | null): Promise<ApiResponse> {
     try {
       const formData = new window.FormData();
-      
+
       formData.append('first_name', data.fullName);
       formData.append('last_name', data.lastName);
       formData.append('email', data.email);
       formData.append('password', data.password);
       formData.append('role', data.userType === 'teacher' ? 'teacher' : 'student');
-      
+
       if (profilePicture) {
         formData.append('profile_picture', profilePicture);
       }

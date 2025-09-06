@@ -107,12 +107,13 @@ export default function TeacherClassesPage() {
   };
 
   const handleImageError = (schoolId: string) => {
-    setImageErrors(prev => new Set(prev).add(schoolId));
+    setImageErrors((prev) => new Set(prev).add(schoolId));
   };
 
   const renderSchoolImage = (school: School) => {
     const hasImageError = imageErrors.has(school.id);
-    const hasValidImageUrl = school.image_signed_url && school.image_signed_url.trim() !== '' && !hasImageError;
+    const hasValidImageUrl =
+      school.image_signed_url && school.image_signed_url.trim() !== '' && !hasImageError;
 
     if (hasValidImageUrl) {
       return (

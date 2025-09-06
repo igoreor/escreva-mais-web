@@ -18,7 +18,6 @@ import { ConfirmDeleteModal } from '@/components/DeleteConfirms';
 import { ThemeServices } from '@/services';
 import { ThemeResponse } from '@/types/theme';
 
-
 export default function TemaDetalhesPage() {
   const { logout } = useAuth();
   const router = useRouter();

@@ -111,11 +111,14 @@ class SchoolService {
     try {
       this.validateToken();
 
-      const response = await fetch(`${this.API_BASE_URL}/classroom/schools/${schoolId}/classrooms`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/schools/${schoolId}/classrooms`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(data),
+        },
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -150,7 +153,7 @@ class SchoolService {
     }
   }
 
-  static async  getStudentClassrooms() {
+  static async getStudentClassrooms() {
     const token = AuthService.getToken();
     if (!token) throw new Error('Token não encontrado');
 
@@ -202,7 +205,6 @@ class SchoolService {
       status: string;
     }>;
   }
-
 }
 
 export default SchoolService;

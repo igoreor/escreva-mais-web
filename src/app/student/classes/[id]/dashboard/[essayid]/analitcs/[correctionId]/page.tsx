@@ -4,14 +4,7 @@ import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import {
-  FiHome,
-  FiBookOpen,
-  FiFileText,
-  FiUser,
-  FiArrowLeft,
-  FiTrello,
-} from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiTrello } from 'react-icons/fi';
 import html2pdf from 'html2pdf.js';
 import router from 'next/router';
 import { Competency, StudentFeedbackDetails } from '@/types/essay';
@@ -97,7 +90,8 @@ const CorrectionDetailsPage: React.FC = () => {
         const data = await StudentEssayService.getStudentFeedbackDetails(correctionId);
         setFeedback(data);
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar detalhes da correção.';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Erro ao carregar detalhes da correção.';
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -163,7 +157,7 @@ const CorrectionDetailsPage: React.FC = () => {
             {/* Header com botão voltar */}
             <div className="relative flex items-center justify-center">
               <button
-                onClick={() => (router.push(`/student/classes/${classId}/dashboard`))}
+                onClick={() => router.push(`/student/classes/${classId}/dashboard`)}
                 className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-blue-600 hover:underline transition-colors"
               >
                 <FiArrowLeft size={22} />
@@ -210,9 +204,7 @@ const CorrectionDetailsPage: React.FC = () => {
                       {COMPETENCIES_MAP[feedback.best_competency.competency]?.title}
                     </div>
                   </div>
-                  <div className="bg-green-100 text-green-600 p-3 rounded-lg">
-                    ✓
-                  </div>
+                  <div className="bg-green-100 text-green-600 p-3 rounded-lg">✓</div>
                 </div>
 
                 <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 flex items-center justify-between">
@@ -228,15 +220,15 @@ const CorrectionDetailsPage: React.FC = () => {
                       {COMPETENCIES_MAP[feedback.worst_competency.competency]?.title}
                     </div>
                   </div>
-                  <div className="bg-red-100 text-red-600 p-3 rounded-lg">
-                    ⚠
-                  </div>
+                  <div className="bg-red-100 text-red-600 p-3 rounded-lg">⚠</div>
                 </div>
               </div>
 
               {/* Desempenho por competência */}
               <div className="space-y-3">
-                <h3 className="text-[15px] font-semibold text-[#1d4b8f]">Desempenho por competência</h3>
+                <h3 className="text-[15px] font-semibold text-[#1d4b8f]">
+                  Desempenho por competência
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {feedback.competencies.map((c: Competency) => {
                     const comp = COMPETENCIES_MAP[c.competency];
@@ -262,7 +254,9 @@ const CorrectionDetailsPage: React.FC = () => {
               {/* Comentário do professor */}
               {feedback.teacher_comment && (
                 <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
-                  <h3 className="text-[15px] font-semibold text-[#1d4b8f] mb-2">Comentário do Professor</h3>
+                  <h3 className="text-[15px] font-semibold text-[#1d4b8f] mb-2">
+                    Comentário do Professor
+                  </h3>
                   <p className="text-gray-700 text-sm">{feedback.teacher_comment}</p>
                 </div>
               )}

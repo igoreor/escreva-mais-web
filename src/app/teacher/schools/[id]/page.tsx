@@ -166,7 +166,7 @@ function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }
             }}
             unoptimized={school.image_signed_url.startsWith('http')}
           />
-          
+
           {/* Loading state */}
           {imageLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
@@ -231,10 +231,7 @@ export default function SchoolDetailsPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
-          <SchoolHeader 
-            school={school} 
-            onBack={() => router.push('/teacher/schools')} 
-          />
+          <SchoolHeader school={school} onBack={() => router.push('/teacher/schools')} />
 
           <section className="px-10 py-8">
             <h2 className="text-lg text-gray-800 font-semibold mb-4">Turmas</h2>

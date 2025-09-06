@@ -10,12 +10,7 @@ import { useFormValidation } from '@/hooks/useFormValidation';
 
 const RegistrationForm: React.FC = () => {
   const router = useRouter();
-  const {
-    errors,
-    validateField,
-    isFormValid,
-    getPasswordValidationMessages,
-  } = useFormValidation();
+  const { errors, validateField, isFormValid, getPasswordValidationMessages } = useFormValidation();
 
   const [formData, setFormData] = useState<FormData>({
     fullName: '',

@@ -1,7 +1,11 @@
 import env from '@/config/env';
 import AuthService from './authService';
-import { CreateEssayResponse, CreateStandAloneEssayRequest, EssayValidationResult, EvaluateEssayResponse } from '@/types/essay';
-
+import {
+  CreateEssayResponse,
+  CreateStandAloneEssayRequest,
+  EssayValidationResult,
+  EvaluateEssayResponse,
+} from '@/types/essay';
 
 class SubmitEssayService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -21,7 +25,9 @@ class SubmitEssayService {
     };
   }
 
-  static async createStandAloneEssay(essayData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
+  static async createStandAloneEssay(
+    essayData: CreateStandAloneEssayRequest,
+  ): Promise<CreateEssayResponse> {
     try {
       const formData = new FormData();
 
@@ -62,10 +68,13 @@ class SubmitEssayService {
 
   static async evaluateEssay(essayId: string): Promise<EvaluateEssayResponse> {
     try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-      });
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/feedbacks/${essayId}/feedbacks/evaluate`,
+        {
+          method: 'POST',
+          headers: this.getHeaders(),
+        },
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -112,7 +121,11 @@ class SubmitEssayService {
   //     }
   // }
 
-  static validateEssayData(theme: string, content: string, image: File | null): EssayValidationResult {
+  static validateEssayData(
+    theme: string,
+    content: string,
+    image: File | null,
+  ): EssayValidationResult {
     const errors: string[] = [];
 
     if (!theme || !theme.trim()) {

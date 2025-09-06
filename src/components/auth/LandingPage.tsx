@@ -6,11 +6,11 @@ import Button from '@/components/ui/Button';
 import LoginForm from '@/components/auth/LoginForm';
 
 const LandingPage: React.FC = () => {
-
   const handleDownloadSheet = () => {
-    const url = "https://escreva-mais-812386266414.us-east1.run.app/static/pdfs/redacao-modelo-escrevamais.pdf";
+    const url =
+      'https://escreva-mais-812386266414.us-east1.run.app/static/pdfs/redacao-modelo-escrevamais.pdf';
 
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   };
 
   const scrollToLogin = () => {
