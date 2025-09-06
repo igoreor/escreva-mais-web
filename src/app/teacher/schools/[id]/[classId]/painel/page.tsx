@@ -196,7 +196,7 @@ const TeacherClassPage: React.FC = () => {
                         })}
                       </span>
                       <span className="text-gray-600">
-                        {assignment.submission_status} entregues
+                        {assignment.status} entregues
                       </span>
                     </div>
                   </div>
