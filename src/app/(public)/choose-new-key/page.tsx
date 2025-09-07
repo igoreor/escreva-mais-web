@@ -1,5 +1,3 @@
-// chamada dos componentes da tela "escolha nova senha"
-
 'use client';
 
 import { PasswordForm } from '@/components/ui/recover-key/PasswordForm';

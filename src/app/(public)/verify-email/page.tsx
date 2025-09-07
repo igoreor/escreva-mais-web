@@ -1,4 +1,3 @@
-// chamada dos componentes da tela "verifique seu e-mail"
 'use client';
 
 import { VerifyEmailForm } from '@/components/ui/recover-key/VerifyEmailForm';

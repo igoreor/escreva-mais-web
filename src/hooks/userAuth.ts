@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthService from '@/services/authService';
-import { LoginRequest, User } from '@/types/auth';
+import { LoginRequest, User } from '@/types/user';
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,6 @@ export const useAuth = () => {
       setUser(response.user);
       setIsAuthenticated(true);
 
-      // Redirecionar baseado na role
       const redirectPath = AuthService.getRedirectPath(response.user.role);
       router.push(redirectPath);
 

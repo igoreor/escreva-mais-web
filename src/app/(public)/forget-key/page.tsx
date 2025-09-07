@@ -1,4 +1,3 @@
-// chamada dos componentes da tela "esqueci minha senha"
 'use client';
 
 import { EmailForm } from '@/components/ui/recover-key/EmailForm';

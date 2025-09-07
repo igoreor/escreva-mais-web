@@ -1,5 +1,6 @@
+import { FormData, ValidationErrors } from '@/types/user';
 import { useState, useCallback } from 'react';
-import { FormData, ValidationErrors } from '@/types/registration';
+
 
 export const useFormValidation = () => {
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -12,7 +13,6 @@ export const useFormValidation = () => {
   });
 
   const validateField = useCallback((field: keyof FormData, value: string, formData?: FormData) => {
-    // CORREÇÃO: Adicionei esta verificação para ignorar a validação do 'userType'.
     if (field === 'userType') {
       return;
     }
