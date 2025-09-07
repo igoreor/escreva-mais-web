@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar, { SidebarItem } from '@/components/common/SideBar';
+import Sidebar from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiUser, FiPlus, FiFileText, FiUpload } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
@@ -137,11 +137,6 @@ export default function StudentClassesPage() {
   const selecionarTurma = (turma: Classroom) => {
     localStorage.setItem('turmaSelecionada', JSON.stringify(turma));
     router.push(`/student/classes/${turma.id}/dashboard`);
-  };
-
-  const entrarSemTurma = () => {
-    localStorage.removeItem('turmaSelecionada');
-    router.push(`/student/classes`);
   };
 
   const getShiftLabel = (shift: string) => {

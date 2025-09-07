@@ -71,26 +71,6 @@ const getMenuItems = (id: string) => [
   { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/student/profile' },
 ];
 
-const mapApiStatusToLocal = (apiStatus: string): 'Pendente' | 'Entregue' | 'Não enviado' => {
-  const statusMap: { [key: string]: 'Pendente' | 'Entregue' | 'Não enviado' } = {
-    // Status em inglês (caso a API mude no futuro)
-    pending: 'Pendente',
-    submitted: 'Entregue',
-    not_submitted: 'Não enviado',
-    completed: 'Entregue',
-    overdue: 'Não enviado',
-
-    Pendente: 'Pendente',
-    Entregue: 'Entregue',
-    'Não enviado': 'Não enviado',
-    pendente: 'Pendente',
-    entregue: 'Entregue',
-    'não enviado': 'Não enviado',
-  };
-
-  return statusMap[apiStatus] || statusMap[apiStatus.toLowerCase()] || 'Não enviado';
-};
-
 const renderStatusBadge = (status: 'Pendente' | 'Entregue' | 'Não enviado') => {
   const statusConfig = {
     Pendente: {

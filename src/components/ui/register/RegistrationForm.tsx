@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import ErrorPopup from '@/components/common/ErrorPopup';
 import UserTypeSelector from './UserTypeSelector';
-import { FormData, FocusStates } from '@/types/registration';
+import { FocusStates, FormData } from '@/types/user';
 import { RegistrationService } from '@/services/registrationService';
 import FloatingInput from './FloatingInput';
 import { useFormValidation } from '@/hooks/useFormValidation';

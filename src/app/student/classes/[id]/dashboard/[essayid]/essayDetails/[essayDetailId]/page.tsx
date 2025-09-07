@@ -116,12 +116,6 @@ const EssayViewPage: React.FC = () => {
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
           <div className="mx-auto w-full max-w-5xl space-y-6">
-            import Link from 'next/link';
-
-// ... (rest of the imports)
-
-// ... (rest of the component)
-
             {/* Header com botão voltar */}
             <div className="relative flex items-center justify-center">
               <Link
@@ -135,9 +129,6 @@ const EssayViewPage: React.FC = () => {
                 Ver redação
               </h1>
             </div>
-
-// ... (rest of the component)
-
             {/* Conteúdo da redação */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 lg:p-8 space-y-6">
               {/* Título */}
