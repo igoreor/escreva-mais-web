@@ -33,7 +33,7 @@ class EssayService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`, response.status);
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
       const data: AssignmentDetailsResponse = await response.json();
@@ -44,7 +44,7 @@ class EssayService {
       }
 
       console.error('Erro ao buscar detalhes da atividade:', error);
-      throw new ApiError('Erro de conexão com o servidor', 500);
+      throw new ApiError('Erro de conexão com o servidor');
     }
   }
 
@@ -60,7 +60,7 @@ class EssayService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`, response.status);
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
       const data: EssayDetailsForTeacherResponse = await response.json();
@@ -71,7 +71,7 @@ class EssayService {
       }
 
       console.error('Erro ao buscar detalhes da redação:', error);
-      throw new ApiError('Erro de conexão com o servidor', 500);
+      throw new ApiError('Erro de conexão com o servidor');
     }
   }
 
@@ -88,7 +88,7 @@ class EssayService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`, response.status);
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`);
       }
 
       const data: UpdateEssayFeedbackResponse = await response.json();
@@ -99,7 +99,7 @@ class EssayService {
       }
 
       console.error('Erro ao atualizar feedback da redação:', error);
-      throw new ApiError('Erro de conexão com o servidor', 500);
+      throw new ApiError('Erro de conexão com o servidor');
     }
   }
 
@@ -113,8 +113,7 @@ class EssayService {
   ): Promise<AssignmentDetailsResponse> {
     if (!this.isTeacher()) {
       throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade',
-        403,
+        'Acesso negado: apenas professores podem acessar esta funcionalidade'
       );
     }
 
@@ -126,8 +125,7 @@ class EssayService {
   ): Promise<EssayDetailsForTeacherResponse> {
     if (!this.isTeacher()) {
       throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade',
-        403,
+        'Acesso negado: apenas professores podem acessar esta funcionalidade'
       );
     }
 
@@ -140,8 +138,7 @@ class EssayService {
   ): Promise<UpdateEssayFeedbackResponse> {
     if (!this.isTeacher()) {
       throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade',
-        403,
+        'Acesso negado: apenas professores podem acessar esta funcionalidade'
       );
     }
 

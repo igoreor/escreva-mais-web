@@ -1,11 +1,17 @@
 import env from '@/config/env';
 import AuthService from './authService';
+import { 
+  CreateClassroomData, 
+  Classroom, 
+  School, 
+  SchoolWithClassrooms, 
+  JoinClassroomResponse, 
+  CreateSchoolResponse,
+  DeleteSchoolResponse,
+  CreateClassroomResponse
+} from '@/types/classroom';
 
-interface CreateClassroomData {
-  name: string;
-  description: string;
-  shift: string;
-}
+
 
 class SchoolService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -33,7 +39,7 @@ class SchoolService {
     return token;
   }
 
-  static async createSchool(name: string, image?: File | null): Promise<any> {
+  static async createSchool(name: string, image?: File | null): Promise<CreateSchoolResponse> {
     try {
       this.validateToken();
 
@@ -61,7 +67,7 @@ class SchoolService {
     }
   }
 
-  static async listSchools(): Promise<any> {
+  static async listSchools(): Promise<School[]> {
     try {
       this.validateToken();
 
@@ -82,7 +88,7 @@ class SchoolService {
     }
   }
 
-  static async deleteSchool(schoolId: string): Promise<any> {
+  static async deleteSchool(schoolId: string): Promise<DeleteSchoolResponse | void> {
     try {
       this.validateToken();
 
@@ -107,7 +113,7 @@ class SchoolService {
     }
   }
 
-  static async createClassroom(schoolId: string, data: CreateClassroomData): Promise<any> {
+  static async createClassroom(schoolId: string, data: CreateClassroomData): Promise<CreateClassroomResponse> {
     try {
       this.validateToken();
 
@@ -132,7 +138,7 @@ class SchoolService {
     }
   }
 
-  static async getSchoolWithClassroomsById(schoolId: string): Promise<any> {
+  static async getSchoolWithClassroomsById(schoolId: string): Promise<SchoolWithClassrooms> {
     try {
       this.validateToken();
 
@@ -153,7 +159,7 @@ class SchoolService {
     }
   }
 
-  static async getStudentClassrooms() {
+  static async getStudentClassrooms(): Promise<Classroom[]> {
     const token = AuthService.getToken();
     if (!token) throw new Error('Token não encontrado');
 
@@ -168,20 +174,10 @@ class SchoolService {
       throw new Error(`Erro ao buscar salas: ${error}`);
     }
 
-    return response.json() as Promise<
-      {
-        id: string;
-        name: string;
-        description: string;
-        shift: string;
-        join_code: string;
-        school_id: string;
-        teacher_id: string;
-      }[]
-    >;
+    return response.json();
   }
 
-  static async joinClassroom(joinCode: string) {
+  static async joinClassroom(joinCode: string): Promise<JoinClassroomResponse> {
     const token = AuthService.getToken();
     if (!token) throw new Error('Token não encontrado');
 
@@ -201,9 +197,7 @@ class SchoolService {
       throw new Error(`Erro ao entrar na turma: ${error}`);
     }
 
-    return response.json() as Promise<{
-      status: string;
-    }>;
+    return response.json();
   }
 }
 
