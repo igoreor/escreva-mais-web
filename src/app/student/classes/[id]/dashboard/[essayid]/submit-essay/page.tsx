@@ -20,7 +20,8 @@ import Popup from '@/components/ui/Popup';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StudentClassroomService, { CreateEssayRequest } from '@/services/StudentClassroomService';
-import router from 'next/router';
+import Link from 'next/link';
+import { Toast } from '@/components/common/ToastAlert';
 
 const getMenuItems = (id: string) => [
   {
@@ -307,6 +308,9 @@ const SubmitEssayPage: React.FC = () => {
   const [essayText, setEssayText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
+
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -359,7 +363,11 @@ const SubmitEssayPage: React.FC = () => {
 
   const handleSaveDraft = () => {
     // TODO: Implementar salvamento de rascunho
-    alert('Rascunho salvo com sucesso!');
+    setToastInfo({
+      title: 'Rascunho salvo!',
+      description: 'Seu rascunho foi salvo com sucesso.',
+    });
+    setShowToast(true);
   };
 
   const router = useRouter();
@@ -418,14 +426,12 @@ const SubmitEssayPage: React.FC = () => {
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
 
         <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
-          <button
-            onClick={() =>
-              (window.location.href = `/student/classes/${classId}/dashboard/${essayId}`)
-            }
+          <Link
+            href={`/student/classes/${classId}/dashboard/${essayId}`}
             className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
             <FiArrowLeft className="mr-1" /> Voltar
-          </button>
+          </Link>
 
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
             Enviar nova redação
@@ -545,7 +551,7 @@ const SubmitEssayPage: React.FC = () => {
             {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
               <Button variant="outline" size="lg" onClick={handleSaveDraft} disabled={loading}>
-                Salvar rascunho
+                Salvar rascunco
               </Button>
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}
@@ -561,6 +567,13 @@ const SubmitEssayPage: React.FC = () => {
           title={popupConfig.title}
           message={popupConfig.message}
           onClose={() => setPopupConfig(null)}
+        />
+      )}
+       {showToast && (
+        <Toast
+          title={toastInfo.title}
+          description={toastInfo.description}
+          onClose={() => setShowToast(false)}
         />
       )}
     </RouteGuard>

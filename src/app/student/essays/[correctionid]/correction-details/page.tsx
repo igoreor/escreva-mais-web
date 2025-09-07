@@ -3,10 +3,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import html2pdf from 'html2pdf.js';
 import { Competency, StudentFeedbackDetails } from '@/types/essay';
 import StudentEssayService from '@/services/StudentEssayService';
+import Popup from '@/components/ui/Popup';
 
 const COMPETENCIES_MAP: Record<string, { title: string; description: string }> = {
   C1: {
@@ -35,11 +36,11 @@ const COMPETENCIES_MAP: Record<string, { title: string; description: string }> =
 
 const CorrectionDetailsPage: React.FC = () => {
   const params = useParams();
-  const router = useRouter();
   const essayId = params.correctionid as string;
 
   const [feedback, setFeedback] = useState<StudentFeedbackDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showCommentPopup, setShowCommentPopup] = useState(false);
 
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -82,11 +83,7 @@ const CorrectionDetailsPage: React.FC = () => {
     }
   };
 
-  const handleViewEssay = () => {
-    router.push(`/student/essays/${essayId}/correction-details/${essayId}`);
-  };
-
-  const handleSeeMore = () => alert(feedback.teacher_comment);
+  const handleSeeMore = () => setShowCommentPopup(true);
 
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8]">
@@ -193,14 +190,24 @@ const CorrectionDetailsPage: React.FC = () => {
 
         {/* ações */}
         <div className="flex flex-col sm:flex-row gap-3 justify-end">
-          <Button variant="outline" size="lg" onClick={handleViewEssay}>
-            Ver redação
-          </Button>
+          <Link href={`/student/essays/${essayId}/correction-details/${essayId}`}>
+            <Button variant="outline" size="lg">
+              Ver redação
+            </Button>
+          </Link>
           <Button variant="primary" size="lg" onClick={handleSavePDF}>
             Salvar relatório em PDF
           </Button>
         </div>
       </div>
+      {showCommentPopup && (
+        <Popup
+          type="success"
+          title="Comentário do Professor"
+          message={feedback.teacher_comment}
+          onClose={() => setShowCommentPopup(false)}
+        />
+      )}
     </div>
   );
 };

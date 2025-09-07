@@ -65,3 +65,27 @@ export interface ClassroomDetailsForStudent {
   teacher_name: string;
   assignments: Assignment[];
 }
+
+export interface Classroom {
+  id: string;
+  name: string;
+  description: string;
+  shift: string;
+  join_code: string;
+  school_id: string;
+  teacher_id: string;
+}
+
+export interface School {
+  id: string;
+  name: string;
+  image_url?: string;
+}
+
+export interface SchoolWithClassrooms extends School {
+  classrooms: Classroom[];
+}
+
+export interface JoinClassroomResponse {
+  status: string;
+}

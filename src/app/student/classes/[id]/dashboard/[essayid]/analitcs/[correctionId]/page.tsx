@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
 import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiTrello } from 'react-icons/fi';
 import html2pdf from 'html2pdf.js';
-import router from 'next/router';
+import Link from 'next/link';
 import { Competency, StudentFeedbackDetails } from '@/types/essay';
 import StudentEssayService from '@/services/StudentEssayService';
 
@@ -156,13 +156,13 @@ const CorrectionDetailsPage: React.FC = () => {
           <div className="mx-auto w-full max-w-5xl space-y-6">
             {/* Header com botão voltar */}
             <div className="relative flex items-center justify-center">
-              <button
-                onClick={() => router.push(`/student/classes/${classId}/dashboard`)}
+              <Link
+                href={`/student/classes/${classId}/dashboard`}
                 className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-blue-600 hover:underline transition-colors"
               >
                 <FiArrowLeft size={22} />
                 <span className="text-sm">Voltar</span>
-              </button>
+              </Link>
               <h1 className="text-center text-2xl sm:text-3xl font-bold text-[#0f2752]">
                 Detalhes da correção
               </h1>

@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { EssayDetailsForTeacherResponse } from '@/types/essay';
 import EssayService from '@/services/EssayService';
+import Link from 'next/link';
 
 type PopupData =
   | {
@@ -38,7 +39,6 @@ export default function RedacaoPage() {
   const [message, setMessage] = useState('');
   const [imageZoomed, setImageZoomed] = useState(false);
 
-  const router = useRouter();
   const { id: schoolId, classId, essayid, correctionid } = useParams();
 
   const handleSendComment = async () => {
@@ -189,12 +189,12 @@ export default function RedacaoPage() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* BOTÃO VOLTAR */}
       <div className="w-full mb-4">
-        <button
-          onClick={() => router.push(`/teacher/schools/${schoolId}/${classId}/painel/${essayid}`)}
+        <Link
+          href={`/teacher/schools/${schoolId}/${classId}/painel/${essayid}`}
           className="flex items-center text-black hover:text-gray-600 font-medium"
         >
           <span className="mr-1">{'<'}</span> Voltar
-        </button>
+        </Link>
       </div>
 
       {/* REDAÇÃO */}

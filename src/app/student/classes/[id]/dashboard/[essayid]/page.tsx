@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
@@ -14,7 +14,7 @@ import {
   FiTrello,
 } from 'react-icons/fi';
 import StudentClassroomService from '@/services/StudentClassroomService';
-import router from 'next/router';
+import Link from 'next/link';
 
 const getMenuItems = (id: string) => [
   {
@@ -75,6 +75,7 @@ interface AssignmentDetails {
 const ActivityDetailPage: React.FC = () => {
   const { logout } = useAuth();
   const params = useParams();
+  const router = useRouter();
   const classId = params.id as string;
   const essayId = params.essayid as string;
   const [assignment, setAssignment] = useState<AssignmentDetails | null>(null);
@@ -141,19 +142,19 @@ const ActivityDetailPage: React.FC = () => {
     if (status === 'Entregue') {
       return (
         <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-          <a
+          <Link
             href={`/student/classes/${classId}/dashboard/${essayId}/essayDetails/${assignment.essay_id}`}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
           >
             📄 Ver Redação
-          </a>
+          </Link>
 
-          <a
+          <Link
             href={`/student/classes/${classId}/dashboard/${essayId}/analitcs/${assignment.essay_id}`}
             className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow flex items-center justify-center transition-colors"
           >
             ✏️ Ver Correção
-          </a>
+          </Link>
         </div>
       );
     } else if (status === 'Não enviado' || status === 'Pendente') {
@@ -171,7 +172,7 @@ const ActivityDetailPage: React.FC = () => {
         sessionStorage.setItem('assignmentData', JSON.stringify(assignmentData));
 
         // Navegar para página de envio
-        window.location.href = `/student/classes/${classId}/dashboard/${essayId}/submit-essay`;
+        router.push(`/student/classes/${classId}/dashboard/${essayId}/submit-essay`);
       };
 
       return (
@@ -212,13 +213,13 @@ const ActivityDetailPage: React.FC = () => {
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           {/* Botão voltar */}
-          <button
-            onClick={() => router.push(`/student/classes/${classId}/dashboard`)}
+          <Link
+            href={`/student/classes/${classId}/dashboard`}
             className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
           >
             <FiArrowLeft className="mr-1" />
             Voltar
-          </button>
+          </Link>
 
           {/* Card principal */}
           <div className="bg-white shadow-md rounded-xl p-8 max-w-5xl mx-auto">

@@ -2,13 +2,21 @@
 'use client';
 
 import Button from '@/components/ui/Button';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Toast } from '@/components/common/ToastAlert';
 
 export function VerifyEmailForm() {
-  const router = useRouter();
+  
+  const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
 
   function handleResendLink() {
-    alert('Link de redefinição reenviado para: email@email.com (mock)');
+    setToastInfo({
+      title: 'Link Enviado',
+      description: 'Link de redefinição reenviado para: email@email.com',
+    });
+    setShowToast(true);
     // Aqui entraria a chamada real para a API
   }
 
@@ -19,16 +27,17 @@ export function VerifyEmailForm() {
         <strong>email@email.com</strong>. Pode levar alguns minutinhos para chegar.
       </p>
 
-      <Button
-        type="button"
-        onClick={() => router.push('/')}
-        variant="primary"
-        size="lg"
-        fullWidth
-        className="font-normal"
-      >
-        Voltar para tela de login
-      </Button>
+      <Link href="/" className="w-full">
+        <Button
+          type="button"
+          variant="primary"
+          size="lg"
+          fullWidth
+          className="font-normal"
+        >
+          Voltar para tela de login
+        </Button>
+      </Link>
 
       <button
         type="button"
@@ -37,6 +46,13 @@ export function VerifyEmailForm() {
       >
         Reenviar link
       </button>
+      {showToast && (
+        <Toast
+          title={toastInfo.title}
+          description={toastInfo.description}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 }

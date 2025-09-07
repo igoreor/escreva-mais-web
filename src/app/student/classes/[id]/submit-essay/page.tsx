@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
+import { Toast } from '@/components/common/ToastAlert';
 
 interface DropdownOption {
   value: string;
@@ -220,6 +221,8 @@ const SubmitEssayPage: React.FC = () => {
   const [title, setTitle] = useState('');
   const [essayText, setEssayText] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -238,7 +241,13 @@ const SubmitEssayPage: React.FC = () => {
     { value: 'social', label: 'Questões Sociais' },
   ];
 
-  const handleSaveDraft = () => alert('Rascunho salvo com sucesso!');
+  const handleSaveDraft = () => {
+    setToastInfo({
+      title: 'Rascunho salvo!',
+      description: 'Seu rascunho foi salvo com sucesso.',
+    });
+    setShowToast(true);
+  };
 
   const handleSubmit = async () => {
     if (!selectedTheme || (!essayText && !file)) {
@@ -344,6 +353,13 @@ const SubmitEssayPage: React.FC = () => {
           title={popupConfig.title}
           message={popupConfig.message}
           onClose={() => setPopupConfig(null)}
+        />
+      )}
+      {showToast && (
+        <Toast
+          title={toastInfo.title}
+          description={toastInfo.description}
+          onClose={() => setShowToast(false)}
         />
       )}
     </RouteGuard>

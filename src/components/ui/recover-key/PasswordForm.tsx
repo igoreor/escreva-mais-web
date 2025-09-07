@@ -7,6 +7,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import FloatingInput from '@/components/ui/register/FloatingInput';
 import Image from 'next/image';
+import { Toast } from '@/components/common/ToastAlert';
 
 export function PasswordForm() {
   const [password, setPassword] = useState('');
@@ -14,6 +15,8 @@ export function PasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
 
   // Controle de foco para floating label
   const [focusPassword, setFocusPassword] = useState(false);
@@ -36,7 +39,11 @@ export function PasswordForm() {
     e.preventDefault();
     setSubmitted(true);
     if (isFormValid) {
-      alert('Senha redefinida com sucesso! (mock)');
+      setToastInfo({
+        title: 'Sucesso',
+        description: 'Senha redefinida com sucesso!',
+      });
+      setShowToast(true);
       // Aqui entraria a chamada à API de redefinir senha
     }
   }
@@ -130,6 +137,13 @@ export function PasswordForm() {
       <Button type="submit" disabled={!isFormValid} variant="primary" size="lg" fullWidth>
         Redefinir senha e fazer login
       </Button>
+      {showToast && (
+        <Toast
+          title={toastInfo.title}
+          description={toastInfo.description}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </form>
   );
 }

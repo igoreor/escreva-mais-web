@@ -14,7 +14,10 @@ import {
 } from 'react-icons/fi';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import ThemeServices, { ThemeResponse, ThemeUpdatePayload } from '@/services/ThemeServices';
+import ThemeServices from '@/services/ThemeServices';
+import { ThemeResponse, ThemeUpdatePayload } from '@/types/theme';
+import Link from 'next/link';
+import { Toast } from '@/components/common/ToastAlert';
 
 export default function EditThemePage() {
   const { logout } = useAuth();
@@ -26,6 +29,8 @@ export default function EditThemePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
 
   // Estados do formulário
   const [titulo, setTitulo] = useState('');
@@ -45,15 +50,21 @@ export default function EditThemePage() {
       setLoading(true);
       setError('');
 
-      const data = await ThemeServices.getThemeById(themeId);
-      setOriginalTheme(data);
+      const response = await ThemeServices.getThemeById(themeId);
 
-      // Preenche o formulário com os dados existentes
-      setTitulo(data.theme || '');
-      setTexto1(data.text1 || '');
-      setTexto2(data.text2 || '');
-      setTexto3(data.text3 || '');
-      setTexto4(data.text4 || '');
+      if (response.success && response.data) {
+        setOriginalTheme(response.data);
+
+        // Preenche o formulário com os dados existentes
+        setTitulo(response.data.theme || '');
+        setTexto1(response.data.text1 || '');
+        setTexto2(response.data.text2 || '');
+        setTexto3(response.data.text3 || '');
+        setTexto4(response.data.text4 || '');
+      } else {
+        setError(response.error || 'Erro ao carregar tema');
+        setOriginalTheme(null);
+      }
     } catch (err) {
       console.error('Erro ao buscar tema:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar tema');
@@ -86,8 +97,14 @@ export default function EditThemePage() {
       setError('');
 
       await ThemeServices.updateTheme(themeId, payload);
-      alert('Tema atualizado com sucesso!');
-      router.push(`/teacher/themes/${themeId}`);
+      setToastInfo({
+        title: 'Sucesso',
+        description: 'Tema atualizado com sucesso!',
+      });
+      setShowToast(true);
+      setTimeout(() => {
+        router.push(`/teacher/themes/${themeId}`);
+      }, 2000);
     } catch (err) {
       console.error('Erro ao atualizar tema:', err);
       setError(err instanceof Error ? err.message : '❌ Erro ao atualizar tema.');
@@ -97,7 +114,7 @@ export default function EditThemePage() {
   };
 
   const handleVoltar = () => {
-    router.push(`/teacher/themes/${themeId}`);
+    router.back();
   };
 
   const hasChanges = () => {
@@ -305,6 +322,13 @@ export default function EditThemePage() {
           )}
         </main>
       </div>
+      {showToast && (
+        <Toast
+          title={toastInfo.title}
+          description={toastInfo.description}
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </RouteGuard>
   );
 }

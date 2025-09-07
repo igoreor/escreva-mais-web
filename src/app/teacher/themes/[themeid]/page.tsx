@@ -1,5 +1,4 @@
-'use client';
-
+import React, { useState, useEffect } from 'react';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
@@ -13,7 +12,7 @@ import {
   FiFileText,
 } from 'react-icons/fi';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ConfirmDeleteModal } from '@/components/DeleteConfirms';
 import { ThemeServices } from '@/services';
 import { ThemeResponse } from '@/types/theme';
@@ -92,9 +91,7 @@ export default function TemaDetalhesPage() {
     setShowDeleteModal(false);
   };
 
-  const handleVoltar = () => {
-    router.push('/teacher/themes');
-  };
+  
 
   const menuItems: SidebarItem[] = [
     { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
@@ -157,12 +154,12 @@ export default function TemaDetalhesPage() {
           {tema && !loading && !error && (
             <>
               {/* Voltar */}
-              <button
-                onClick={handleVoltar}
+              <Link
+                href="/teacher/themes"
                 className="flex items-center text-blue-600 mb-4 hover:underline transition"
               >
                 <FiArrowLeft className="mr-1" /> Voltar
-              </button>
+              </Link>
 
               {/* Título */}
               <div className="bg-white rounded-lg shadow-sm border p-6">

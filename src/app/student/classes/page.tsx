@@ -7,6 +7,7 @@ import { FiHome, FiBookOpen, FiUser, FiPlus, FiFileText, FiUpload } from 'react-
 import { useAuth } from '@/hooks/userAuth';
 import RouteGuard from '@/components/auth/RouterGuard';
 import SchoolService from '@/services/schoolService';
+import ErrorPopup from '@/components/common/ErrorPopup';
 
 const menuItems = [
   {
@@ -61,6 +62,9 @@ export default function StudentClassesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [joiningClassroom, setJoiningClassroom] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
 
   useEffect(() => {
     fetchClassrooms();
@@ -117,12 +121,13 @@ export default function StudentClassesPage() {
       console.error('Erro ao entrar na turma:', err);
       if (err instanceof Error) {
         if (err.message.includes('404')) {
-          alert('Código da turma não encontrado.');
+          setErrorMessage('Código da turma não encontrado.');
         } else if (err.message.includes('already')) {
-          alert('Você já está matriculado nesta turma.');
+          setErrorMessage('Você já está matriculado nesta turma.');
         } else {
-          alert('Erro ao entrar na turma. Tente novamente.');
+          setErrorMessage('Erro ao entrar na turma. Tente novamente.');
         }
+        setShowErrorPopup(true);
       }
     } finally {
       setJoiningClassroom(false);
@@ -254,6 +259,7 @@ export default function StudentClassesPage() {
           )}
         </main>
       </div>
+      {showErrorPopup && <ErrorPopup message={errorMessage} onClose={() => setShowErrorPopup(false)} />}
     </RouteGuard>
   );
 }

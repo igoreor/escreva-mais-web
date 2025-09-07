@@ -2,12 +2,10 @@
 
 import { PasswordForm } from '@/components/ui/recover-key/PasswordForm';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PartnerLogos from '@/components/ui/register/PartnerLogos';
 
 export default function ForgetKeyPage() {
-  const router = useRouter();
-
   return (
     <main className="min-h-screen bg-global-3 flex flex-col items-center justify-start">
       <div className="w-full lg:max-w-[1166px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,13 +30,12 @@ export default function ForgetKeyPage() {
           {/* Formulário */}
           <div className="flex flex-col items-center w-full">
             <PasswordForm />
-            <button
-              type="button"
-              onClick={() => router.push('/registration')}
+            <Link
+              href="/registration"
               className="mt-4 px-4 py-2 text-global-2 rounded hover:bg-blue-300 transition"
             >
               Voltar para tela de login
-            </button>
+            </Link>
           </div>
 
           {/* Logos dos parceiros */}
