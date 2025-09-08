@@ -110,8 +110,9 @@ const StudentDashboard: React.FC = () => {
       { nome: 'Competência 5', pontos: 200, media: 2.0, descricao: 'Proposta de intervenção' },
     ],
   };
-
   useEffect(() => {
+  // Limpa o localStorage só para teste
+    localStorage.removeItem('turmaSelecionada');
     const turmaSalva = localStorage.getItem('turmaSelecionada');
     if (turmaSalva) {
       setTurmaSelecionada(JSON.parse(turmaSalva));
@@ -149,7 +150,7 @@ const StudentDashboard: React.FC = () => {
           </div>
 
           {/* Wrapper central */}
-          <div className="mx-auto w-full max-w-[1300px] ">
+          <div className="mx-auto w-full max-w-[1500px] ">
             {/* Média geral */}
             <div className="bg-blue-100/50 rounded-xl p-4 sm:p-6 md:p-4 lg:p-7 flex justify-between items-center shadow w-full mb-6 border-2 border-blue-400">
               <div className="pl-4 sm:pl-2  md:pl-3 lg:pl-3 text-left">

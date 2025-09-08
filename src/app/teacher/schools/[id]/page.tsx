@@ -3,16 +3,10 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
-  FiArrowLeft,
-  FiUser,
-  FiBookOpen,
-  FiHome,
   FiPlus,
   FiEye,
   FiEyeOff,
-  FiGrid,
   FiPlusSquare,
-  FiFileMinus,
 } from 'react-icons/fi';
 import { FaGraduationCap } from 'react-icons/fa';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
@@ -26,13 +20,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={28} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     children: [
       {
         id: 'classes',
@@ -45,13 +39,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/teacher/profile',
   },
 ];
@@ -86,7 +80,7 @@ function ClassroomCard({ turma, onCopied }: { turma: Classroom; onCopied: () => 
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+    <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition ">
       <div className="flex items-center gap-2 text-blue-800 mb-2">
         <FaGraduationCap size={24} />
         <h3 className="text-md font-semibold">{turma.name}</h3>
@@ -98,7 +92,7 @@ function ClassroomCard({ turma, onCopied }: { turma: Classroom; onCopied: () => 
         <strong>Turno:</strong> {turma.shift}
       </p>
 
-      <div className="flex items-center gap-2 mt-2">
+      <div className="flex items-center gap-2 mt-1">
         <strong className="text-sm text-gray-700">Código da Turma:</strong>
         <span
           className={`font-mono bg-gray-100 px-2 py-0.5 rounded cursor-pointer select-none transition ${
@@ -171,12 +165,16 @@ export default function SchoolDetailsPage() {
 
             <button
               onClick={() => router.push('/teacher/schools')}
-              className="absolute top-4 left-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition"
+              className="absolute top-4 left-4 sm:left-6 md:left-8 lg:left-12 bg-white text-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-200 transition flex items-center"
             >
-              <FiArrowLeft className="inline-block mr-2" />
-              Voltar
+              <img 
+                src="/images/voltar.svg" 
+                alt="Voltar"  
+                className="inline-block mr-2"  
+              />
+              <span className="text-global-1 font-medium">Voltar</span>
             </button>
-            <div className="absolute bottom-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
+            <div className="absolute bottom-6 left-12 text-white text-3xl font-bold drop-shadow-lg">
               {school.name}
             </div>
           </div>

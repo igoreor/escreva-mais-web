@@ -5,10 +5,7 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
 import {
-  FiHome,
-  FiBookOpen,
   FiFileText,
-  FiUser,
   FiArrowLeft,
   FiCalendar,
   FiTrello,
@@ -19,13 +16,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
     children: [
       {
@@ -37,7 +34,7 @@ const getMenuItems = (id: string) => [
       {
         id: 'essays',
         label: 'Minhas Redações',
-        icon: <FiFileText size={24} />,
+        icon:<img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10"/>,
         href: `/student/classes/${id}/essays`,
       },
     ],
@@ -45,7 +42,7 @@ const getMenuItems = (id: string) => [
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FiBookOpen, FiCamera, FiEye, FiEyeOff, FiFileMinus, FiHome, FiUser } from 'react-icons/fi';
+import { FiCamera, FiEye, FiEyeOff, } from 'react-icons/fi';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
@@ -12,25 +12,25 @@ const menuItems: SidebarItem[] = [
     id: 'home',
     label: 'Início',
     href: '/teacher/home',
-    icon: <FiHome size={34} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
     href: '/teacher/schools',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
   },
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
     href: '/teacher/profile',
-    icon: <FiUser size={34} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
   },
 ];
 

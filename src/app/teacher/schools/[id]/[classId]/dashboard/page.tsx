@@ -6,16 +6,9 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
   FiCheckCircle,
   FiAlertCircle,
-  FiBarChart2,
   FiFileText,
-  FiHome,
-  FiBookOpen,
-  FiUser,
-  FiArrowLeft,
-  FiGrid,
   FiPlusSquare,
   FiTrendingUp,
-  FiFileMinus,
 } from 'react-icons/fi';
 import { useParams } from 'next/navigation';
 
@@ -45,13 +38,13 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={28} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     children: [
       {
         id: 'classes',
@@ -80,13 +73,13 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/teacher/profile',
   },
 ];
