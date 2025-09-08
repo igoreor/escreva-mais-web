@@ -80,7 +80,6 @@ const StudentsPage: React.FC = () => {
   return (
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-gray-50">
-        {/* Sidebar */}
         <Sidebar
           menuItems={getMenuItems(schoolId as string, classId as string)}
           onLogout={logout}
