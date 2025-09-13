@@ -135,7 +135,12 @@ const TeacherClassPage: React.FC = () => {
                 🎓 {classroom.name}
               </h1>
             </div>
-            <div className="flex items-center text-gray-700 text-sm gap-2">
+            <div
+              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer"
+              onClick={() =>
+                (window.location.href = `/teacher/schools/${schoolId}/${classId}/list`)
+              }
+            >
               <FiUsers /> {classroom.student_count} alunos
               <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
                 {classroom.name.charAt(0).toUpperCase()}

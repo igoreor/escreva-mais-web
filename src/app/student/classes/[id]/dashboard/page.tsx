@@ -167,7 +167,10 @@ const ClassDetailPage: React.FC = () => {
                 <span className="inline-block">🎓</span> {classroom.name}
               </h1>
             </div>
-            <div className="flex items-center text-gray-700 text-sm gap-2">
+            <div
+              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer"
+              onClick={() => (window.location.href = `/student/classes/${classId}/list-students`)}
+            >
               <FiUsers /> {classroom.student_count} alunos
             </div>
           </div>
