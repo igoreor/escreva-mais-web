@@ -2,15 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
-  FiHome,
-  FiBookOpen,
-  FiUser,
-  FiArrowLeft,
-  FiGrid,
-  FiPlusSquare,
-  FiFileMinus,
+FiArrowLeft,
 } from 'react-icons/fi';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
@@ -25,24 +20,25 @@ const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={28} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
+    href: '/teacher/schools',
   },
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/teacher/profile',
   },
 ];
@@ -81,9 +77,7 @@ export default function CreateClassPage() {
     }
   };
 
-  const handleCancel = () => {
-    router.back();
-  };
+  // handleCancel removido - usando Link diretamente
 
   return (
     <RouteGuard allowedRoles={['teacher']}>
@@ -91,12 +85,12 @@ export default function CreateClassPage() {
         <Sidebar menuItems={getMenuItems(schoolId as string)} onLogout={logout} />
 
         <main className="flex-1 lg:ml-[270px] p-10">
-          <button
-            onClick={handleCancel}
+          <Link
+            href={`/teacher/schools/${schoolId}`}
             className="flex items-center text-blue-700 hover:underline mb-4"
           >
             <FiArrowLeft className="mr-1" /> Voltar
-          </button>
+          </Link>
 
           <h1 className="text-2xl font-bold text-gray-800 mb-8">Cadastrar turma</h1>
 
@@ -139,13 +133,12 @@ export default function CreateClassPage() {
             </div>
 
             <div className="flex justify-end gap-4">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-6 py-2 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-50 transition"
+              <Link
+                href={`/teacher/schools/${schoolId}`}
+                className="px-6 py-2 border border-blue-700 text-blue-700 rounded-md hover:bg-blue-50 transition inline-block text-center"
               >
                 Cancelar
-              </button>
+              </Link>
               <button
                 type="submit"
                 disabled={loading}

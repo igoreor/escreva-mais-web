@@ -3,13 +3,13 @@
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiUser, FiFileMinus, FiCalendar, FiEye, FiPlus } from 'react-icons/fi';
+import { FiCalendar, FiEye, FiPlus } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
 import { Tema, ThemePayload, ThemeResponse, ThemesApiData } from '@/types/theme';
 import { AuthService, ThemeServices } from '@/services';
 
 export default function MeusTemasPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [temas, setTemas] = useState<Tema[]>([]);
 
@@ -111,15 +111,27 @@ export default function MeusTemasPage() {
   };
 
   const menuItems: SidebarItem[] = [
-    { id: 'home', label: 'Início', icon: <FiHome size={34} />, href: '/teacher/home' },
+    { id: 'home', 
+      label: 'Início', 
+      icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />, 
+      href: '/teacher/home' },
     {
       id: 'management',
       label: 'Minhas Turmas',
-      icon: <FiBookOpen size={34} />,
+      icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
       href: '/teacher/schools',
     },
-    { id: 'temas', label: 'Meus Temas', icon: <FiFileMinus size={34} />, href: '/teacher/themes' },
-    { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/teacher/profile' },
+    { 
+      id: 'temas', 
+      label: 'Meus Temas', 
+      icon: <img src="/images/meus-temas.png" alt="Minhas Turmas" className="w-10 h-10" />,
+      href: '/teacher/themes' 
+    },
+    { 
+      id: 'profile', 
+      label: 'Meu Perfil', 
+      icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
+      href: '/teacher/profile' },
   ];
 
   return (
