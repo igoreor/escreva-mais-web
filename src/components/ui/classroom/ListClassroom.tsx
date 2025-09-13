@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import { FiUsers } from 'react-icons/fi';
 
 interface Student {
@@ -12,7 +13,8 @@ interface ListClassroomProps {
   studentCount: number;
   teacherName: string;
   students: Student[];
-  onBack: () => void; // ação do botão voltar (professor → painel, aluno → dashboard)
+  onBack?: () => void; // ação do botão voltar (professor → painel, aluno → dashboard)
+  backHref?: string; // Link para navegação usando Next.js Link
 }
 
 const ListClassroom: React.FC<ListClassroomProps> = ({
@@ -21,15 +23,22 @@ const ListClassroom: React.FC<ListClassroomProps> = ({
   teacherName,
   students,
   onBack,
+  backHref,
 }) => {
   return (
     <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto p-6 lg:p-12">
       {/* header */}
       <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg">
-            ←
-          </button>
+          {backHref ? (
+            <Link href={backHref} className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg">
+              ←
+            </Link>
+          ) : (
+            <button onClick={onBack} className="p-2 text-blue-700 hover:bg-blue-100 rounded-lg">
+              ←
+            </button>
+          )}
           <h1 className="text-2xl font-semibold text-blue-900 flex items-center gap-2">
             🎓 {classroomName}
           </h1>

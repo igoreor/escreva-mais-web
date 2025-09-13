@@ -4,15 +4,6 @@ import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
 import EditText from '@/components/ui/EditText';
 import RouteGuard from '@/components/auth/RouterGuard';
-import {
-  FiHome,
-  FiUpload,
-  FiFileText,
-  FiUser,
-  FiPaperclip,
-  FiBookOpen,
-  FiAlertCircle,
-} from 'react-icons/fi';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
 
@@ -20,13 +11,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={28} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
   },
   {
@@ -38,13 +29,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={28} />,
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];
@@ -268,6 +259,7 @@ const TextAreaWithLineNumbers: React.FC<{
 
 import { useParams } from 'next/navigation';
 import SubmitEssayService from '@/services/submitEssay';
+import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload } from 'react-icons/fi';
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();

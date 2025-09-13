@@ -5,11 +5,8 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
 import {
-  FiHome,
-  FiBookOpen,
   FiFileText,
   FiUpload,
-  FiUser,
   FiArrowLeft,
   FiUsers,
   FiCalendar,
@@ -35,11 +32,16 @@ interface ClassroomData {
 }
 
 const getMenuItems = (id: string) => [
-  { id: 'student', label: 'Início', icon: <FiHome size={34} />, href: '/student/home' },
+  { 
+    id: 'student', 
+    label: 'Início', 
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
+    href: '/student/home' 
+  },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
     children: [
       {
@@ -65,10 +67,13 @@ const getMenuItems = (id: string) => [
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
-  { id: 'profile', label: 'Meu Perfil', icon: <FiUser size={34} />, href: '/student/profile' },
+  { id: 'profile', 
+    label: 'Meu Perfil', 
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
+    href: '/student/profile' },
 ];
 
 const renderStatusBadge = (status: 'Pendente' | 'Entregue' | 'Não enviado') => {
@@ -167,12 +172,12 @@ const ClassDetailPage: React.FC = () => {
                 <span className="inline-block">🎓</span> {classroom.name}
               </h1>
             </div>
-            <div
-              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer"
-              onClick={() => (window.location.href = `/student/classes/${classId}/list-students`)}
+            <Link
+              href={`/student/classes/${classId}/list-students`}
+              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer hover:text-blue-700 transition-colors"
             >
               <FiUsers /> {classroom.student_count} alunos
-            </div>
+            </Link>
           </div>
 
           {/* Aviso / Frase do professor */}

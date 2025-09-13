@@ -1,37 +1,32 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation'; // 1. Importado o hook 'useParams'
-import RouteGuard from '@/components/auth/RouterGuard';
-import { useAuth } from '@/hooks/userAuth';
+import Image from "next/image";
+import Link from "next/link";
+import RouteGuard from "@/components/auth/RouterGuard";
+import { useAuth } from "@/hooks/userAuth";
 import Sidebar from '@/components/common/SideBar';
-import {
-  FiCheckCircle,
-  FiAlertCircle,
-  FiBarChart2,
-  FiFileText,
-  FiHome,
-  FiUpload,
-  FiBookOpen,
-  FiUser,
-  FiArrowLeft,
-} from 'react-icons/fi';
+import {FiUpload } from 'react-icons/fi';
 
-// Interfaces (sem alteração)
 interface CompetencyCardProps {
   title: string;
-  score: number;
   average: number;
   description: string;
+  score: number;
 }
+
 interface Competencia {
   nome: string;
   pontos: number;
   media: number;
+  descricao: string;
 }
+
 interface Redacao {
   titulo: string;
   nota: number;
+  media: number;
 }
+
 interface Turma {
   id: number;
   nome: string;
@@ -43,220 +38,240 @@ interface Turma {
   competencias: Competencia[];
 }
 
-// 2. 'menuItems' foi transformado em uma função 'getMenuItems'
-const getMenuItems = (id: string) => [
+const iconSize = 34;
+
+const menuItems = [
   {
     id: 'student',
     label: 'Início',
-    icon: <FiHome size={34} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/student/home',
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={34} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
   },
   {
     id: 'submit',
     label: 'Enviar Nova Redação',
-    icon: <FiUpload size={34} />,
-    href: `/student/submit-essay`,
+    icon: <FiUpload size={iconSize} />,
+    href: '/student/submit-essay',
   },
   {
     id: 'essays',
     label: 'Minhas Redações',
-    icon: <FiFileText size={34} />,
-    href: `/student/essays`,
+    icon:<img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10"/>,
+    href: '/student/essays',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={34} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile',
   },
 ];
 
 const CompetencyCard: React.FC<CompetencyCardProps> = ({ title, score, average, description }) => (
-  <div className="bg-global-3 border border-global-7 rounded-[10px] p-4 sm:p-5 md:p-6 flex flex-col items-center text-center">
-    <h3 className="text-global-1 text-lg sm:text-xl font-semibold leading-6 mb-4 sm:mb-5">
+  <div className="bg-global-3 border text-global-1 rounded-xl p-4 sm:p-5 md:p-4 lg:p-7
+  flex flex-col items-start text-left shadow-md w-full border-2 border-gray-300">
+    <h3 className="text-global-1 text-xl sm:text-2xl md:text-base lg:text-2xl font-semibold leading-tight mb-2 relative -top-1 sm:-top-2">
       {title}
     </h3>
-    <div className="flex flex-col gap-2 items-center">
-      <div className="flex items-end gap-1 sm:gap-2 justify-center">
-        <span className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-normal leading-[43px]">
-          {score}
-        </span>
-        <span className="text-global-5 text-sm sm:text-base font-normal leading-[19px] mb-1.5">
-          pontos
-        </span>
-        <span className="text-global-4 text-base sm:text-xl font-normal leading-6 ml-4 sm:ml-6 mb-1">
-          / {average.toFixed(1)}{' '}
-          <span className="text-global-5 text-sm sm:text-base font-normal leading-4">em média</span>
-        </span>
-      </div>
-      <p className="text-global-4 text-sm sm:text-base font-normal leading-[19px] max-w-xs">
-        {description}
-      </p>
+    <div className="flex items-end gap-2 mb-2">
+      <span className="text-global-1 text-2xl sm:text-3xl md:text-lg lg:text-4xl font-normal">{score}</span>
+      <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl">pontos</span>
+      <span className="text-global-4 text-sm sm:text-base md:text-sm lg:text-xl ml-2 sm:ml-4">
+        / {average.toFixed(1)} <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl">em média</span>
+      </span>
     </div>
+    <p className="text-sm sm:text-lg md:text-sm lg:text-xl mt-2">{description}</p>
   </div>
 );
 
 const StudentDashboard: React.FC = () => {
   const { user, logout } = useAuth();
-  const params = useParams();
-  const classId = params.id as string;
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
 
-  const dadosPadrao = {
+  const dadosPadrao: Turma = {
+    id: 1,
+    nome: 'Turma Exemplo',
+    alunos: 30,
+    imagem: '',
     mediaGeral: 920,
-    melhorRedacao: { titulo: 'Tecnologia e sociedade', nota: 980 },
-    piorRedacao: { titulo: 'Mobilidade urbana', nota: 840 },
+    melhorRedacao: { titulo: 'Tecnologia e sociedade', nota: 980, media: 9.8 },
+    piorRedacao: { titulo: 'Mobilidade urbana', nota: 840, media: 8.4 },
     competencias: [
-      { nome: 'Competência 1', pontos: 200, media: 2.0 },
-      { nome: 'Competência 2', pontos: 160, media: 1.6 },
-      { nome: 'Competência 3', pontos: 200, media: 2.0 },
-      { nome: 'Competência 4', pontos: 200, media: 2.0 },
-      { nome: 'Competência 5', pontos: 200, media: 2.0 },
+      { nome: 'Competência 1', pontos: 200, media: 2.0, descricao: 'Domínio da norma padrão' },
+      { nome: 'Competência 2', pontos: 160, media: 1.6, descricao: 'Compreensão da proposta' },
+      { nome: 'Competência 3', pontos: 200, media: 2.0, descricao: 'Capacidade de argumentação' },
+      { nome: 'Competência 4', pontos: 200, media: 2.0, descricao: 'Conhecimento dos mecanismos linguísticos' },
+      { nome: 'Competência 5', pontos: 200, media: 2.0, descricao: 'Proposta de intervenção' },
     ],
   };
 
   useEffect(() => {
+    // Limpa o localStorage só para teste
+    localStorage.removeItem('turmaSelecionada');
     const turmaSalva = localStorage.getItem('turmaSelecionada');
     if (turmaSalva) {
       setTurmaSelecionada(JSON.parse(turmaSalva));
     }
   }, []);
 
-  const dados = dadosPadrao;
+  const voltarParaTurmas = () => {
+    localStorage.removeItem('turmaSelecionada');
+    setTurmaSelecionada(null);
+    // Navegação será tratada pelo componente Link
+  };
+
+  const dados = turmaSelecionada || dadosPadrao;
 
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-global-2">
-        {/* 5. Passando os itens do menu gerados dinamicamente para o Sidebar */}
-        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        <Sidebar menuItems={menuItems} onLogout={logout} />
 
-        {/* Conteúdo com scroll independente */}
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto py-6 sm:py-8 lg:py-16 px-4 sm:px-6 lg:px-16">
-          <div className="flex justify-between items-center mb-10">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-[57px] py-7">
-                  Olá, {user?.first_name || 'Estudante'}!
-                </h1>
-                {turmaSelecionada && (
-                  <p className="text-blue-700 text-lg font-medium mt-2 -mt-8">
-                    {turmaSelecionada.nome} - {turmaSelecionada.alunos} alunos
-                  </p>
-                )}
-              </div>
-            </div>
+        {/* Conteúdo principal */}
+        <main className="ml-0 lg:ml-[270px] w-full min-h-screen overflow-y-auto py-6 sm:py-8 lg:py-16 px-4 sm:px-6 lg:px-16">
+          {/* Cabeçalho */}
+          <div className="relative w-full mb-14">
+            {turmaSelecionada && (
+              <Link
+                href="/student/classes"
+                onClick={voltarParaTurmas}
+                className="absolute left-0 top-1/2 -translate-y-1/2 p-2 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                title="Voltar para turmas"
+              >
+                ←
+              </Link>
+            )}
+            <h1 className="text-center text-global-1 text-2xl sm:text-3xl md:text-2xl lg:text-5xl font-semibold mb-20">
+              Olá, {user?.first_name || 'Estudante'}!
+            </h1>
+            {turmaSelecionada && (
+              <p className="text-center text-blue-700 text-lg font-medium mt-2">
+                {turmaSelecionada.nome} - {turmaSelecionada.alunos} alunos
+              </p>
+            )}
           </div>
 
-          <div className="max-w-6xl mx-auto w-full flex flex-col gap-10">
-            {/* MÉDIA GERAL */}
-            <div className="w-full bg-blue-100 border border-blue-400 rounded-lg p-6 flex justify-between items-center">
-              <div>
-                <h2 className="font-semibold text-blue-800 mb-2">
-                  Média geral de todas suas redações
-                </h2>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-normal text-blue-900">{dados.mediaGeral}</span>
-                  <span className="text-gray-500">pontos</span>
-                  <span className="text-lg text-gray-700">
-                    / {(dados.mediaGeral / 100).toFixed(1)} em média
-                  </span>
+          {/* Wrapper central */}
+          <div className="mx-auto w-full max-w-[1500px]">
+            {/* Média geral */}
+            <div className="bg-blue-100/50 rounded-xl p-4 sm:p-6 md:p-4 lg:p-7 flex justify-between items-center shadow w-full mb-6 border-2 border-blue-400">
+              <div className="pl-4 sm:pl-2  md:pl-3 lg:pl-3 text-left">
+                <div>
+                  <h2 className="text-xl sm:text-2xl md:text-base lg:text-2xl font-semibold text-global-1 mb-3 relative -top-1 sm:-top-2">
+                    Média geral
+                  </h2>
+                  <div className="flex items-end gap-2 -mt-1 mb-1">
+                    <p className="text-2xl sm:text-3xl md:text-lg lg:text-4xl font-normal text-global-1">{dados.mediaGeral}</p>
+                    <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl">pontos</span>
+                    <span className="text-global-4 text-sm sm:text-base md:text-sm lg:text-xl ml-2 sm:ml-4">
+                      / <span className="font-normal">{(dados.mediaGeral / 100).toFixed(1)}</span>
+                      <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl"> em média</span>
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700 mt-1">
-                  {turmaSelecionada
-                    ? `Baseado no desempenho da ${turmaSelecionada.nome}`
-                    : 'Baseado em todas as redações corrigidas'}
+                <p className="text-global-4 text-sm sm:text-lg md:text-sm lg:text-xl mt-4 sm:mt-4">
+                  Baseado em todas as redações corrigidas
                 </p>
               </div>
-              <FiBarChart2 size={32} className="text-black" />
+              <Image
+                src="/images/img_vector.svg"
+                alt="Ícone média geral"
+                width={40}
+                height={40}
+                className="relative top-1 mr-2 sm:mr-4 md:w-[25px] md:h-[25px] lg:w-[50px] lg:h-[50px] h-auto w-auto max-w-full"
+              />
             </div>
 
-            {/* MELHOR E PIOR REDAÇÃO */}
-            <div className="flex flex-col sm:flex-row gap-8 w-full">
-              {/* Melhor Redação */}
-              <div className="flex-1 bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-green-600 font-semibold mb-1 text-center">Melhor redação</h3>
-                  <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">
-                      {dados.melhorRedacao.nota}
-                    </span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">
-                      / {(dados.melhorRedacao.nota / 100).toFixed(1)} em média
+            {/* Melhor e Pior redação */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-4">
+              {/* Melhor redação */}
+              <div className="bg-white border rounded-xl p-4 md:p-3 lg:p-6 shadow border-2 border-gray-300">
+                <div className="pl-4">
+                  <div className="flex items-start justify-between relative">
+                    <h2 className="text-green-600 font-semibold text-xl md:text-sm lg:text-2xl self-start">Melhor redação</h2>
+                    <Image
+                      src="/images/img_done.svg"
+                      alt="Melhor redação"
+                      width={60}
+                      height={60}
+                      className="relative top-8 md:top-6 md:w-[40px] md:h-[40px] lg:w-[80px] lg:h-[80px]"
+                    />
+                  </div>
+                  <div className="flex items-end gap-1 max-md:-mt-4 md:-mt-1 lg:-mt-8 lg:mb-1">
+                    <p className="text-2xl md:text-lg lg:text-4xl font-normal text-global-1">{dados.melhorRedacao.nota}</p>
+                    <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl">pontos</span>
+                    <span className="text-global-4 text-sm md:text-sm lg:text-xl ml-2">
+                      / <span className="font-normal">{dados.melhorRedacao.media.toFixed(1)}</span>
+                      <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl"> em média</span>
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 justify-center">
-                    <FiFileText size={18} className="text-gray-800" />
-                    <span className="text-gray-800 text-sm">{dados.melhorRedacao.titulo}</span>
-                  </div>
+                  <p className="text-sm md:text-sm lg:text-xl flex items-center gap-2 lg:mt-4 mt-4">
+                    <Image
+                      src="/images/img_group_gray_900.svg"
+                      alt="Ícone tema"
+                      width={16}
+                      height={16}
+                      className="inline-block h-auto w-auto max-w-full"
+                    />
+                    {dados.melhorRedacao.titulo}
+                  </p>
                 </div>
-                <FiCheckCircle size={48} className="text-green-500" />
               </div>
 
-              {/* Pior Redação */}
-              <div className="flex-1 bg-white border border-gray-200 rounded-lg p-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-red-500 font-semibold mb-1 text-center">Pior redação</h3>
-                  <div className="flex items-baseline gap-2 justify-center mb-1">
-                    <span className="text-2xl font-normal text-blue-900">
-                      {dados.piorRedacao.nota}
-                    </span>
-                    <span className="text-gray-500">pontos</span>
-                    <span className="text-lg text-gray-700">
-                      / {(dados.piorRedacao.nota / 100).toFixed(1)} em média
+              {/* Pior redação */}
+              <div className="bg-white border rounded-xl p-4 md:p-3 lg:p-6 shadow border-2 border-gray-300">
+                <div className="pl-4">
+                  <div className="flex items-center justify-between relative">
+                    <h2 className="text-red-500 font-semibold text-xl md:text-sm lg:text-2xl self-start">Pior redação</h2>
+                    <Image
+                      src="/images/img_error_outline.svg"
+                      alt="Pior redação"
+                      width={60}
+                      height={60}
+                      className="relative top-8 md:top-6 md:w-[40px] md:h-[40px] lg:w-[80px] lg:h-[80px]"
+                    />
+                  </div>
+                  <div className="flex items-end gap-1 max-md:-mt-4 md:-mt-1 lg:-mt-8 lg:mb-1">
+                    <p className="text-2xl md:text-lg lg:text-4xl font-normal text-global-1">{dados.piorRedacao.nota}</p>
+                    <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl">pontos</span>
+                    <span className="text-global-4 text-sm md:text-sm lg:text-xl ml-2">
+                      / <span className="font-normal">{dados.piorRedacao.media.toFixed(1)}</span>
+                      <span className="text-global-5 text-sm sm:text-base md:text-sm lg:text-xl"> em média</span>
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 justify-center">
-                    <FiFileText size={18} className="text-gray-800" />
-                    <span className="text-gray-800 text-sm">{dados.piorRedacao.titulo}</span>
-                  </div>
+                  <p className="text-sm md:text-sm lg:text-xl flex items-center gap-2 lg:mt-4 mt-4">
+                    <Image
+                      src="/images/img_group_gray_900.svg"
+                      alt="Ícone tema"
+                      width={16}
+                      height={16}
+                      className="inline-block h-auto w-auto max-w-full"
+                    />
+                    {dados.piorRedacao.titulo}
+                  </p>
                 </div>
-                <FiAlertCircle size={48} className="text-yellow-500" />
               </div>
             </div>
 
-            {/* DESEMPENHO POR COMPETÊNCIA */}
-            <div className="w-full">
-              <h2 className="text-blue-700 font-semibold mb-4 text-center">
-                Desempenho por competência
-                {turmaSelecionada && (
-                  <span className="block text-sm text-gray-600 font-normal mt-1">
-                    {turmaSelecionada.nome}
-                  </span>
-                )}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {dados.competencias.map((competencia, index) => (
-                  <div
-                    key={index}
-                    className="bg-white border border-gray-200 rounded-lg p-6 text-center"
-                  >
-                    <h3 className="font-semibold text-blue-900 mb-2">{competencia.nome}</h3>
-                    <div className="flex items-baseline justify-center gap-2 mb-2">
-                      <span className="text-2xl font-normal text-blue-900">
-                        {competencia.pontos}
-                      </span>
-                      <span className="text-gray-500">pontos</span>
-                      <span className="text-lg text-gray-700">
-                        / {competencia.media.toFixed(1)} em média
-                      </span>
-                    </div>
-                    <p className="text-gray-800">
-                      {index === 0 && 'Domínio da norma padrão'}
-                      {index === 1 && 'Compreensão da proposta'}
-                      {index === 2 && 'Capacidade de argumentação'}
-                      {index === 3 && 'Conhecimento dos mecanismos linguísticos'}
-                      {index === 4 && 'Proposta de intervenção'}
-                    </p>
-                  </div>
-                ))}
-              </div>
+            {/* Seção de Competências */}
+            <h2 className="text-blue-600 sm:text-2xl md:text-lg lg:text-2xl font-semibold mt-12">Desempenho por Competência</h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mt-4">
+              {dados.competencias.map((comp, idx) => (
+                <CompetencyCard
+                  key={idx}
+                  title={comp.nome}
+                  score={comp.pontos}
+                  average={comp.media}
+                  description={comp.descricao}
+                />
+              ))}
             </div>
           </div>
         </main>

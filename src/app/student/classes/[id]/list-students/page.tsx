@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
@@ -83,7 +84,8 @@ const StudentStudentsPage = () => {
           studentCount={data.student_count}
           teacherName={data.teacher_name}
           students={data.students}
-          onBack={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
+          onBack={() => null}
+          backHref={`/student/classes/${classId}/dashboard`}
         />
       </div>
     </RouteGuard>

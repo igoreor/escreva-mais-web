@@ -5,17 +5,12 @@ import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import {
-  FiHome,
-  FiBookOpen,
   FiFileText,
-  FiUser,
   FiArrowLeft,
   FiUsers,
   FiCalendar,
   FiEye,
   FiPlusSquare,
-  FiEdit2,
-  FiFileMinus,
 } from 'react-icons/fi';
 import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
 import ClassroomService from '@/services/ClassroomService';
@@ -26,13 +21,13 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <FiHome size={28} />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <FiBookOpen size={28} />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     children: [
       {
         id: 'classes',
@@ -60,13 +55,13 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <FiFileMinus size={34} />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <FiUser size={28} />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/teacher/profile',
   },
 ];
@@ -135,17 +130,15 @@ const TeacherClassPage: React.FC = () => {
                 🎓 {classroom.name}
               </h1>
             </div>
-            <div
-              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer"
-              onClick={() =>
-                (window.location.href = `/teacher/schools/${schoolId}/${classId}/list`)
-              }
+            <Link
+              href={`/teacher/schools/${schoolId}/${classId}/list`}
+              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer hover:text-blue-700 transition-colors"
             >
               <FiUsers /> {classroom.student_count} alunos
               <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
                 {classroom.name.charAt(0).toUpperCase()}
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Descrição da turma */}

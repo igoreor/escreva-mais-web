@@ -77,7 +77,7 @@ const TeacherStudentsPage = () => {
           studentCount={data.student_count}
           teacherName={data.teacher_name}
           students={data.students}
-          onBack={() => (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)}
+          backHref={`/teacher/schools/${schoolId}/${classId}/painel`}
         />
       </div>
     </RouteGuard>
