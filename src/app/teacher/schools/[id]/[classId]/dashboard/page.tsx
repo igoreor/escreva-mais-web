@@ -14,7 +14,7 @@ import {
   FiTrendingUp,
   FiFileMinus,
 } from 'react-icons/fi';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 interface Competencia {
   nome: string;
@@ -91,6 +91,7 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
 const TeacherDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const params = useParams();
+  const router = useRouter();
   const schoolId = params?.id;
   const classId = params?.classId;
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
@@ -118,7 +119,7 @@ const TeacherDashboard: React.FC = () => {
   const voltarParaTurmas = () => {
     localStorage.removeItem('turmaSelecionada');
     setTurmaSelecionada(null);
-    window.location.href = '/teacher/schools';
+    router.push('/teacher/schools');
   };
 
   const dados = dadosPadrao;

@@ -2,6 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Button from '../ui/Button';
+import Link from 'next/link';
 
 interface HeaderProps {
   className?: string;
@@ -14,11 +15,6 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
     if (loginSection) {
       loginSection.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  const handleRegisterClick = () => {
-    // Handle register navigation
-    window.location.href = '/registration';
   };
 
   return (
@@ -42,14 +38,15 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
             Login
           </Button>
 
-          <Button
-            variant="outline"
-            size="md"
-            onClick={handleRegisterClick}
-            className="font-semibold"
-          >
-            Cadastro
-          </Button>
+          <Link href="/registration">
+            <Button
+              variant="outline"
+              size="md"
+              className="font-semibold"
+            >
+              Cadastro
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

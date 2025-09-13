@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
@@ -140,7 +140,7 @@ function ClassroomCard({ turma, onCopied }: ClassroomCardProps) {
   );
 }
 
-function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }) {
+function SchoolHeader({ school, onBack }: { school: School; onBack: string }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -182,13 +182,13 @@ function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }
       )}
 
       {/* Botão voltar */}
-      <button
-        onClick={onBack}
+      <Link
+        href={onBack}
         className="absolute top-4 right-4 bg-white text-gray-800 px-3 py-1.5 rounded hover:bg-gray-200 transition z-10"
       >
         <FiArrowLeft className="inline-block mr-2" />
         Voltar
-      </button>
+      </Link>
 
       {/* Nome da escola */}
       <div className="absolute bottom-6 left-6 text-white text-3xl font-bold drop-shadow-lg z-10">
@@ -201,7 +201,7 @@ function SchoolHeader({ school, onBack }: { school: School; onBack: () => void }
 export default function SchoolDetailsPage() {
   const { id } = useParams();
   const { logout } = useAuth();
-  const router = useRouter();
+  
 
   const [school, setSchool] = useState<School | null>(null);
   const [loading, setLoading] = useState(true);
@@ -231,7 +231,7 @@ export default function SchoolDetailsPage() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
         <main className="flex-1 lg:ml-[270px]">
-          <SchoolHeader school={school} onBack={() => router.push('/teacher/schools')} />
+          <SchoolHeader school={school} onBack="/teacher/schools" />
 
           <section className="px-10 py-8">
             <h2 className="text-lg text-gray-800 font-semibold mb-4">Turmas</h2>

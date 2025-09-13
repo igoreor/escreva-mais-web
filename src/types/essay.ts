@@ -112,10 +112,7 @@ export interface EssayValidationResult {
 }
 
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-  ) {
+  constructor(message: string) {
     super(message);
     this.name = 'ApiError';
   }

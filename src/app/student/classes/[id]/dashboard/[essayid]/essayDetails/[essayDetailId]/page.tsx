@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
@@ -117,18 +118,17 @@ const EssayViewPage: React.FC = () => {
           <div className="mx-auto w-full max-w-5xl space-y-6">
             {/* Header com botão voltar */}
             <div className="relative flex items-center justify-center">
-              <button
-                onClick={() => (window.location.href = `/student/classes/${classId}/dashboard`)}
+              <Link
+                href={`/student/classes/${classId}/dashboard`}
                 className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-blue-600 hover:underline transition-colors"
               >
                 <FiArrowLeft size={22} />
                 <span className="text-sm">Voltar</span>
-              </button>
+              </Link>
               <h1 className="text-center text-2xl sm:text-3xl font-bold text-[#0f2752]">
                 Ver redação
               </h1>
             </div>
-
             {/* Conteúdo da redação */}
             <div className="rounded-xl border border-gray-200 bg-white p-6 lg:p-8 space-y-6">
               {/* Título */}

@@ -1,23 +1,17 @@
-// components/auth/LoginForm.tsx
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useAuth } from '@/hooks/userAuth';
 import FloatingTextField from './FloatingTextFieldProps ';
 
 const LoginForm: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<'student' | 'teacher'>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
 
   const { login, isLoading } = useAuth();
-
-  const handleRoleChange = (role: 'student' | 'teacher') => {
-    setSelectedRole(role);
-    setErrors({}); // Limpar erros ao trocar de role
-  };
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -51,7 +45,6 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  // Função para lidar com a tecla Enter
   const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && !isLoading) {
       event.preventDefault();
@@ -59,25 +52,18 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  // Effect para adicionar/remover o event listener
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
-
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [email, password, isLoading]); // Dependencies para que a função sempre tenha os valores atuais
-
-  const handleForgotPassword = () => {
-    console.log('Forgot password clicked');
-  };
-
-  const handleRegister = () => {
-    window.location.href = '/registration';
-  };
+  }, [email, password, isLoading]);
 
   return (
-    <section id="login-section" className="bg-white pt-12 pb-4 sm:pt-16 sm:pb-6 lg:pt-20 lg:pb-8">
+    <section
+      id="login-section"
+      className="bg-white pt-12 pb-4 sm:pt-16 sm:pb-6 lg:pt-20 lg:pb-8"
+    >
       <div className="max-w-[570px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="text-center mb-12 lg:mb-16">
@@ -88,47 +74,6 @@ const LoginForm: React.FC = () => {
             height={48}
             className="mx-auto w-[250px] sm:w-[300px] lg:w-[350px] h-auto"
           />
-        </div>
-        <br />
-
-        {/* Role Selection */}
-        <div className="mb-6">
-          <div className="bg-global-2 rounded p-1.5 flex">
-            <button
-              onClick={() => handleRoleChange('student')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 ${
-                selectedRole === 'student'
-                  ? 'bg-button-2 text-global-1 shadow-md'
-                  : 'text-global-1 hover:bg-gray-200'
-              }`}
-            >
-              <Image
-                src="/images/img_person.svg"
-                alt="Student"
-                width={20}
-                height={20}
-                className="w-5 h-5 sm:w-6 sm:h-6"
-              />
-              Sou Aluno
-            </button>
-            <button
-              onClick={() => handleRoleChange('teacher')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded text-sm sm:text-base font-normal transition-all duration-200 ${
-                selectedRole === 'teacher'
-                  ? 'bg-button-2 text-global-1 shadow-md'
-                  : 'text-global-1 hover:bg-gray-200'
-              }`}
-            >
-              <Image
-                src="/images/img_school.svg"
-                alt="Teacher"
-                width={20}
-                height={20}
-                className="w-5 h-5 sm:w-6 sm:h-6"
-              />
-              Sou Professor
-            </button>
-          </div>
         </div>
 
         {/* Error Message */}
@@ -167,27 +112,23 @@ const LoginForm: React.FC = () => {
             className="font-semibold"
             disabled={isLoading}
           >
-            {isLoading
-              ? 'Entrando...'
-              : selectedRole === 'student'
-                ? 'Entrar como aluno'
-                : 'Entrar como professor'}
+            {isLoading ? 'Entrando...' : 'Entrar'}
           </Button>
         </div>
 
         {/* Additional Links */}
         <div className="text-center pt-20 space-y-2">
-          <button
-            onClick={handleForgotPassword}
+          <Link
+            href="/forgot-password"
             className="text-global-2 text-sm sm:text-base hover:underline"
           >
             Esqueci a senha
-          </button>
+          </Link>
           <p className="text-global-1 text-sm sm:text-base">
             Ainda não tem uma conta?{' '}
-            <button onClick={handleRegister} className="text-global-2 hover:underline">
+            <Link href="/registration" className="text-global-2 hover:underline">
               Cadastre-se.
-            </button>
+            </Link>
           </p>
         </div>
       </div>

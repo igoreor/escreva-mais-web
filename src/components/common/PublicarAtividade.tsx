@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiX, FiEdit2, FiFileText } from 'react-icons/fi';
-import ClassroomService, { Theme } from '@/services/ClassroomService';
+import ClassroomService from '@/services/ClassroomService';
+import { Theme } from '@/types/theme';
+import ErrorPopup from './ErrorPopup';
 
 interface PublicarAtividadeModalProps {
   isOpen: boolean;
@@ -23,6 +25,8 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
   const [myThemes, setMyThemes] = useState<Theme[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const preExistingThemes = [
     { id: 'pre-1', theme: 'Democratização do acesso ao cinema no Brasil' },
@@ -59,7 +63,8 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
 
   const handleCreateAssignment = async () => {
     if (!selectedTheme || !data || !hora || !descricao.trim()) {
-      alert('Por favor, preencha todos os campos');
+      setErrorMessage('Por favor, preencha todos os campos');
+      setShowErrorPopup(true);
       return;
     }
 
@@ -80,7 +85,8 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
       onClose();
     } catch (error) {
       console.error('Erro ao criar atividade:', error);
-      alert('Erro ao criar atividade. Tente novamente.');
+      setErrorMessage('Erro ao criar atividade. Tente novamente.');
+      setShowErrorPopup(true);
     } finally {
       setCreating(false);
     }
@@ -215,6 +221,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
           </button>
         </div>
       </div>
+      {showErrorPopup && <ErrorPopup message={errorMessage} onClose={() => setShowErrorPopup(false)} />}
     </div>
   );
 };

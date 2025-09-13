@@ -1,21 +1,11 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import RegistrationForm from '@/components/ui/register/RegistrationForm';
 import PartnerLogos from '@/components/ui/register/PartnerLogos';
 
 const RegistrationPage: React.FC = () => {
-  const router = useRouter();
-
-  const handleForgotPassword = () => {
-    console.log('Forgot password clicked');
-  };
-
-  const handleLogin = () => {
-    router.push('/');
-  };
-
   return (
     <div className="min-h-screen bg-global-3 flex flex-col items-center justify-start">
       <div className="w-full lg:max-w-[1166px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,21 +28,21 @@ const RegistrationPage: React.FC = () => {
 
           {/* Footer Links */}
           <div className="flex flex-col items-center gap-1 px-7 mt-[-8px]">
-            <button
-              onClick={handleForgotPassword}
+            <Link
+              href="/forgot-password"
               className="text-global-2 text-sm sm:text-base hover:underline"
             >
               Esqueci a senha
-            </button>
+            </Link>
             <div className="text-base text-global-1 font-normal leading-4 text-center">
               <span>Já tem</span>
               <span> uma conta? </span>
-              <button
-                onClick={handleLogin}
+              <Link
+                href="/"
                 className="text-global-2 hover:underline transition-all duration-200"
               >
                 Faça o login.
-              </button>
+              </Link>
             </div>
           </div>
 

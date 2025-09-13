@@ -84,7 +84,7 @@ export interface UpdatedUserData extends User {
   profile_picture?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   error?: string;
   message?: string;

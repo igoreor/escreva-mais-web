@@ -16,6 +16,7 @@ import {
 import { AssignmentDetailsResponse } from '@/types/essay';
 import EssayService from '@/services/EssayService';
 import { Submission } from '@/types/classroom';
+import Link from 'next/link';
 
 const EssayPage: React.FC = () => {
   const { logout } = useAuth();
@@ -124,15 +125,12 @@ const EssayPage: React.FC = () => {
 
         <main className="flex-1 lg:ml-[270px] p-4 sm:p-6 lg:p-10">
           {/* Voltar */}
-          <button
-            type="button"
-            onClick={() =>
-              (window.location.href = `/teacher/schools/${schoolId}/${classId}/painel`)
-            }
+          <Link
+            href={`/teacher/schools/${schoolId}/${classId}/painel`}
             className="flex items-center text-blue-600 mb-4 hover:underline text-sm sm:text-base"
           >
             <FiArrowLeft className="mr-1" /> Voltar
-          </button>
+          </Link>
 
           {/* Título */}
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
@@ -256,16 +254,14 @@ const EssayPage: React.FC = () => {
                       {sub.grade ?? 'Não avaliada'}/1000
                     </span>
 
-                    <button
-                      onClick={() => {
-                        window.location.href = `/teacher/schools/${schoolId}/${classId}/painel/${essayid}/${sub.essay_id}`;
-                      }}
+                    <Link
+                      href={`/teacher/schools/${schoolId}/${classId}/painel/${essayid}/${sub.essay_id}`}
                       className="flex items-center justify-center gap-1 sm:gap-2 bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto"
                     >
                       <FiMessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" />
                       <span className="hidden sm:inline">Ver redação</span>
                       <span className="sm:hidden">Ver</span>
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

@@ -8,6 +8,36 @@ export interface Assignment {
   status: string;
 }
 
+export interface CreateSchoolResponse {
+  id: string;
+  name: string;
+  image_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DeleteSchoolResponse {
+  message: string;
+}
+
+export interface CreateClassroomResponse {
+  id: string;
+  name: string;
+  description: string;
+  shift: string;
+  join_code: string;
+  school_id: string;
+  teacher_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateClassroomData {
+  name: string;
+  description: string;
+  shift: string;
+}
+
 export interface ClassroomDetails {
   name: string;
   description: string;
@@ -64,4 +94,28 @@ export interface ClassroomDetailsForStudent {
   description: string;
   teacher_name: string;
   assignments: Assignment[];
+}
+
+export interface Classroom {
+  id: string;
+  name: string;
+  description: string;
+  shift: string;
+  join_code: string;
+  school_id: string;
+  teacher_id: string;
+}
+
+export interface School {
+  id: string;
+  name: string;
+  image_url?: string;
+}
+
+export interface SchoolWithClassrooms extends School {
+  classrooms: Classroom[];
+}
+
+export interface JoinClassroomResponse {
+  status: string;
 }
