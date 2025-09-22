@@ -93,6 +93,7 @@ export interface ClassroomDetailsForStudent {
   student_count: number;
   description: string;
   teacher_name: string;
+  teacher_profile_picture?: string | null;
   assignments: Assignment[];
 }
 
