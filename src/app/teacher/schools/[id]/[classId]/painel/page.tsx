@@ -17,27 +17,27 @@ import ClassroomService from '@/services/ClassroomService';
 import { Assignment, ClassroomDetails } from '@/types/classroom';
 import Link from 'next/link';
 
-const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
+const getMenuItems = (schoolId?: string, classId?: string, classroomName?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-6 h-6" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-6 h-6" />,
     children: [
       {
         id: 'classes',
-        label: 'Minhas Turmas',
+        label: classroomName || 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
             id: 'class-details',
-            label: 'dashboard',
+            label: 'Dashboard',
             icon: <FiFileText size={20} />,
             href:
               schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
@@ -46,7 +46,7 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileText size={20} />,
-            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}` : undefined,
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/painel` : undefined,
           },
         ],
       },
@@ -55,19 +55,19 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-6 h-6" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-6 h-6" />,
     href: '/teacher/profile',
   },
 ];
 
 const TeacherClassPage: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { id: schoolId, classId } = useParams();
 
   const [classroom, setClassroom] = useState<ClassroomDetails | null>(null);
@@ -111,12 +111,12 @@ const TeacherClassPage: React.FC = () => {
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar
-          menuItems={getMenuItems(schoolId as string, classId as string)}
+          menuItems={getMenuItems(schoolId as string, classId as string, classroom?.name)}
           onLogout={logout}
         />
 
         {/* Conteúdo principal */}
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
+        <main className="ml-0 lg:ml-64 w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
           {/* Header */}
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">
@@ -130,15 +130,18 @@ const TeacherClassPage: React.FC = () => {
                 🎓 {classroom.name}
               </h1>
             </div>
-            <Link
-              href={`/teacher/schools/${schoolId}/${classId}/list`}
-              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer hover:text-blue-700 transition-colors"
-            >
-              <FiUsers /> {classroom.student_count} alunos
-              <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-                {classroom.name.charAt(0).toUpperCase()}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center text-gray-700 text-sm gap-2">
+                <FiUsers /> {classroom.student_count} alunos
               </div>
-            </Link>
+              <Link
+                href={`/teacher/schools/${schoolId}/${classId}/list`}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+              >
+                <FiUsers size={16} />
+                Ver alunos
+              </Link>
+            </div>
           </div>
 
           {/* Descrição da turma */}
