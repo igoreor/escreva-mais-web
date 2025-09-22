@@ -29,7 +29,7 @@ const RegistrationPage: React.FC = () => {
           {/* Footer Links */}
           <div className="flex flex-col items-center gap-1 px-7 mt-[-8px]">
             <Link
-              href="/forgot-password"
+              href="/forget-key"
               className="text-global-2 text-sm sm:text-base hover:underline"
             >
               Esqueci a senha
