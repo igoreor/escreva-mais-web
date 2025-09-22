@@ -7,6 +7,7 @@ import {
   CreateAssignmentResponse,
 } from '@/types/classroom';
 import { Theme } from '@/types/theme';
+import { StudentReadSchema } from '@/types/user';
 
 class ClassroomService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -96,6 +97,27 @@ class ClassroomService {
       return await response.json();
     } catch (error) {
       console.error('Erro ao criar atividade:', error);
+      throw error;
+    }
+  }
+
+  static async getClassroomStudents(classroomId: string): Promise<StudentReadSchema[]> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/students`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar estudantes da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar estudantes da turma:', error);
       throw error;
     }
   }
