@@ -257,12 +257,16 @@ const TextAreaWithLineNumbers: React.FC<{
   );
 };
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import SubmitEssayService from '@/services/submitEssay';
+import EssayService from '@/services/EssayService';
 import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload } from 'react-icons/fi';
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const essayId = searchParams.get('essayId');
   const classId =
     typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
   const [theme, setTheme] = useState('');
@@ -270,6 +274,8 @@ const SubmitEssayPage: React.FC = () => {
   const [essayText, setEssayText] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -343,7 +349,85 @@ const SubmitEssayPage: React.FC = () => {
     }
   };
 
+  const handleSaveDraft = async () => {
+    if (!theme.trim()) {
+      setPopupConfig({
+        type: 'error',
+        title: 'Tema Obrigatório',
+        message: 'É necessário informar um tema para salvar o rascunho.',
+      });
+      return;
+    }
+
+    setIsSavingDraft(true);
+    try {
+      const result = await SubmitEssayService.saveDraft({
+        theme: theme.trim(),
+        title: title.trim() || null,
+        content: essayText.trim() || null,
+        image: image,
+      });
+      console.log('Rascunho salvo com sucesso:', result);
+      setPopupConfig({
+        type: 'success',
+        title: 'Rascunho Salvo!',
+        message: 'Seu rascunho foi salvo com sucesso. Redirecionando para minhas redações...',
+      });
+
+      setTimeout(() => {
+        router.push('/student/essays');
+      }, 2000);
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro ao Salvar',
+        message: `Não foi possível salvar o rascunho: ${errorMessage}`,
+      });
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
   const { logout } = useAuth();
+
+  useEffect(() => {
+    const loadDraft = async () => {
+      if (!essayId) return;
+
+      setIsLoadingDraft(true);
+      try {
+        const essay = await EssayService.getEssay(essayId);
+        console.log('Rascunho carregado:', essay);
+
+        setTheme(essay.theme || '');
+        setTitle(essay.title || '');
+        setEssayText(essay.content || '');
+
+        // Para imagem, por enquanto apenas mostramos que ela existe
+        // TODO: Implementar carregamento de imagem se necessário
+        if (essay.image_url) {
+          console.log('Essay tem imagem:', essay.image_url);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar rascunho:', error);
+        setPopupConfig({
+          type: 'error',
+          title: 'Erro ao Carregar',
+          message: 'Não foi possível carregar o rascunho. Redirecionando...',
+        });
+
+        setTimeout(() => {
+          router.push('/student/essays');
+        }, 2000);
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadDraft();
+  }, [essayId, router]);
 
   return (
     <RouteGuard allowedRoles={['student']}>
@@ -353,8 +437,15 @@ const SubmitEssayPage: React.FC = () => {
         </div>
         <div className="flex flex-col flex-1 px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14 overflow-y-auto">
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-8">
-            Enviar nova redação
+            {essayId ? 'Editar rascunho' : 'Enviar nova redação'}
           </h1>
+
+          {isLoadingDraft && (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-600">Carregando rascunho...</span>
+            </div>
+          )}
           <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
             <div className="bg-global-3 border border-gray-300 rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col gap-6">
               <div className="flex flex-col gap-2">
@@ -365,7 +456,7 @@ const SubmitEssayPage: React.FC = () => {
                   placeholder="Digite o tema da sua redação"
                   value={theme}
                   onChange={(e) => setTheme(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isLoadingDraft}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -374,7 +465,7 @@ const SubmitEssayPage: React.FC = () => {
                   placeholder="Insira aqui o título da sua redação, caso deseje"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isLoadingDraft}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -443,15 +534,20 @@ const SubmitEssayPage: React.FC = () => {
               )}
               <FileUpload
                 onFileSelect={handleImageSelect}
-                disabled={isLoading}
+                disabled={isLoading || isLoadingDraft}
                 isBlocked={imageBlocked}
               />
             </div>
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
-              <Button variant="outline" size="lg" disabled={isLoading}>
-                {isLoading ? 'Salvando...' : 'Salvar rascunho'}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleSaveDraft}
+                disabled={isLoading || isSavingDraft || isLoadingDraft}
+              >
+                {isSavingDraft ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
-              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading}>
+              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading || isSavingDraft || isLoadingDraft}>
                 {isLoading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>
