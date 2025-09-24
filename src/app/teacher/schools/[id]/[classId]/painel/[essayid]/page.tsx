@@ -129,12 +129,15 @@ const EssayPage: React.FC = () => {
 
         <main className="flex-1 lg:ml-[270px] p-4 sm:p-6 lg:p-10">
           {/* Voltar */}
-          <Link
-            href={`/teacher/schools/${schoolId}/${classId}/painel`}
-            className="flex items-center text-blue-600 mb-4 hover:underline text-sm sm:text-base"
-          >
-            <FiArrowLeft className="mr-1" /> Voltar
-          </Link>
+          <div className="flex justify-end ml-6">
+            <Link
+              href={`/teacher/schools/${schoolId}/${classId}/painel`}
+              className="flex items-center text-blue-600 mb-4 hover:underline text-sm sm:text-base"
+            >
+              <FiArrowLeft className="mr-1" /> Voltar
+            </Link>
+          </div>
+
 
           {/* Título */}
           <div className="bg-white rounded-lg shadow p-4 sm:p-6">
