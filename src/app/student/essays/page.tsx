@@ -53,7 +53,7 @@ const EssayCard: React.FC<{ essay: EssayWithStatus }> = ({ essay }) => {
     if (essay.status === 'draft') {
       return (
         <Link
-          href={`/student/essays/${essay.id}/correction-details`}
+          href={`/student/submit-essay?essayId=${essay.id}`}
           className="px-3 py-1 text-sm rounded-lg bg-yellow-600 text-white hover:bg-yellow-700 transition-colors"
         >
           Continuar
