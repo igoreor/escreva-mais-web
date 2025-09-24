@@ -227,29 +227,8 @@ export default function SchoolDetailsPage() {
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
-        <main className="flex-1 ml-0 lg:ml-64">
-          <div className="relative">
-            <img
-              src="/images/escola.png"
-              alt="Imagem da escola"
-              className="w-full h-64 object-cover"
-            />
-
-            <button
-              onClick={() => router.push('/teacher/schools')}
-              className="absolute top-4 left-4 sm:left-6 md:left-8 lg:left-12 bg-white text-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-200 transition flex items-center"
-            >
-              <img 
-                src="/images/voltar.svg" 
-                alt="Voltar"  
-                className="inline-block mr-2"  
-              />
-              <span className="text-global-1 font-medium">Voltar</span>
-            </button>
-            <div className="absolute bottom-6 left-12 text-white text-3xl font-bold drop-shadow-lg">
-              {school.name}
-            </div>
-          </div>
+        <main className="flex-1 ml-0 lg:ml-64 px-8">
+          <SchoolHeader school={school} onBack="/teacher/schools" />
 
           <section className="px-10 py-8">
             <h2 className="text-lg text-gray-800 font-semibold mb-4">Turmas</h2>
