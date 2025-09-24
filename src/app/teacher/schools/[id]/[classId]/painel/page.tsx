@@ -116,9 +116,9 @@ const TeacherClassPage: React.FC = () => {
         />
 
         {/* Conteúdo principal */}
-        <main className="ml-0 lg:ml-64 w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
+        <main className="ml-0 lg:ml-64 w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-4 lg:p-12">
           {/* Header */}
-          <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center bg-blue-50 p-4 lg:p-6 rounded-lg mb-6 gap-4">
             <div className="flex items-center gap-3">
               <Link
                 href={`/teacher/schools/${schoolId}`}
@@ -126,17 +126,17 @@ const TeacherClassPage: React.FC = () => {
               >
                 <FiArrowLeft size={20} />
               </Link>
-              <h1 className="text-2xl font-semibold text-blue-900 flex items-center gap-2">
+              <h1 className="text-lg lg:text-2xl font-semibold text-blue-900 flex items-center gap-2">
                 🎓 {classroom.name}
               </h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <div className="flex items-center text-gray-700 text-sm gap-2">
                 <FiUsers /> {classroom.student_count} alunos
               </div>
               <Link
                 href={`/teacher/schools/${schoolId}/${classId}/list`}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm w-full sm:w-auto justify-center"
               >
                 <FiUsers size={16} />
                 Ver alunos
@@ -145,8 +145,8 @@ const TeacherClassPage: React.FC = () => {
           </div>
 
           {/* Descrição da turma */}
-          <div className="bg-white border border-gray-200 rounded-lg p-5 mb-8">
-            <p className="text-gray-700">{classroom.description}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 mb-8">
+            <p className="text-gray-700 text-sm lg:text-base">{classroom.description}</p>
           </div>
 
           {/* Atividades (Temas) */}
@@ -155,13 +155,13 @@ const TeacherClassPage: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between">
-              <div className="flex gap-3 items-start">
-                <FiFileText size={28} className="text-blue-600 mt-1" />
+            <div className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex gap-3 items-center">
+                <FiFileText size={28} className="text-blue-600" />
               </div>
               <button
                 onClick={() => setAbrirModal(true)}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full sm:w-auto justify-center"
               >
                 <FiPlusSquare /> Publicar atividade
               </button>
@@ -179,15 +179,15 @@ const TeacherClassPage: React.FC = () => {
             {classroom.assignments.map((assignment: Assignment) => (
               <div
                 key={assignment.id}
-                className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between"
+                className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
               >
-                <div className="flex gap-3 items-start">
-                  <FiFileText size={28} className="text-blue-600 mt-1" />
-                  <div>
-                    <h3 className="text-gray-800 font-medium">{assignment.title}</h3>
-                    <div className="flex items-center gap-3 mt-2 text-sm">
+                <div className="flex gap-3 items-start flex-1">
+                  <FiFileText size={24} className="text-blue-600 mt-1 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-gray-800 font-medium text-sm lg:text-base truncate">{assignment.title}</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-2 text-xs lg:text-sm">
                       <span className="flex items-center gap-1 text-blue-600">
-                        <FiCalendar />
+                        <FiCalendar size={14} />
                         Prazo:{' '}
                         {new Date(assignment.due_date).toLocaleString('pt-BR', {
                           day: '2-digit',
@@ -204,9 +204,9 @@ const TeacherClassPage: React.FC = () => {
 
                 <Link
                   href={`/teacher/schools/${schoolId}/${classId}/painel/${assignment.id}`}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full lg:w-auto justify-center"
                 >
-                  <FiEye size={18} /> Ver redações
+                  <FiEye size={16} /> Ver redações
                 </Link>
               </div>
             ))}
