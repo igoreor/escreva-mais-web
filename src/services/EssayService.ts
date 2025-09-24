@@ -112,9 +112,7 @@ class EssayService {
     assignmentId: string,
   ): Promise<AssignmentDetailsResponse> {
     if (!this.isTeacher()) {
-      throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade'
-      );
+      throw new ApiError('Acesso negado: apenas professores podem acessar esta funcionalidade');
     }
 
     return this.getAssignmentDetailsForTeacher(assignmentId);
@@ -124,9 +122,7 @@ class EssayService {
     essayId: string,
   ): Promise<EssayDetailsForTeacherResponse> {
     if (!this.isTeacher()) {
-      throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade'
-      );
+      throw new ApiError('Acesso negado: apenas professores podem acessar esta funcionalidade');
     }
 
     return this.getEssayDetailsForTeacher(essayId);
@@ -137,12 +133,60 @@ class EssayService {
     feedbackData: UpdateEssayFeedbackRequest,
   ): Promise<UpdateEssayFeedbackResponse> {
     if (!this.isTeacher()) {
-      throw new ApiError(
-        'Acesso negado: apenas professores podem acessar esta funcionalidade'
-      );
+      throw new ApiError('Acesso negado: apenas professores podem acessar esta funcionalidade');
     }
 
     return this.updateEssayFeedback(essayId, feedbackData);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static async saveDraft(essayId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/${essayId}/save-draft`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      console.error('Erro ao salvar rascunho:', error);
+      throw new ApiError('Erro de conexão com o servidor');
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static async getEssay(essayId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/${essayId}`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+        throw new ApiError(errorData.message || `Erro HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      console.error('Erro ao buscar redação:', error);
+      throw new ApiError('Erro de conexão com o servidor');
+    }
   }
 }
 
