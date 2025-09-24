@@ -51,13 +51,12 @@ class SubmitEssayService {
 
       const createdEssay: CreateEssayResponse = await response.json();
 
-      this.evaluateEssay(createdEssay.id)
-        .then((result) => {
-          console.log('Feedback gerado:', result);
-        })
-        .catch((err) => {
-          console.error('Erro ao avaliar redação:', err);
-        });
+      try {
+        const evaluationResult = await this.evaluateEssay(createdEssay.id);
+        console.log('Feedback gerado:', evaluationResult);
+      } catch (err) {
+        console.error('Erro ao avaliar redação:', err);
+      }
 
       return createdEssay;
     } catch (error) {
@@ -88,38 +87,39 @@ class SubmitEssayService {
     }
   }
 
-  // static async saveDraft(draftData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
-  //     try {
-  //         const formData = new FormData();
+  static async saveDraft(draftData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
+    try {
+      const formData = new FormData();
 
-  //         formData.append('theme', draftData.theme);
-  //         formData.append('title', draftData.title || '');
-  //         formData.append('content', draftData.content || '');
-  //         formData.append('isDraft', 'true'); // Indica que é um rascunho
+      formData.append('theme', draftData.theme);
+      formData.append('title', draftData.title?.trim() || '');
+      formData.append('content', draftData.content?.trim() || '');
+      if (draftData.image) {
+        formData.append('image', draftData.image);
+      }
 
-  //         if (draftData.image) {
-  //             formData.append('image', draftData.image);
-  //         } else {
-  //             formData.append('image', '');
-  //         }
+      const response = await fetch(`${this.API_BASE_URL}/essays/essays/create-stand-alone`, {
+        method: 'POST',
+        headers: this.getMultipartHeaders(),
+        body: formData,
+      });
 
-  //         const response = await fetch(`${this.API_BASE_URL}/essays/save-draft`, {
-  //             method: 'POST',
-  //             headers: this.getMultipartHeaders(),
-  //             body: formData,
-  //         });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+      }
 
-  //         if (!response.ok) {
-  //             const errorData = await response.json().catch(() => ({}));
-  //             throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
-  //         }
+      const createdEssay: CreateEssayResponse = await response.json();
 
-  //         return await response.json();
-  //     } catch (error) {
-  //         console.error('Erro ao salvar rascunho:', error);
-  //         throw error;
-  //     }
-  // }
+      const EssayService = (await import('./EssayService')).default;
+      await EssayService.saveDraft(createdEssay.id);
+
+      return createdEssay;
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error);
+      throw error;
+    }
+  }
 
   static validateEssayData(
     theme: string,
