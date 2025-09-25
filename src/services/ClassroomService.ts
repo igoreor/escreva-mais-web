@@ -5,6 +5,7 @@ import {
   ClassroomDetails,
   CreateAssignmentRequest,
   CreateAssignmentResponse,
+  UpdateClassroomDescriptionRequest,
 } from '@/types/classroom';
 import { Theme } from '@/types/theme';
 import { StudentReadSchema } from '@/types/user';
@@ -118,6 +119,31 @@ class ClassroomService {
       return await response.json();
     } catch (error) {
       console.error('Erro ao buscar estudantes da turma:', error);
+      throw error;
+    }
+  }
+
+  static async updateClassroomDescription(
+    classroomId: string,
+    descriptionData: UpdateClassroomDescriptionRequest,
+  ): Promise<ClassroomDetails> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/description`,
+        {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify(descriptionData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar descrição da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao atualizar descrição da turma:', error);
       throw error;
     }
   }
