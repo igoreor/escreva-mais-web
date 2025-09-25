@@ -7,6 +7,7 @@ import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import ListClassroom from '@/components/ui/classroom/ListClassroom';
 import { FiHome, FiBookOpen, FiFileMinus, FiUser } from 'react-icons/fi';
 import ClassroomService from '@/services/ClassroomService';
+import AuthService from '@/services/authService';
 import { StudentReadSchema } from '@/types/user';
 import { ClassroomDetails } from '@/types/classroom';
 
@@ -68,6 +69,15 @@ interface ClassroomData {
   students: { id: string; name: string; profile_picture_url?: string | null }[];
 }
 
+interface UserApiResponse {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: 'teacher' | 'student';
+  profile_picture_url?: string;
+}
+
 const TeacherStudentsPage = () => {
   const { logout, user } = useAuth();
   const { id: schoolId, classId } = useParams();
@@ -75,6 +85,44 @@ const TeacherStudentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ClassroomData | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Função para buscar dados atualizados do professor
+  const fetchTeacherData = async (): Promise<UserApiResponse | null> => {
+    try {
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        console.error('ID do usuário não encontrado');
+        return null;
+      }
+
+      const token = AuthService.getToken();
+      if (!token) {
+        console.error('Token de autenticação não encontrado');
+        return null;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/users/${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.error('Erro ao buscar dados do professor');
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar dados do professor:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchClassroomData = async () => {
@@ -84,10 +132,11 @@ const TeacherStudentsPage = () => {
         setLoading(true);
         setError(null);
 
-        // Buscar detalhes da turma e estudantes em paralelo
-        const [classroomDetails, students] = await Promise.all([
+        // Buscar detalhes da turma, estudantes e dados atualizados do professor em paralelo
+        const [classroomDetails, students, teacherData] = await Promise.all([
           ClassroomService.getClassroomDetails(classId as string),
           ClassroomService.getClassroomStudents(classId as string),
+          fetchTeacherData(),
         ]);
 
         // Transformar dados dos estudantes para o formato esperado pelo componente
@@ -97,15 +146,23 @@ const TeacherStudentsPage = () => {
           profile_picture_url: student.profile_picture_url,
         }));
 
-        // Usar o nome real do professor logado
-        const teacherName = user ? `${user.first_name} ${user.last_name}` : 'Professor';
+        // Usar dados atualizados do professor ou fallback para dados locais
+        const teacherName = teacherData
+          ? `${teacherData.first_name} ${teacherData.last_name}`
+          : user
+            ? `${user.first_name} ${user.last_name}`
+            : 'Professor';
+
+        const teacherProfilePicture = teacherData?.profile_picture_url
+          || user?.profile_picture_url
+          || null;
 
         setData({
           name: classroomDetails.name,
           description: classroomDetails.description,
           student_count: classroomDetails.student_count,
           teacher_name: teacherName,
-          teacher_profile_picture: user?.profile_picture_url || null,
+          teacher_profile_picture: teacherProfilePicture,
           students: formattedStudents,
         });
       } catch (error) {
