@@ -120,3 +120,7 @@ export interface SchoolWithClassrooms extends School {
 export interface JoinClassroomResponse {
   status: string;
 }
+
+export interface UpdateClassroomDescriptionRequest {
+  description: string;
+}
