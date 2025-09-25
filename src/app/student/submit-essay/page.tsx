@@ -276,12 +276,56 @@ const SubmitEssayPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [isLoadingDraft, setIsLoadingDraft] = useState(false);
+  const [themeFromAI, setThemeFromAI] = useState(false);
+  const [isThemeFocused, setIsThemeFocused] = useState(false);
+
+
+  const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (themeFromAI && e.target.value === '') {
+      setThemeFromAI(false);
+    }
+    setTheme(e.target.value);
+  };
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
     title: string;
     message: string;
   } | null>(null);
+
+  const [themeMenuVisible, setThemeMenuVisible] = useState(false);
+  const toggleThemeMenu = () => setThemeMenuVisible(prev => !prev);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
+
+  const [generatedThemes, setGeneratedThemes] = useState<string[]>([
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+  ]);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if(
+        themeMenuRef.current &&
+        !themeMenuRef.current.contains(event.target as Node)
+      ){
+        setThemeMenuVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   const hasText = essayText.trim().length > 0;
   const hasImage = image !== null;
@@ -452,13 +496,64 @@ const SubmitEssayPage: React.FC = () => {
                 <label className="text-global-1 font-semibold">
                   Tema <span className="text-red-500">*</span>
                 </label>
+                <div className="relative w-full" ref={themeMenuRef}>
                 <EditText
                   placeholder="Digite o tema da sua redação"
                   value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
+                  onChange={handleThemeChange}
+                  onFocus={() => {
+                    setIsThemeFocused(true);
+                    setThemeMenuVisible(false);
+                  }}
+                  onBlur={() => setIsThemeFocused(false)}
+                  readOnly={themeFromAI}
                   disabled={isLoading || isLoadingDraft}
                 />
+                {(themeFromAI && (isThemeFocused || themeMenuVisible)) ? (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setTheme(''); 
+                      setThemeFromAI(false);
+                      setThemeMenuVisible(false);
+                    }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600 text-lg font-bold"
+                  >
+                    ✕
+                  </button>
+                ) : (
+                <button
+                  type="button"
+                  onClick={toggleThemeMenu}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  ▼
+                </button>
+              )}
+                {themeMenuVisible && (
+                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    <div className="bg-blue-600 text-white font-semibold px-4 py-2 sticky top-0 z-10">
+                      Selecione um de nossos temas
+                    </div>
+                    {/* Suposição de temas - aqui vai a chamada da IA depois */}
+                    {generatedThemes.map((t, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setTheme(t);
+                          setThemeFromAI(true);
+                          setThemeMenuVisible(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">Título (opcional)</label>
                 <EditText
@@ -488,6 +583,7 @@ const SubmitEssayPage: React.FC = () => {
                     </button>
                   )}
                 </div>
+                
                 {imageBlocked && (
                   <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-xs sm:text-sm">
                     <FiAlertCircle className="w-4 h-4" />
@@ -554,6 +650,7 @@ const SubmitEssayPage: React.FC = () => {
           </div>
         </div>
       </div>
+    </div>
       {popupConfig && (
         <Popup
           type={popupConfig.type}
@@ -563,6 +660,8 @@ const SubmitEssayPage: React.FC = () => {
         />
       )}
     </RouteGuard>
+  
+    
   );
 };
 
