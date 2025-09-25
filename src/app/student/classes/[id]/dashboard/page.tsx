@@ -28,6 +28,7 @@ interface ClassroomData {
   student_count: number;
   description: string;
   teacher_name: string;
+  teacher_photo: string;
   assignments: Atividade[];
 }
 
@@ -128,7 +129,11 @@ const ClassDetailPage: React.FC = () => {
                 : 'Não enviado',
         }));
 
-        setClassroom({ ...data, assignments });
+        setClassroom({ 
+          ...data, 
+          assignments, 
+          teacher_photo: data.teacher_profile_picture || "https://i.pravatar.cc/40"
+        });
       } catch (err: unknown) {
         const errorMessage =
           err instanceof Error ? err.message : 'Erro ao carregar dados da turma.';
@@ -172,12 +177,17 @@ const ClassDetailPage: React.FC = () => {
                 <span className="inline-block">🎓</span> {classroom.name}
               </h1>
             </div>
-            <Link
-              href={`/student/classes/${classId}/list-students`}
-              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer hover:text-blue-700 transition-colors"
-            >
-              <FiUsers /> {classroom.student_count} alunos
-            </Link>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center text-gray-700 text-sm gap-2">
+                <FiUsers /> {classroom.student_count} alunos
+              </span>
+              <Link
+                href={`/student/classes/${classId}/list-students`}
+                className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm gap-2"
+              >
+                <FiEye /> Ver turma
+              </Link>
+            </div>
           </div>
 
           {/* Aviso / Frase do professor */}
@@ -189,7 +199,7 @@ const ClassDetailPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img
-                  src="https://i.pravatar.cc/40"
+                  src={classroom.teacher_photo || "https://i.pravatar.cc/40"}
                   alt="professor"
                   className="w-8 h-8 rounded-full"
                 />
