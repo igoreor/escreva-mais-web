@@ -213,6 +213,10 @@ const SubmitEssayPage: React.FC = () => {
   const params = useParams();
   const classId =
     typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
+
+  // Storage key único por turma
+  const STORAGE_KEY = `essay_draft_class_${classId}`;
+
   const [selectedTheme, setSelectedTheme] = useState('');
   const [title, setTitle] = useState('');
   const [essayText, setEssayText] = useState('');
@@ -238,9 +242,11 @@ const SubmitEssayPage: React.FC = () => {
   ];
 
   const handleSaveDraft = () => {
+    // O rascunho já está sendo salvo automaticamente no localStorage
+    // Apenas mostramos uma confirmação ao usuário
     setToastInfo({
       title: 'Rascunho salvo!',
-      description: 'Seu rascunho foi salvo com sucesso.',
+      description: 'Seu rascunho foi salvo automaticamente.',
     });
     setShowToast(true);
   };
@@ -262,12 +268,21 @@ const SubmitEssayPage: React.FC = () => {
       console.log('Enviando dados:', { selectedTheme, title, essayText, file });
       // const response = await api.post('/essays', formData);
 
+      // Limpar localStorage após envio bem-sucedido
+      localStorage.removeItem(STORAGE_KEY);
+
       // Simulação de sucesso (status 200)
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
         message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
+
+      // Limpar campos
+      setSelectedTheme('');
+      setTitle('');
+      setEssayText('');
+      setFile(null);
     } catch (error) {
       setPopupConfig({
         type: 'error',
@@ -279,6 +294,34 @@ const SubmitEssayPage: React.FC = () => {
   };
 
   const { logout } = useAuth();
+
+  // Carregar do localStorage ao montar o componente
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setSelectedTheme(draft.selectedTheme || '');
+        setTitle(draft.title || '');
+        setEssayText(draft.essayText || '');
+        // Nota: não é possível restaurar o arquivo File do localStorage
+      } catch (error) {
+        console.error('Erro ao carregar rascunho do localStorage:', error);
+      }
+    }
+  }, [STORAGE_KEY]);
+
+  // Salvar no localStorage sempre que houver mudanças
+  useEffect(() => {
+    const draftData = {
+      selectedTheme,
+      title,
+      essayText,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+  }, [selectedTheme, title, essayText, STORAGE_KEY]);
 
   return (
     <RouteGuard allowedRoles={['student']}>
