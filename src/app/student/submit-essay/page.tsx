@@ -262,6 +262,8 @@ import SubmitEssayService from '@/services/submitEssay';
 import EssayService from '@/services/EssayService';
 import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload } from 'react-icons/fi';
 
+const STORAGE_KEY = 'essay_draft_standalone';
+
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
   const router = useRouter();
@@ -371,6 +373,10 @@ const SubmitEssayPage: React.FC = () => {
         image: image,
       });
       console.log('Redação enviada com sucesso:', result);
+
+      // Limpar localStorage após envio bem-sucedido
+      localStorage.removeItem(STORAGE_KEY);
+
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
@@ -412,6 +418,10 @@ const SubmitEssayPage: React.FC = () => {
         image: image,
       });
       console.log('Rascunho salvo com sucesso:', result);
+
+      // Limpar localStorage após salvar rascunho com sucesso
+      localStorage.removeItem(STORAGE_KEY);
+
       setPopupConfig({
         type: 'success',
         title: 'Rascunho Salvo!',
@@ -435,6 +445,38 @@ const SubmitEssayPage: React.FC = () => {
   };
 
   const { logout } = useAuth();
+
+  // Carregar do localStorage ao montar o componente (apenas se não estiver editando um rascunho)
+  useEffect(() => {
+    if (essayId) return; // Não carregar do localStorage se estiver editando um rascunho
+
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setTheme(draft.theme || '');
+        setTitle(draft.title || '');
+        setEssayText(draft.essayText || '');
+        // Nota: não é possível restaurar o arquivo File do localStorage
+      } catch (error) {
+        console.error('Erro ao carregar rascunho do localStorage:', error);
+      }
+    }
+  }, [essayId]);
+
+  // Salvar no localStorage sempre que houver mudanças
+  useEffect(() => {
+    if (essayId) return; // Não salvar no localStorage se estiver editando um rascunho
+
+    const draftData = {
+      theme,
+      title,
+      essayText,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+  }, [theme, title, essayText, essayId]);
 
   useEffect(() => {
     const loadDraft = async () => {
