@@ -102,7 +102,7 @@ const renderStatusBadge = (status: 'Pendente' | 'Entregue' | 'Não enviado') => 
 };
 
 const ClassDetailPage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const params = useParams();
   const classId = params.id;
 
@@ -132,7 +132,7 @@ const ClassDetailPage: React.FC = () => {
         setClassroom({ 
           ...data, 
           assignments, 
-          teacher_photo: data.teacher_profile_picture || "https://i.pravatar.cc/40"
+          teacher_photo: data.teacher_image || '/images/default-avatar.png' 
         });
       } catch (err: unknown) {
         const errorMessage =
