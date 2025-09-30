@@ -3,6 +3,7 @@ import AuthService from './authService';
 import {
   AssignmentDetails,
   ClassroomDetails,
+  ClassroomDetailsForStudent,
   CreateAssignmentRequest,
   CreateAssignmentResponse,
   UpdateClassroomDescriptionRequest,
@@ -144,6 +145,29 @@ class ClassroomService {
       return await response.json();
     } catch (error) {
       console.error('Erro ao atualizar descrição da turma:', error);
+      throw error;
+    }
+  }
+
+  static async getClassroomDetailsForStudent(
+    classroomId: string,
+  ): Promise<ClassroomDetailsForStudent> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/student-view`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar detalhes da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da turma:', error);
       throw error;
     }
   }
