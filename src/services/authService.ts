@@ -261,6 +261,46 @@ class AuthService {
       };
     }
   }
+
+  static async deleteUser(userId: string): Promise<ApiResponse> {
+    try {
+      const token = this.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 204) {
+        this.logout();
+        return {
+          success: true,
+          message: 'Conta excluída com sucesso!',
+        };
+      } else {
+        const responseData = await response.json();
+        return {
+          success: false,
+          error: responseData.message || 'Erro ao excluir conta',
+        };
+      }
+    } catch (error) {
+      console.error('Delete User API Error:', error);
+
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Erro de conexão. Verifique se o servidor está rodando.',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Erro interno. Tente novamente mais tarde.',
+      };
+    }
+  }
 }
 
 export default AuthService;
