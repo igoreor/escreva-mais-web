@@ -88,13 +88,20 @@ export interface AssignmentDetailsForStudent {
   essay_id: string;
 }
 
+export interface StudentAssignmentStatus {
+  id: string;
+  title: string;
+  due_date: string;
+  status: string;
+}
+
 export interface ClassroomDetailsForStudent {
   name: string;
   student_count: number;
   description: string;
   teacher_name: string;
-  teacher_profile_picture?: string | null;
-  assignments: Assignment[];
+  teacher_image?: string | null;
+  assignments: StudentAssignmentStatus[];
 }
 
 export interface Classroom {
