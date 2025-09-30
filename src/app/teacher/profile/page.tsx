@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
 import { User } from '@/types/user';
 import { X } from 'lucide-react';
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 interface SuccessPopupProps {
   isOpen: boolean;
@@ -117,6 +118,8 @@ export default function ProfilePage() {
   // Estados para popups
   const [successPopup, setSuccessPopup] = useState({ isOpen: false, title: '', message: '' });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { logout } = useAuth();
 
@@ -328,10 +331,31 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDeleteAccount = () => {
-    if (confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
-      // Aqui você implementaria a lógica para excluir a conta
-      console.log('Excluir conta');
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+
+    try {
+      const userId = AuthService.getUserId();
+      if (!userId) {
+        setErrorMessage('Erro ao identificar usuário');
+        return;
+      }
+
+      const result = await AuthService.deleteUser(userId);
+
+      if (result.success) {
+        // O logout já foi chamado dentro do deleteUser
+        // Não precisa fazer mais nada aqui
+      } else {
+        setErrorMessage(result.error || 'Erro ao excluir conta');
+        setShowDeleteModal(false);
+      }
+    } catch (error) {
+      console.error('Erro ao excluir conta:', error);
+      setErrorMessage('Erro ao excluir conta. Tente novamente.');
+      setShowDeleteModal(false);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -448,13 +472,26 @@ export default function ProfilePage() {
 
             <button
               type="button"
-              onClick={handleDeleteAccount}
+              onClick={() => setShowDeleteModal(true)}
               className="text-red-500 text-sm mt-2 text-center hover:text-red-700 transition underline"
             >
               Excluir dados da conta
             </button>
           </form>
         </main>
+
+        {/* Modal de confirmação de exclusão */}
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDeleteAccount}
+          title="Excluir conta"
+          message="Tem certeza que deseja excluir sua conta? Todos os seus dados serão permanentemente removidos e esta ação não pode ser desfeita."
+          confirmText="Sim, excluir conta"
+          cancelText="Cancelar"
+          isLoading={deleteLoading}
+          variant="danger"
+        />
 
         {/* Modal de alteração de senha */}
         {showPasswordModal && (
