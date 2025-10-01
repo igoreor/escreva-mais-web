@@ -298,6 +298,8 @@ const SubmitEssayPage: React.FC = () => {
         ? params.essayid[0]
         : '';
 
+  const STORAGE_KEY = `essay_draft_assignment_${essayId}`;
+
   const [assignmentTheme, setAssignmentTheme] = useState('');
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [title, setTitle] = useState('');
@@ -357,6 +359,29 @@ const SubmitEssayPage: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setTitle(draft.title || '');
+        setEssayText(draft.essayText || '');
+      } catch (error) {
+        console.error('Erro ao carregar rascunho do localStorage:', error);
+      }
+    }
+  }, [STORAGE_KEY]);
+
+  useEffect(() => {
+    const draftData = {
+      title,
+      essayText,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+  }, [title, essayText, STORAGE_KEY]);
+
   const handleSaveDraft = () => {
     // TODO: Implementar salvamento de rascunho
     setToastInfo({
@@ -389,6 +414,8 @@ const SubmitEssayPage: React.FC = () => {
       };
 
       await StudentClassroomService.createEssayInAssignment(essayData);
+
+      localStorage.removeItem(STORAGE_KEY);
 
       setPopupConfig({
         type: 'success',
