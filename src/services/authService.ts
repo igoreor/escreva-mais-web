@@ -236,13 +236,27 @@ class AuthService {
       } else {
         const responseData = await response.json();
 
+        // Trata erro específico de senha fraca
+        if (responseData.detail && typeof responseData.detail === 'string') {
+          if (responseData.detail.includes('não é considerada boa suficiente')) {
+            return {
+              success: false,
+              error: 'A nova senha não é forte o suficiente. Use letras maiúsculas, minúsculas, números e caracteres especiais.'
+            };
+          }
+          if (responseData.detail.includes('password')) {
+            return { success: false, error: 'Senha atual incorreta' };
+          }
+          return { success: false, error: responseData.detail };
+        }
+
         if (response.status === 400 && responseData.message?.includes('password')) {
           return { success: false, error: 'Senha atual incorreta' };
         }
 
         return {
           success: false,
-          error: responseData.message || 'Erro ao alterar senha',
+          error: responseData.message || responseData.detail || 'Erro ao alterar senha',
         };
       }
     } catch (error) {
