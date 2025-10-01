@@ -273,11 +273,17 @@ const ClassDetailPage: React.FC = () => {
             </p>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <img
-                  src={classroom.teacher_photo || "https://i.pravatar.cc/40"}
-                  alt="professor"
-                  className="w-8 h-8 rounded-full"
-                />
+                {classroom.teacher_photo && classroom.teacher_photo !== '/images/default-avatar.png' ? (
+                  <img
+                    src={classroom.teacher_photo}
+                    alt="professor"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm">
+                    {classroom.teacher_name.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <span className="text-sm text-gray-800">{classroom.teacher_name}</span>
               </div>
               <span className="text-sm text-gray-500 flex items-center gap-1">
