@@ -46,7 +46,16 @@ class SubmitEssayService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+
+        // Trata erro específico de quantidade de palavras
+        if (errorData.detail && typeof errorData.detail === 'string') {
+          if (errorData.detail.includes('deve ter pelo menos')) {
+            throw new Error('A redação deve ter pelo menos 100 palavras.');
+          }
+          throw new Error(errorData.detail);
+        }
+
+        throw new Error(errorData.message || `Erro ao enviar redação: ${response.status}`);
       }
 
       const createdEssay: CreateEssayResponse = await response.json();

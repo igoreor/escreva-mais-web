@@ -99,8 +99,17 @@ class StudentClassroomService {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erro ao criar redação: ${response.status} - ${errorText}`);
+        const errorData = await response.json().catch(() => ({}));
+
+        // Trata erro específico de quantidade de palavras
+        if (errorData.detail && typeof errorData.detail === 'string') {
+          if (errorData.detail.includes('deve ter pelo menos')) {
+            throw new Error('A redação deve ter pelo menos 100 palavras.');
+          }
+          throw new Error(errorData.detail);
+        }
+
+        throw new Error(errorData.message || `Erro ao enviar redação: ${response.status}`);
       }
 
       const createdEssay = await response.json();
