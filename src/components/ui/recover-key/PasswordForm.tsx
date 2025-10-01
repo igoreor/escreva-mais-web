@@ -8,22 +8,26 @@ import Button from '@/components/ui/Button';
 import FloatingInput from '@/components/ui/register/FloatingInput';
 import Image from 'next/image';
 import { Toast } from '@/components/common/ToastAlert';
+import AuthService from '@/services/authService';
+import { useRouter } from 'next/navigation';
 
-export function PasswordForm() {
+interface PasswordFormProps {
+  email: string;
+  otp: string;
+}
+
+export function PasswordForm({ email, otp }: PasswordFormProps) {
+  const router = useRouter();
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Controle de foco para floating label
   const [focusPassword, setFocusPassword] = useState(false);
-  const [focusConfirm, setFocusConfirm] = useState(false);
-
-  // Controle de "campo tocado"
-  const [touchedConfirm, setTouchedConfirm] = useState(false);
 
   const passwordRules = {
     length: password.length >= 10,
@@ -33,18 +37,39 @@ export function PasswordForm() {
   };
 
   const isPasswordValid = Object.values(passwordRules).every(Boolean);
-  const isFormValid = isPasswordValid && password === confirmPassword;
+  const isFormValid = isPasswordValid;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
-    if (isFormValid) {
-      setToastInfo({
-        title: 'Sucesso',
-        description: 'Senha redefinida com sucesso!',
-      });
-      setShowToast(true);
-      // Aqui entraria a chamada à API de redefinir senha
+    setError('');
+
+    if (!isFormValid) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await AuthService.resetPassword(email, otp, password);
+
+      if (result.success) {
+        setToastInfo({
+          title: 'Sucesso',
+          description: result.message || 'Senha redefinida com sucesso!',
+        });
+        setShowToast(true);
+
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
+      } else {
+        setError(result.error || 'Erro ao redefinir senha');
+      }
+    } catch (error) {
+      setError('Erro ao redefinir senha. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -113,29 +138,10 @@ export function PasswordForm() {
         </ul>
       </div>
 
-      {/* Campo de confirmação */}
-      <FloatingInput
-        label="Confirmar nova senha"
-        type={showConfirm ? 'text' : 'password'}
-        value={confirmPassword}
-        onChange={setConfirmPassword}
-        focused={focusConfirm}
-        onFocus={() => setFocusConfirm(true)}
-        onBlur={() => {
-          setFocusConfirm(false);
-          setTouchedConfirm(true);
-        }}
-        placeholder="Digite novamente"
-        showToggle={!!confirmPassword}
-        onToggle={() => setShowConfirm(!showConfirm)}
-      />
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
-      {touchedConfirm && confirmPassword !== password && (
-        <p className="text-red-600 text-sm mt-1">As senhas não coincidem.</p>
-      )}
-
-      <Button type="submit" disabled={!isFormValid} variant="primary" size="lg" fullWidth>
-        Redefinir senha e fazer login
+      <Button type="submit" disabled={!isFormValid || isLoading} variant="primary" size="lg" fullWidth>
+        {isLoading ? 'Redefinindo...' : 'Redefinir senha e fazer login'}
       </Button>
       {showToast && (
         <Toast
