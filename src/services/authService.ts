@@ -301,6 +301,88 @@ class AuthService {
       };
     }
   }
+
+  static async recoverPassword(email: string): Promise<ApiResponse> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/users/recover-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'Link de redefinição enviado para o e-mail!',
+        };
+      } else {
+        const responseData = await response.json();
+        return {
+          success: false,
+          error: responseData.message || 'Erro ao enviar e-mail de recuperação',
+        };
+      }
+    } catch (error) {
+      console.error('Recover Password API Error:', error);
+
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Erro de conexão. Verifique se o servidor está rodando.',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Erro interno. Tente novamente mais tarde.',
+      };
+    }
+  }
+
+  static async resetPassword(email: string, otp: string, newPassword: string): Promise<ApiResponse> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/users/recover-password-confirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          otp,
+          new_password: newPassword,
+        }),
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'Senha redefinida com sucesso!',
+        };
+      } else {
+        const responseData = await response.json();
+        return {
+          success: false,
+          error: responseData.message || 'Erro ao redefinir senha',
+        };
+      }
+    } catch (error) {
+      console.error('Reset Password API Error:', error);
+
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Erro de conexão. Verifique se o servidor está rodando.',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Erro interno. Tente novamente mais tarde.',
+      };
+    }
+  }
 }
 
 export default AuthService;

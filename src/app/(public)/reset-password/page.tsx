@@ -7,7 +7,7 @@ import PartnerLogos from '@/components/ui/register/PartnerLogos';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
-function ChooseNewKeyContent() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
   const otp = searchParams.get('otp') || '';
@@ -90,7 +90,7 @@ function ChooseNewKeyContent() {
   );
 }
 
-export default function ChooseNewKeyPage() {
+export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
@@ -101,7 +101,7 @@ export default function ChooseNewKeyPage() {
         </main>
       }
     >
-      <ChooseNewKeyContent />
+      <ResetPasswordContent />
     </Suspense>
   );
 }
