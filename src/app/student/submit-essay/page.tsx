@@ -6,6 +6,7 @@ import EditText from '@/components/ui/EditText';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Popup from '@/components/ui/Popup';
+import { ThemeResponse } from '@/types/theme';
 
 const getMenuItems = (id: string) => [
   {
@@ -162,6 +163,7 @@ const TextAreaWithLineNumbers: React.FC<{
   rows?: number;
   maxLength?: number;
   showCharCount?: boolean;
+  showWordCount?: boolean;
   maxLines?: number;
   disabled?: boolean;
 }> = ({
@@ -171,6 +173,7 @@ const TextAreaWithLineNumbers: React.FC<{
   rows = 10,
   maxLength,
   showCharCount,
+  showWordCount = false,
   maxLines = 30,
   disabled = false,
 }) => {
@@ -225,6 +228,7 @@ const TextAreaWithLineNumbers: React.FC<{
   }, [lineNumbers, syncScroll]);
 
   const currentLines = value.split('\n').length;
+  const wordCount = value.trim().split(/\s+/).filter(word => word.length > 0).length;
 
   return (
     <div className="relative w-full">
@@ -251,15 +255,22 @@ const TextAreaWithLineNumbers: React.FC<{
           className={`flex-1 p-2 resize-none font-mono text-xs sm:text-sm focus:outline-none leading-6 ${disabled ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
         />
       </div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs text-gray-400 mt-1 gap-1">
-        <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs mt-1 gap-1">
+        <div className="text-gray-400">
           Linhas: {currentLines}/{maxLines}
         </div>
-        {showCharCount && maxLength && (
-          <div>
-            {value.length}/{maxLength} caracteres
-          </div>
-        )}
+        <div className="flex gap-3">
+          {showWordCount && (
+            <div className={wordCount < 100 ? 'text-red-500 font-semibold' : 'text-gray-400'}>
+              Palavras: {wordCount}/100 {wordCount < 100 && '(mínimo)'}
+            </div>
+          )}
+          {showCharCount && maxLength && (
+            <div className="text-gray-400">
+              Caracteres: {value.length}/{maxLength}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -268,9 +279,69 @@ const TextAreaWithLineNumbers: React.FC<{
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import SubmitEssayService from '@/services/submitEssay';
 import EssayService from '@/services/EssayService';
-import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload } from 'react-icons/fi';
+import ThemeService from '@/services/ThemeServices';
+import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload, FiX, FiEye } from 'react-icons/fi';
 
 const STORAGE_KEY = 'essay_draft_standalone';
+
+// Modal para visualizar textos motivadores
+const MotivationalTextsModal: React.FC<{
+  theme: ThemeResponse;
+  onClose: () => void;
+  onSelectTheme: () => void;
+}> = ({ theme, onClose, onSelectTheme }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-800">{theme.theme}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
+          >
+            <FiX size={24} />
+          </button>
+        </div>
+        <div className="p-6 space-y-6">
+          <div className="space-y-4">
+            {theme.text1 && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Texto Motivador 1</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{theme.text1}</p>
+              </div>
+            )}
+            {theme.text2 && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Texto Motivador 2</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{theme.text2}</p>
+              </div>
+            )}
+            {theme.text3 && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Texto Motivador 3</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{theme.text3}</p>
+              </div>
+            )}
+            {theme.text4 && (
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Texto Motivador 4</h3>
+                <p className="text-gray-600 whitespace-pre-wrap">{theme.text4}</p>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <Button variant="outline" onClick={onClose}>
+              Fechar
+            </Button>
+            <Button variant="primary" onClick={onSelectTheme}>
+              Usar este tema
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
@@ -291,10 +362,11 @@ const SubmitEssayPage: React.FC = () => {
 
 
   const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (themeFromAI && e.target.value === '') {
+    setTheme(e.target.value);
+    // Se o usuário começar a digitar, não é mais da IA
+    if (themeFromAI && e.target.value !== theme) {
       setThemeFromAI(false);
     }
-    setTheme(e.target.value);
   };
 
   const [popupConfig, setPopupConfig] = useState<{
@@ -307,20 +379,9 @@ const SubmitEssayPage: React.FC = () => {
   const toggleThemeMenu = () => setThemeMenuVisible(prev => !prev);
   const themeMenuRef = useRef<HTMLDivElement>(null);
 
-  const [generatedThemes, setGeneratedThemes] = useState<string[]>([
-    'O impacto da tecnologia na educação',
-    'A importância da leitura na formação do indivíduo',
-    'Como a sustentabilidade transforma o mundo',
-    'O papel da ética no ambiente digital',
-    'O impacto da tecnologia na educação',
-    'A importância da leitura na formação do indivíduo',
-    'Como a sustentabilidade transforma o mundo',
-    'O papel da ética no ambiente digital',
-    'O impacto da tecnologia na educação',
-    'A importância da leitura na formação do indivíduo',
-    'Como a sustentabilidade transforma o mundo',
-    'O papel da ética no ambiente digital',
-  ]);
+  const [systemThemes, setSystemThemes] = useState<ThemeResponse[]>([]);
+  const [isLoadingThemes, setIsLoadingThemes] = useState(false);
+  const [selectedThemeForPreview, setSelectedThemeForPreview] = useState<ThemeResponse | null>(null);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if(
@@ -362,6 +423,10 @@ const SubmitEssayPage: React.FC = () => {
     setEssayText('');
   };
 
+  const countWords = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
   const handleSubmit = async () => {
     const validation = SubmitEssayService.validateEssayData(theme, essayText, image);
     if (!validation.isValid) {
@@ -371,6 +436,19 @@ const SubmitEssayPage: React.FC = () => {
         message: validation.errors.join('\n'),
       });
       return;
+    }
+
+    // Validar número mínimo de palavras (apenas para texto, não para imagem)
+    if (essayText.trim() && !image) {
+      const wordCount = countWords(essayText);
+      if (wordCount < 100) {
+        setPopupConfig({
+          type: 'error',
+          title: 'Redação Muito Curta',
+          message: `Sua redação possui apenas ${wordCount} palavra${wordCount !== 1 ? 's' : ''}. O mínimo necessário são 100 palavras.`,
+        });
+        return;
+      }
     }
     setIsLoading(true);
     try {
@@ -453,6 +531,27 @@ const SubmitEssayPage: React.FC = () => {
   };
 
   const { logout } = useAuth();
+
+  // Carregar temas do sistema ao montar o componente
+  useEffect(() => {
+    const loadSystemThemes = async () => {
+      setIsLoadingThemes(true);
+      try {
+        const response = await ThemeService.getSystemThemes();
+        if (response.success && response.data) {
+          setSystemThemes(response.data);
+        } else {
+          console.error('Erro ao carregar temas do sistema:', response.error);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar temas do sistema:', error);
+      } finally {
+        setIsLoadingThemes(false);
+      }
+    };
+
+    loadSystemThemes();
+  }, []);
 
   // Carregar do localStorage ao montar o componente (apenas se não estiver editando um rascunho)
   useEffect(() => {
@@ -558,7 +657,7 @@ const SubmitEssayPage: React.FC = () => {
                 </label>
                 <div className="relative w-full" ref={themeMenuRef}>
                 <EditText
-                  placeholder="Digite o tema da sua redação"
+                  placeholder="Digite o tema da sua redação ou selecione um da lista"
                   value={theme}
                   onChange={handleThemeChange}
                   onFocus={() => {
@@ -566,19 +665,19 @@ const SubmitEssayPage: React.FC = () => {
                     setThemeMenuVisible(false);
                   }}
                   onBlur={() => setIsThemeFocused(false)}
-                  readOnly={themeFromAI}
                   disabled={isLoading || isLoadingDraft}
                 />
-                {(themeFromAI && (isThemeFocused || themeMenuVisible)) ? (
+                {theme && (isThemeFocused || themeMenuVisible) ? (
                   <button
                     type="button"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
-                      setTheme(''); 
+                      setTheme('');
                       setThemeFromAI(false);
                       setThemeMenuVisible(false);
                     }}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600 text-lg font-bold"
+                    title="Limpar tema"
                   >
                     ✕
                   </button>
@@ -587,29 +686,54 @@ const SubmitEssayPage: React.FC = () => {
                   type="button"
                   onClick={toggleThemeMenu}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  title="Selecionar tema da lista"
                 >
                   ▼
                 </button>
               )}
                 {themeMenuVisible && (
-                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
                     <div className="bg-blue-600 text-white font-semibold px-4 py-2 sticky top-0 z-10">
                       Selecione um de nossos temas
                     </div>
-                    {/* Suposição de temas - aqui vai a chamada da IA depois */}
-                    {generatedThemes.map((t, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          setTheme(t);
-                          setThemeFromAI(true);
-                          setThemeMenuVisible(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                      >
-                        {t}
-                      </button>
-                    ))}
+                    {isLoadingThemes ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <span className="ml-2 text-gray-600">Carregando temas...</span>
+                      </div>
+                    ) : systemThemes.length > 0 ? (
+                      systemThemes.map((themeObj) => (
+                        <div
+                          key={themeObj.id}
+                          className="flex items-center justify-between px-4 py-3 hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                        >
+                          <button
+                            onClick={() => {
+                              setTheme(themeObj.theme);
+                              setThemeFromAI(true);
+                              setThemeMenuVisible(false);
+                            }}
+                            className="flex-1 text-left text-gray-800"
+                          >
+                            {themeObj.theme}
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedThemeForPreview(themeObj);
+                            }}
+                            className="ml-2 p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                            title="Ver textos motivadores"
+                          >
+                            <FiEye size={18} />
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-8 text-center text-gray-500">
+                        Nenhum tema disponível no momento.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -656,6 +780,7 @@ const SubmitEssayPage: React.FC = () => {
                   onChange={handleTextChange}
                   rows={10}
                   showCharCount
+                  showWordCount
                   maxLength={3450}
                   maxLines={30}
                   disabled={textDisabled}
@@ -717,6 +842,18 @@ const SubmitEssayPage: React.FC = () => {
           title={popupConfig.title}
           message={popupConfig.message}
           onClose={() => setPopupConfig(null)}
+        />
+      )}
+      {selectedThemeForPreview && (
+        <MotivationalTextsModal
+          theme={selectedThemeForPreview}
+          onClose={() => setSelectedThemeForPreview(null)}
+          onSelectTheme={() => {
+            setTheme(selectedThemeForPreview.theme);
+            setThemeFromAI(true);
+            setThemeMenuVisible(false);
+            setSelectedThemeForPreview(null);
+          }}
         />
       )}
     </RouteGuard>

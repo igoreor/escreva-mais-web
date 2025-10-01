@@ -213,6 +213,46 @@ class ThemeService {
       };
     }
   }
+
+  static async getSystemThemes(): Promise<ApiResponse<ThemeResponse[]>> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/motivational-content/system/`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        return {
+          success: true,
+          data: responseData,
+        };
+      } else {
+        return {
+          success: false,
+          error: responseData.message || 'Erro ao carregar temas do sistema',
+        };
+      }
+    } catch (error) {
+      console.error('Get System Themes API Error:', error);
+
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Erro de conexão. Verifique se o servidor está rodando.',
+        };
+      }
+
+      return {
+        success: false,
+        error: 'Erro interno. Tente novamente mais tarde.',
+      };
+    }
+  }
 }
 
 export default ThemeService;
