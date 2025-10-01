@@ -454,10 +454,11 @@ const SubmitEssayPage: React.FC = () => {
         </div>
       )}
 
-      <div className="flex min-h-screen bg-global-2">
-        <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
-
-        <div className="ml-64 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-10 sm:py-12 md:py-16 overflow-y-auto">
+      <div className="flex flex-col md:flex-row min-h-screen bg-global-2">
+        <div className="w-full md:w-64 flex-shrink-0">
+          <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
+        </div>
+        <div className="flex flex-col flex-1 px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14 overflow-y-auto">
           <Link
             href={`/student/classes/${classId}/dashboard/${essayId}`}
             className="flex items-center text-blue-600 mb-4 hover:underline transition-colors"
@@ -465,12 +466,12 @@ const SubmitEssayPage: React.FC = () => {
             <FiArrowLeft className="mr-1" /> Voltar
           </Link>
 
-          <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-center mb-10">
+          <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-8">
             Enviar nova redação
           </h1>
 
-          <div className="flex flex-col gap-10 w-full max-w-5xl mx-auto">
-            <div className="bg-global-3 border border-gray-300 rounded-2xl p-6 sm:p-7 md:p-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
+            <div className="bg-global-3 border border-gray-300 rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col gap-6">
               {/* Tema do Assignment (readonly) */}
               {assignmentTheme && (
                 <div className="flex flex-col gap-2">
@@ -506,7 +507,7 @@ const SubmitEssayPage: React.FC = () => {
 
               {/* Texto da redação */}
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <label className="text-global-1 font-semibold">
                     Texto{' '}
                     {hasImage && (
@@ -526,7 +527,7 @@ const SubmitEssayPage: React.FC = () => {
                   )}
                 </div>
                 {imageBlocked && (
-                  <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+                  <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-xs sm:text-sm">
                     <FiAlertCircle className="w-4 h-4" />
                     <span>Upload de imagem bloqueado enquanto houver texto digitado</span>
                   </div>
@@ -546,7 +547,7 @@ const SubmitEssayPage: React.FC = () => {
 
             {/* Upload de imagem */}
             <div className="flex flex-col gap-4 w-full">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <h2 className="text-global-1 text-lg sm:text-xl font-semibold">
                   Ou faça o upload de uma foto
                   {hasText && (
@@ -567,7 +568,7 @@ const SubmitEssayPage: React.FC = () => {
               </div>
 
               {textDisabled && (
-                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg text-green-700 text-xs sm:text-sm">
                   <FiAlertCircle className="w-4 h-4" />
                   <span>Modo imagem ativado - texto desabilitado</span>
                 </div>
@@ -581,7 +582,7 @@ const SubmitEssayPage: React.FC = () => {
             </div>
 
             {/* Botões de ação */}
-            <div className="flex justify-end gap-5 mt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}
               </Button>
