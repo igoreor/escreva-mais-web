@@ -119,7 +119,7 @@ const LoginForm: React.FC = () => {
         {/* Additional Links */}
         <div className="text-center pt-20 space-y-2">
           <Link
-            href="/forgot-password"
+            href="/forget-key"
             className="text-global-2 text-sm sm:text-base hover:underline"
           >
             Esqueci a senha

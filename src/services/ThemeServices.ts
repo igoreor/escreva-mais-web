@@ -178,7 +178,7 @@ class ThemeService {
   static async deleteTheme(themeId: string): Promise<ApiResponse> {
     try {
       const response = await fetch(
-        `${this.API_BASE_URL}/essays/motivational-content?motivational_content_id=${themeId}`,
+        `${this.API_BASE_URL}/essays/motivational-content/${themeId}`,
         {
           method: 'DELETE',
           headers: this.getHeaders(),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
@@ -17,19 +17,18 @@ import { useAuth } from '@/hooks/userAuth';
 import Link from 'next/link';
 import Popup from '@/components/ui/Popup';
 import SchoolService from '@/services/schoolService';
-import Router from 'next/router';
 
 const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-6 h-6" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-6 h-6" />,
     children: [
       {
         id: 'classes',
@@ -42,13 +41,13 @@ const getMenuItems = (id?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-6 h-6" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-6 h-6" />,
     href: '/teacher/profile',
   },
 ];
@@ -198,6 +197,7 @@ function SchoolHeader({ school, onBack }: { school: School; onBack: string }) {
 export default function SchoolDetailsPage() {
   const { id } = useParams();
   const { logout } = useAuth();
+  const router = useRouter();
   
 
   const [school, setSchool] = useState<School | null>(null);
@@ -227,29 +227,8 @@ export default function SchoolDetailsPage() {
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar menuItems={getMenuItems(id as string)} onLogout={logout} />
-        <main className="flex-1 lg:ml-[270px]">
-          <div className="relative">
-            <img
-              src="/images/escola.png"
-              alt="Imagem da escola"
-              className="w-full h-64 object-cover"
-            />
-
-            <button
-              onClick={() => Router.push('/teacher/schools')}
-              className="absolute top-4 left-4 sm:left-6 md:left-8 lg:left-12 bg-white text-gray-800 px-3 py-1.5 rounded-full hover:bg-gray-200 transition flex items-center"
-            >
-              <img 
-                src="/images/voltar.svg" 
-                alt="Voltar"  
-                className="inline-block mr-2"  
-              />
-              <span className="text-global-1 font-medium">Voltar</span>
-            </button>
-            <div className="absolute bottom-6 left-12 text-white text-3xl font-bold drop-shadow-lg">
-              {school.name}
-            </div>
-          </div>
+        <main className="flex-1 ml-0 lg:ml-64 px-8">
+          <SchoolHeader school={school} onBack="/teacher/schools" />
 
           <section className="px-10 py-8">
             <h2 className="text-lg text-gray-800 font-semibold mb-4">Turmas</h2>

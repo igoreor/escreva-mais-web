@@ -31,20 +31,18 @@ const getMenuItems = (id: string) => [
     label: 'Minhas Turmas',
     icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
-    children: [
-      {
-        id: 'dashboard',
-        label: 'Painel',
-        icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`,
-      },
-      {
-        id: 'essays',
-        label: 'Minhas Redações',
-        icon:<img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10"/>,
-        href: `/student/classes/${id}/essays`,
-      },
-    ],
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={28} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
+    href: `/student/essays`,
   },
   {
     id: 'profile',
@@ -298,6 +296,8 @@ const SubmitEssayPage: React.FC = () => {
         ? params.essayid[0]
         : '';
 
+  const STORAGE_KEY = `essay_draft_assignment_${essayId}`;
+
   const [assignmentTheme, setAssignmentTheme] = useState('');
   const [assignmentTitle, setAssignmentTitle] = useState('');
   const [title, setTitle] = useState('');
@@ -340,22 +340,59 @@ const SubmitEssayPage: React.FC = () => {
     setEssayText('');
   };
 
-  // Carregar dados do assignment do sessionStorage
+  // Carregar dados do assignment
   useEffect(() => {
-    const assignmentDataStr = sessionStorage.getItem('assignmentData');
-    if (assignmentDataStr) {
-      try {
-        const assignmentData = JSON.parse(assignmentDataStr);
-        setAssignmentTheme(assignmentData.theme || '');
-        setAssignmentTitle(assignmentData.title || '');
+    const loadAssignmentData = async () => {
+      // Tentar carregar do sessionStorage primeiro
+      const assignmentDataStr = sessionStorage.getItem('assignmentData');
+      if (assignmentDataStr) {
+        try {
+          const assignmentData = JSON.parse(assignmentDataStr);
+          setAssignmentTheme(assignmentData.theme || '');
+          setAssignmentTitle(assignmentData.title || '');
+          return;
+        } catch (error) {
+          console.error('Erro ao carregar dados do sessionStorage:', error);
+        }
+      }
 
-        // Limpar dados do sessionStorage após uso
-        sessionStorage.removeItem('assignmentData');
+      // Se não tiver no sessionStorage, buscar da API
+      if (essayId) {
+        try {
+          const assignmentDetails = await StudentClassroomService.getAssignmentDetailsForStudent(essayId);
+          setAssignmentTheme(assignmentDetails.motivational_content?.theme || '');
+          setAssignmentTitle(assignmentDetails.title || '');
+        } catch (error) {
+          console.error('Erro ao carregar dados do assignment da API:', error);
+        }
+      }
+    };
+
+    loadAssignmentData();
+  }, [essayId]);
+
+  useEffect(() => {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setTitle(draft.title || '');
+        setEssayText(draft.essayText || '');
       } catch (error) {
-        console.error('Erro ao carregar dados do assignment:', error);
+        console.error('Erro ao carregar rascunho do localStorage:', error);
       }
     }
-  }, []);
+  }, [STORAGE_KEY]);
+
+  useEffect(() => {
+    const draftData = {
+      title,
+      essayText,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+  }, [title, essayText, STORAGE_KEY]);
 
   const handleSaveDraft = () => {
     // TODO: Implementar salvamento de rascunho
@@ -390,6 +427,8 @@ const SubmitEssayPage: React.FC = () => {
 
       await StudentClassroomService.createEssayInAssignment(essayData);
 
+      localStorage.removeItem(STORAGE_KEY);
+
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
@@ -418,6 +457,16 @@ const SubmitEssayPage: React.FC = () => {
 
   return (
     <RouteGuard allowedRoles={['student']}>
+      {/* Overlay de loading */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="text-gray-700 font-medium">Enviando redação...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex min-h-screen bg-global-2">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
 
@@ -547,7 +596,7 @@ const SubmitEssayPage: React.FC = () => {
             {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
               <Button variant="outline" size="lg" onClick={handleSaveDraft} disabled={loading}>
-                Salvar rascunco
+                Salvar rascunho
               </Button>
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}

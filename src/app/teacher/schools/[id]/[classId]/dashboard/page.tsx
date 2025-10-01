@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
+import ClassroomService from '@/services/ClassroomService';
 import {
   FiCheckCircle,
   FiAlertCircle,
@@ -34,7 +35,7 @@ interface Turma {
   competencias: Competencia[];
 }
 
-const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
+const getMenuItems = (schoolId?: string, classId?: string, classroomName?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
@@ -48,13 +49,13 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
     children: [
       {
         id: 'classes',
-        label: 'Minhas Turmas',
+        label: classroomName || 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
             id: 'class-details',
-            label: 'dashboard',
+            label: 'Dashboard',
             icon: <FiFileText size={20} />,
             href:
               schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
@@ -88,9 +89,10 @@ const TeacherDashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const params = useParams();
   const router = useRouter();
-  const schoolId = params?.id;
-  const classId = params?.classId;
+  const schoolId = params?.id as string;
+  const classId = params?.classId as string;
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
+  const [classroomName, setClassroomName] = useState<string>('');
 
   const dadosPadrao = {
     mediaGeral: 920,
@@ -106,11 +108,24 @@ const TeacherDashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchClassroomName = async () => {
+      if (classId) {
+        try {
+          const classroomDetails = await ClassroomService.getClassroomDetails(classId);
+          setClassroomName(classroomDetails.name);
+        } catch (error) {
+          console.error('Erro ao buscar detalhes da turma:', error);
+        }
+      }
+    };
+
+    fetchClassroomName();
+
     const turmaSalva = localStorage.getItem('turmaSelecionada');
     if (turmaSalva) {
       setTurmaSelecionada(JSON.parse(turmaSalva));
     }
-  }, []);
+  }, [classId]);
 
   const voltarParaTurmas = () => {
     localStorage.removeItem('turmaSelecionada');
@@ -124,7 +139,7 @@ const TeacherDashboard: React.FC = () => {
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-global-2">
         <Sidebar
-          menuItems={getMenuItems(schoolId as string, classId as string)}
+          menuItems={getMenuItems(schoolId, classId, classroomName)}
           onLogout={logout}
         />
 

@@ -196,17 +196,24 @@ const TextAreaWithLineNumbers: React.FC<{
   useLayoutEffect(() => {
     if (textAreaRef.current) {
       const textarea = textAreaRef.current;
+      const computedStyle = getComputedStyle(textarea);
       const lineHeight = 24;
-      const paddingTop = parseFloat(getComputedStyle(textarea).paddingTop);
-      const paddingBottom = parseFloat(getComputedStyle(textarea).paddingBottom);
+
+      const paddingTop = parseFloat(computedStyle.paddingTop);
+      const paddingBottom = parseFloat(computedStyle.paddingBottom);
       const verticalPadding = paddingTop + paddingBottom;
+
       const contentHeight = textarea.scrollHeight - verticalPadding;
       const renderedLineCount = Math.round(contentHeight / lineHeight);
+
       const newlineCount = value.split('\n').length;
+
       const lineCount = Math.max(1, renderedLineCount, newlineCount);
+
       const newNumbers = Array.from({ length: lineCount }, (_, i) =>
         String(i + 1).padStart(2, '0'),
       ).join('\n');
+
       if (newNumbers !== lineNumbers) {
         setLineNumbers(newNumbers);
       }
@@ -230,6 +237,7 @@ const TextAreaWithLineNumbers: React.FC<{
           rows={rows}
           className={`w-10 sm:w-12 text-center p-2 text-gray-400 resize-none font-mono text-xs sm:text-sm select-none border-r border-gray-200 focus:outline-none leading-6 ${disabled ? 'bg-gray-200' : 'bg-gray-100'}`}
           value={lineNumbers}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
         <textarea
           ref={textAreaRef}
@@ -257,12 +265,18 @@ const TextAreaWithLineNumbers: React.FC<{
   );
 };
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import SubmitEssayService from '@/services/submitEssay';
+import EssayService from '@/services/EssayService';
 import { FiAlertCircle, FiFileText, FiHome, FiPaperclip, FiUpload } from 'react-icons/fi';
+
+const STORAGE_KEY = 'essay_draft_standalone';
 
 const SubmitEssayPage: React.FC = () => {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const essayId = searchParams.get('essayId');
   const classId =
     typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : '';
   const [theme, setTheme] = useState('');
@@ -270,12 +284,58 @@ const SubmitEssayPage: React.FC = () => {
   const [essayText, setEssayText] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
+  const [themeFromAI, setThemeFromAI] = useState(false);
+  const [isThemeFocused, setIsThemeFocused] = useState(false);
+
+
+  const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (themeFromAI && e.target.value === '') {
+      setThemeFromAI(false);
+    }
+    setTheme(e.target.value);
+  };
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
     title: string;
     message: string;
   } | null>(null);
+
+  const [themeMenuVisible, setThemeMenuVisible] = useState(false);
+  const toggleThemeMenu = () => setThemeMenuVisible(prev => !prev);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
+
+  const [generatedThemes, setGeneratedThemes] = useState<string[]>([
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+    'O impacto da tecnologia na educação',
+    'A importância da leitura na formação do indivíduo',
+    'Como a sustentabilidade transforma o mundo',
+    'O papel da ética no ambiente digital',
+  ]);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if(
+        themeMenuRef.current &&
+        !themeMenuRef.current.contains(event.target as Node)
+      ){
+        setThemeMenuVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   const hasText = essayText.trim().length > 0;
   const hasImage = image !== null;
@@ -321,6 +381,10 @@ const SubmitEssayPage: React.FC = () => {
         image: image,
       });
       console.log('Redação enviada com sucesso:', result);
+
+      // Limpar localStorage após envio bem-sucedido
+      localStorage.removeItem(STORAGE_KEY);
+
       setPopupConfig({
         type: 'success',
         title: 'Redação Enviada!',
@@ -343,38 +407,220 @@ const SubmitEssayPage: React.FC = () => {
     }
   };
 
+  const handleSaveDraft = async () => {
+    if (!theme.trim()) {
+      setPopupConfig({
+        type: 'error',
+        title: 'Tema Obrigatório',
+        message: 'É necessário informar um tema para salvar o rascunho.',
+      });
+      return;
+    }
+
+    setIsSavingDraft(true);
+    try {
+      const result = await SubmitEssayService.saveDraft({
+        theme: theme.trim(),
+        title: title.trim() || null,
+        content: essayText.trim() || null,
+        image: image,
+      });
+      console.log('Rascunho salvo com sucesso:', result);
+
+      // Limpar localStorage após salvar rascunho com sucesso
+      localStorage.removeItem(STORAGE_KEY);
+
+      setPopupConfig({
+        type: 'success',
+        title: 'Rascunho Salvo!',
+        message: 'Seu rascunho foi salvo com sucesso. Redirecionando para minhas redações...',
+      });
+
+      setTimeout(() => {
+        router.push('/student/essays');
+      }, 2000);
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro ao Salvar',
+        message: `Não foi possível salvar o rascunho: ${errorMessage}`,
+      });
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
   const { logout } = useAuth();
+
+  // Carregar do localStorage ao montar o componente (apenas se não estiver editando um rascunho)
+  useEffect(() => {
+    if (essayId) return; // Não carregar do localStorage se estiver editando um rascunho
+
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        setTheme(draft.theme || '');
+        setTitle(draft.title || '');
+        setEssayText(draft.essayText || '');
+        // Nota: não é possível restaurar o arquivo File do localStorage
+      } catch (error) {
+        console.error('Erro ao carregar rascunho do localStorage:', error);
+      }
+    }
+  }, [essayId]);
+
+  // Salvar no localStorage sempre que houver mudanças
+  useEffect(() => {
+    if (essayId) return; // Não salvar no localStorage se estiver editando um rascunho
+
+    const draftData = {
+      theme,
+      title,
+      essayText,
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
+  }, [theme, title, essayText, essayId]);
+
+  useEffect(() => {
+    const loadDraft = async () => {
+      if (!essayId) return;
+
+      setIsLoadingDraft(true);
+      try {
+        const essay = await EssayService.getEssay(essayId);
+        console.log('Rascunho carregado:', essay);
+
+        setTheme(essay.theme || '');
+        setTitle(essay.title || '');
+        setEssayText(essay.content || '');
+
+        // Para imagem, por enquanto apenas mostramos que ela existe
+        // TODO: Implementar carregamento de imagem se necessário
+        if (essay.image_url) {
+          console.log('Essay tem imagem:', essay.image_url);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar rascunho:', error);
+        setPopupConfig({
+          type: 'error',
+          title: 'Erro ao Carregar',
+          message: 'Não foi possível carregar o rascunho. Redirecionando...',
+        });
+
+        setTimeout(() => {
+          router.push('/student/essays');
+        }, 2000);
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadDraft();
+  }, [essayId, router]);
 
   return (
     <RouteGuard allowedRoles={['student']}>
+      {/* Overlay de loading */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="text-gray-700 font-medium">Enviando redação...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row min-h-screen bg-global-2">
         <div className="w-full md:w-64 flex-shrink-0">
           <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
         </div>
         <div className="flex flex-col flex-1 px-4 sm:px-6 md:px-12 lg:px-16 py-8 sm:py-10 md:py-14 overflow-y-auto">
           <h1 className="text-global-1 text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-8">
-            Enviar nova redação
+            {essayId ? 'Editar rascunho' : 'Enviar nova redação'}
           </h1>
+
+          {isLoadingDraft && (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-600">Carregando rascunho...</span>
+            </div>
+          )}
           <div className="flex flex-col gap-8 w-full max-w-5xl mx-auto">
             <div className="bg-global-3 border border-gray-300 rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">
                   Tema <span className="text-red-500">*</span>
                 </label>
+                <div className="relative w-full" ref={themeMenuRef}>
                 <EditText
                   placeholder="Digite o tema da sua redação"
                   value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
-                  disabled={isLoading}
+                  onChange={handleThemeChange}
+                  onFocus={() => {
+                    setIsThemeFocused(true);
+                    setThemeMenuVisible(false);
+                  }}
+                  onBlur={() => setIsThemeFocused(false)}
+                  readOnly={themeFromAI}
+                  disabled={isLoading || isLoadingDraft}
                 />
+                {(themeFromAI && (isThemeFocused || themeMenuVisible)) ? (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setTheme(''); 
+                      setThemeFromAI(false);
+                      setThemeMenuVisible(false);
+                    }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-600 text-lg font-bold"
+                  >
+                    ✕
+                  </button>
+                ) : (
+                <button
+                  type="button"
+                  onClick={toggleThemeMenu}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  ▼
+                </button>
+              )}
+                {themeMenuVisible && (
+                  <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    <div className="bg-blue-600 text-white font-semibold px-4 py-2 sticky top-0 z-10">
+                      Selecione um de nossos temas
+                    </div>
+                    {/* Suposição de temas - aqui vai a chamada da IA depois */}
+                    {generatedThemes.map((t, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          setTheme(t);
+                          setThemeFromAI(true);
+                          setThemeMenuVisible(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+
               <div className="flex flex-col gap-2">
                 <label className="text-global-1 font-semibold">Título (opcional)</label>
                 <EditText
                   placeholder="Insira aqui o título da sua redação, caso deseje"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isLoadingDraft}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -397,6 +643,7 @@ const SubmitEssayPage: React.FC = () => {
                     </button>
                   )}
                 </div>
+                
                 {imageBlocked && (
                   <div className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-xs sm:text-sm">
                     <FiAlertCircle className="w-4 h-4" />
@@ -443,21 +690,27 @@ const SubmitEssayPage: React.FC = () => {
               )}
               <FileUpload
                 onFileSelect={handleImageSelect}
-                disabled={isLoading}
+                disabled={isLoading || isLoadingDraft}
                 isBlocked={imageBlocked}
               />
             </div>
             <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
-              <Button variant="outline" size="lg" disabled={isLoading}>
-                {isLoading ? 'Salvando...' : 'Salvar rascunho'}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleSaveDraft}
+                disabled={isLoading || isSavingDraft || isLoadingDraft}
+              >
+                {isSavingDraft ? 'Salvando...' : 'Salvar rascunho'}
               </Button>
-              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading}>
+              <Button variant="primary" size="lg" onClick={handleSubmit} disabled={isLoading || isSavingDraft || isLoadingDraft}>
                 {isLoading ? 'Enviando...' : 'Enviar'}
               </Button>
             </div>
           </div>
         </div>
       </div>
+    </div>
       {popupConfig && (
         <Popup
           type={popupConfig.type}
@@ -467,6 +720,8 @@ const SubmitEssayPage: React.FC = () => {
         />
       )}
     </RouteGuard>
+  
+    
   );
 };
 

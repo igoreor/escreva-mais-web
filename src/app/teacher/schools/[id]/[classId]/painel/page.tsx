@@ -17,27 +17,27 @@ import ClassroomService from '@/services/ClassroomService';
 import { Assignment, ClassroomDetails } from '@/types/classroom';
 import Link from 'next/link';
 
-const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
+const getMenuItems = (schoolId?: string, classId?: string, classroomName?: string): SidebarItem[] => [
   {
     id: 'home',
     label: 'Início',
-    icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
+    icon: <img src="/images/home.svg" alt="Início" className="w-6 h-6" />,
     href: '/teacher/home',
   },
   {
     id: 'management',
     label: 'Minhas Turmas',
-    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
+    icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-6 h-6" />,
     children: [
       {
         id: 'classes',
-        label: 'Minhas Turmas',
+        label: classroomName || 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
             id: 'class-details',
-            label: 'dashboard',
+            label: 'Dashboard',
             icon: <FiFileText size={20} />,
             href:
               schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
@@ -46,7 +46,7 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileText size={20} />,
-            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}` : undefined,
+            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/painel` : undefined,
           },
         ],
       },
@@ -55,19 +55,19 @@ const getMenuItems = (schoolId?: string, classId?: string): SidebarItem[] => [
   {
     id: 'temas',
     label: 'Meus Temas',
-    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-10 h-10" />,
+    icon: <img src="/images/meus-temas.png" alt="Meus Temas" className="w-6 h-6" />,
     href: '/teacher/themes',
   },
   {
     id: 'profile',
     label: 'Meu Perfil',
-    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
+    icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-6 h-6" />,
     href: '/teacher/profile',
   },
 ];
 
 const TeacherClassPage: React.FC = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { id: schoolId, classId } = useParams();
 
   const [classroom, setClassroom] = useState<ClassroomDetails | null>(null);
@@ -111,14 +111,14 @@ const TeacherClassPage: React.FC = () => {
     <RouteGuard allowedRoles={['teacher']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar
-          menuItems={getMenuItems(schoolId as string, classId as string)}
+          menuItems={getMenuItems(schoolId as string, classId as string, classroom?.name)}
           onLogout={logout}
         />
 
         {/* Conteúdo principal */}
-        <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
+        <main className="ml-0 lg:ml-64 w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-4 lg:p-12">
           {/* Header */}
-          <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center bg-blue-50 p-4 lg:p-6 rounded-lg mb-6 gap-4">
             <div className="flex items-center gap-3">
               <Link
                 href={`/teacher/schools/${schoolId}`}
@@ -126,24 +126,29 @@ const TeacherClassPage: React.FC = () => {
               >
                 <FiArrowLeft size={20} />
               </Link>
-              <h1 className="text-2xl font-semibold text-blue-900 flex items-center gap-2">
+              <h1 className="text-lg lg:text-2xl font-semibold text-blue-900 flex items-center gap-2">
                 🎓 {classroom.name}
               </h1>
             </div>
-            <Link
-              href={`/teacher/schools/${schoolId}/${classId}/list`}
-              className="flex items-center text-gray-700 text-sm gap-2 cursor-pointer hover:text-blue-700 transition-colors"
-            >
-              <FiUsers /> {classroom.student_count} alunos
-              <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-                {classroom.name.charAt(0).toUpperCase()}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <div className="flex items-center text-gray-700 text-sm gap-2">
+                <FiUsers /> {classroom.student_count} alunos
               </div>
-            </Link>
+              <Link
+                href={`/teacher/schools/${schoolId}/${classId}/list`}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm w-full sm:w-auto justify-center"
+              >
+                <FiUsers size={16} />
+                Ver alunos
+              </Link>
+            </div>
           </div>
 
           {/* Descrição da turma */}
-          <div className="bg-white border border-gray-200 rounded-lg p-5 mb-8">
-            <p className="text-gray-700">{classroom.description}</p>
+          <div className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 mb-8">
+            <p className="text-gray-700 text-sm lg:text-base">
+              {classroom.description || 'Nenhuma descrição adicionada.'}
+            </p>
           </div>
 
           {/* Atividades (Temas) */}
@@ -152,13 +157,13 @@ const TeacherClassPage: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between">
-              <div className="flex gap-3 items-start">
-                <FiFileText size={28} className="text-blue-600 mt-1" />
+            <div className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex gap-3 items-center">
+                <FiFileText size={28} className="text-blue-600" />
               </div>
               <button
                 onClick={() => setAbrirModal(true)}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full sm:w-auto justify-center"
               >
                 <FiPlusSquare /> Publicar atividade
               </button>
@@ -176,15 +181,15 @@ const TeacherClassPage: React.FC = () => {
             {classroom.assignments.map((assignment: Assignment) => (
               <div
                 key={assignment.id}
-                className="bg-white border border-gray-200 rounded-lg p-5 flex items-center justify-between"
+                className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
               >
-                <div className="flex gap-3 items-start">
-                  <FiFileText size={28} className="text-blue-600 mt-1" />
-                  <div>
-                    <h3 className="text-gray-800 font-medium">{assignment.title}</h3>
-                    <div className="flex items-center gap-3 mt-2 text-sm">
+                <div className="flex gap-3 items-start flex-1">
+                  <FiFileText size={24} className="text-blue-600 mt-1 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-gray-800 font-medium text-sm lg:text-base truncate">{assignment.title}</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mt-2 text-xs lg:text-sm">
                       <span className="flex items-center gap-1 text-blue-600">
-                        <FiCalendar />
+                        <FiCalendar size={14} />
                         Prazo:{' '}
                         {new Date(assignment.due_date).toLocaleString('pt-BR', {
                           day: '2-digit',
@@ -194,16 +199,16 @@ const TeacherClassPage: React.FC = () => {
                           minute: '2-digit',
                         })}
                       </span>
-                      <span className="text-gray-600">{assignment.status} entregues</span>
+                      <span className="text-gray-600">{assignment.submission_status || assignment.status || '0 entregues'}</span>
                     </div>
                   </div>
                 </div>
 
                 <Link
                   href={`/teacher/schools/${schoolId}/${classId}/painel/${assignment.id}`}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm w-full lg:w-auto justify-center"
                 >
-                  <FiEye size={18} /> Ver redações
+                  <FiEye size={16} /> Ver redações
                 </Link>
               </div>
             ))}

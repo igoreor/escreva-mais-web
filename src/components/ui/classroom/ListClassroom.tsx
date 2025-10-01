@@ -6,12 +6,14 @@ import { FiUsers } from 'react-icons/fi';
 interface Student {
   id: string;
   name: string;
+  profile_picture_url?: string | null;
 }
 
 interface ListClassroomProps {
   classroomName: string;
   studentCount: number;
   teacherName: string;
+  teacherProfilePicture?: string | null;
   students: Student[];
   onBack?: () => void; // ação do botão voltar (professor → painel, aluno → dashboard)
   backHref?: string; // Link para navegação usando Next.js Link
@@ -21,6 +23,7 @@ const ListClassroom: React.FC<ListClassroomProps> = ({
   classroomName,
   studentCount,
   teacherName,
+  teacherProfilePicture,
   students,
   onBack,
   backHref,
@@ -52,9 +55,17 @@ const ListClassroom: React.FC<ListClassroomProps> = ({
       <div className="bg-white border border-gray-200 rounded-lg p-5 mb-8">
         <h2 className="font-semibold text-gray-700 mb-2">Professor</h2>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
-            {teacherName.charAt(0).toUpperCase()}
-          </div>
+          {teacherProfilePicture ? (
+            <img
+              src={teacherProfilePicture}
+              alt={teacherName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold">
+              {teacherName.charAt(0).toUpperCase()}
+            </div>
+          )}
           <span className="text-gray-800">{teacherName}</span>
         </div>
       </div>
@@ -65,9 +76,17 @@ const ListClassroom: React.FC<ListClassroomProps> = ({
         <ul className="divide-y divide-gray-200">
           {students.map((student) => (
             <li key={student.id} className="flex items-center gap-3 py-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
-                {student.name.charAt(0).toUpperCase()}
-              </div>
+              {student.profile_picture_url ? (
+                <img
+                  src={student.profile_picture_url}
+                  alt={student.name}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                  {student.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <span className="text-gray-800">{student.name}</span>
             </li>
           ))}

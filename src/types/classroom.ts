@@ -5,7 +5,8 @@ export interface Assignment {
   id: string;
   title: string;
   due_date: string;
-  status: string;
+  status?: string;
+  submission_status?: string;
 }
 
 export interface CreateSchoolResponse {
@@ -88,12 +89,21 @@ export interface AssignmentDetailsForStudent {
   essay_id: string;
 }
 
+export interface StudentAssignmentStatus {
+  id: string;
+  title: string;
+  due_date: string;
+  status: string;
+  essay_id?: string;
+}
+
 export interface ClassroomDetailsForStudent {
   name: string;
   student_count: number;
   description: string;
   teacher_name: string;
-  assignments: Assignment[];
+  teacher_image?: string | null;
+  assignments: StudentAssignmentStatus[];
 }
 
 export interface Classroom {
@@ -118,4 +128,8 @@ export interface SchoolWithClassrooms extends School {
 
 export interface JoinClassroomResponse {
   status: string;
+}
+
+export interface UpdateClassroomDescriptionRequest {
+  description: string;
 }

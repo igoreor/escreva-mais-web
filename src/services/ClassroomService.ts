@@ -3,10 +3,13 @@ import AuthService from './authService';
 import {
   AssignmentDetails,
   ClassroomDetails,
+  ClassroomDetailsForStudent,
   CreateAssignmentRequest,
   CreateAssignmentResponse,
+  UpdateClassroomDescriptionRequest,
 } from '@/types/classroom';
 import { Theme } from '@/types/theme';
+import { StudentReadSchema } from '@/types/user';
 
 class ClassroomService {
   private static readonly API_BASE_URL: string = env.apiUrl;
@@ -79,6 +82,24 @@ class ClassroomService {
     }
   }
 
+  static async getSystemThemes(): Promise<Theme[]> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/essays/motivational-content/system/themes`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar temas do sistema: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar temas do sistema:', error);
+      throw error;
+    }
+  }
+
   static async createAssignment(
     assignmentData: CreateAssignmentRequest,
   ): Promise<CreateAssignmentResponse> {
@@ -96,6 +117,96 @@ class ClassroomService {
       return await response.json();
     } catch (error) {
       console.error('Erro ao criar atividade:', error);
+      throw error;
+    }
+  }
+
+  static async getClassroomStudents(classroomId: string): Promise<StudentReadSchema[]> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/students`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar estudantes da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar estudantes da turma:', error);
+      throw error;
+    }
+  }
+
+  static async getClassroomClassmates(classroomId: string): Promise<StudentReadSchema[]> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/classmates`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar colegas da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar colegas da turma:', error);
+      throw error;
+    }
+  }
+
+  static async updateClassroomDescription(
+    classroomId: string,
+    descriptionData: UpdateClassroomDescriptionRequest,
+  ): Promise<ClassroomDetails> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/description`,
+        {
+          method: 'PATCH',
+          headers: this.getHeaders(),
+          body: JSON.stringify(descriptionData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar descrição da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao atualizar descrição da turma:', error);
+      throw error;
+    }
+  }
+
+  static async getClassroomDetailsForStudent(
+    classroomId: string,
+  ): Promise<ClassroomDetailsForStudent> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/student-view`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar detalhes da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da turma:', error);
       throw error;
     }
   }

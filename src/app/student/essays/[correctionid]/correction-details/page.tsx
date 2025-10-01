@@ -94,8 +94,7 @@ const CorrectionDetailsPage: React.FC = () => {
             href="/student/essays"
             className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-gray-600 hover:text-gray-800"
           >
-            <Image src="/images/img_arrow_left.svg" alt="Voltar" width={22} height={22} />
-            <span className="text-sm">Voltar</span>
+            <Image src="/images/img_arrow_left.svg" alt="Voltar" width={25} height={25} />
           </Link>
           <h1 className="text-center text-3xl sm:text-[34px] font-bold text-[#0f2752]">
             Detalhes da correção
