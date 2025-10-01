@@ -547,7 +547,7 @@ const SubmitEssayPage: React.FC = () => {
             {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
               <Button variant="outline" size="lg" onClick={handleSaveDraft} disabled={loading}>
-                Salvar rascunco
+                Salvar rascunho
               </Button>
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}
