@@ -36,8 +36,9 @@ const getMenuItems = (id: string) => [
 interface ClassroomData {
   name: string;
   teacher_name: string;
+  teacher_profile_picture?: string | null;
   student_count: number;
-  students: Array<{ id: string; name: string }>;
+  students: Array<{ id: string; name: string; profile_picture_url?: string | null }>;
 }
 
 const StudentStudentsPage = () => {
@@ -56,33 +57,22 @@ const StudentStudentsPage = () => {
         setLoading(true);
         setError(null);
 
-        try {
-          const [classroomDetails, students] = await Promise.all([
-            ClassroomService.getClassroomDetailsForStudent(classId as string),
-            ClassroomService.getClassroomStudents(classId as string),
-          ]);
+        const [classroomDetails, students] = await Promise.all([
+          ClassroomService.getClassroomDetailsForStudent(classId as string),
+          ClassroomService.getClassroomClassmates(classId as string),
+        ]);
 
-          setData({
-            name: classroomDetails.name,
-            teacher_name: classroomDetails.teacher_name,
-            student_count: classroomDetails.student_count,
-            students: students.map((student: StudentReadSchema) => ({
-              id: student.id,
-              name: `${student.first_name} ${student.last_name}`,
-            })),
-          });
-        } catch (studentsError) {
-          const classroomDetails = await ClassroomService.getClassroomDetailsForStudent(
-            classId as string,
-          );
-
-          setData({
-            name: classroomDetails.name,
-            teacher_name: classroomDetails.teacher_name,
-            student_count: classroomDetails.student_count,
-            students: [],
-          });
-        }
+        setData({
+          name: classroomDetails.name,
+          teacher_name: classroomDetails.teacher_name,
+          teacher_profile_picture: classroomDetails.teacher_image,
+          student_count: classroomDetails.student_count,
+          students: students.map((student: StudentReadSchema) => ({
+            id: student.id,
+            name: `${student.first_name} ${student.last_name}`,
+            profile_picture_url: student.profile_picture_url,
+          })),
+        });
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
         setError('Erro ao carregar os dados da turma');
@@ -121,6 +111,7 @@ const StudentStudentsPage = () => {
             classroomName={data.name}
             studentCount={data.student_count}
             teacherName={data.teacher_name}
+            teacherProfilePicture={data.teacher_profile_picture}
             students={data.students}
             onBack={() => null}
             backHref={`/student/classes/${classId}/dashboard`}

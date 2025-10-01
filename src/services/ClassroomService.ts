@@ -124,6 +124,27 @@ class ClassroomService {
     }
   }
 
+  static async getClassroomClassmates(classroomId: string): Promise<StudentReadSchema[]> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/classroom/classrooms/${classroomId}/classmates`,
+        {
+          method: 'GET',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar colegas da turma: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar colegas da turma:', error);
+      throw error;
+    }
+  }
+
   static async updateClassroomDescription(
     classroomId: string,
     descriptionData: UpdateClassroomDescriptionRequest,

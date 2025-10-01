@@ -12,15 +12,19 @@ import {
   FiCalendar,
   FiEye,
   FiTrello,
+  FiTrash2,
 } from 'react-icons/fi';
 import StudentClassroomService from '@/services/StudentClassroomService';
+import StudentEssayService from '@/services/StudentEssayService';
 import Link from 'next/link';
+import Popup from '@/components/ui/Popup';
 
 interface Atividade {
   id: string;
   titulo: string;
   prazo: string;
   status: 'Pendente' | 'Entregue' | 'Não enviado';
+  essay_id?: string;
 }
 
 interface ClassroomData {
@@ -95,6 +99,13 @@ const ClassDetailPage: React.FC = () => {
   const [classroom, setClassroom] = useState<ClassroomData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [essayToCancel, setEssayToCancel] = useState<{ essayId: string; assignmentId: string } | null>(null);
+  const [popupConfig, setPopupConfig] = useState<{
+    type: 'success' | 'error';
+    title: string;
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchClassroomDetails = async () => {
@@ -103,17 +114,23 @@ const ClassDetailPage: React.FC = () => {
 
         const data = await StudentClassroomService.getClassroomDetailsForStudent(classId as string);
 
-        const assignments: Atividade[] = data.assignments.map((a) => ({
-          id: a.id,
-          titulo: a.title,
-          prazo: a.due_date,
-          status:
-            a.status === 'Pendente'
-              ? 'Pendente'
-              : a.status === 'Entregue'
-                ? 'Entregue'
-                : 'Não enviado',
-        }));
+        console.log('Assignments data from API:', data.assignments);
+
+        const assignments: Atividade[] = data.assignments.map((a) => {
+          console.log('Assignment:', a.title, 'Status:', a.status, 'Essay ID:', a.essay_id);
+          return {
+            id: a.id,
+            titulo: a.title,
+            prazo: a.due_date,
+            status:
+              a.status === 'Pendente'
+                ? 'Pendente'
+                : a.status === 'Entregue'
+                  ? 'Entregue'
+                  : 'Não enviado',
+            essay_id: a.essay_id,
+          };
+        });
 
         setClassroom({ 
           ...data, 
@@ -131,6 +148,77 @@ const ClassDetailPage: React.FC = () => {
 
     fetchClassroomDetails();
   }, [classId]);
+
+  const handleCancelClick = async (assignmentId: string) => {
+    try {
+      // Buscar detalhes da atividade para obter o essay_id
+      const assignmentDetails = await StudentClassroomService.getAssignmentDetailsForStudent(assignmentId);
+
+      if (!assignmentDetails.essay_id) {
+        setPopupConfig({
+          type: 'error',
+          title: 'Erro',
+          message: 'Não foi possível encontrar a redação para cancelar.',
+        });
+        return;
+      }
+
+      setEssayToCancel({ essayId: assignmentDetails.essay_id, assignmentId });
+      setShowCancelPopup(true);
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da atividade:', error);
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro',
+        message: 'Não foi possível buscar os detalhes da atividade.',
+      });
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!essayToCancel) return;
+
+    try {
+      await StudentEssayService.cancelEssaySubmission(essayToCancel.essayId);
+
+      setPopupConfig({
+        type: 'success',
+        title: 'Envio Cancelado',
+        message: 'O envio da redação foi cancelado com sucesso.',
+      });
+
+      // Recarregar dados da turma
+      const data = await StudentClassroomService.getClassroomDetailsForStudent(classId as string);
+      const assignments: Atividade[] = data.assignments.map((a) => ({
+        id: a.id,
+        titulo: a.title,
+        prazo: a.due_date,
+        status:
+          a.status === 'Pendente'
+            ? 'Pendente'
+            : a.status === 'Entregue'
+              ? 'Entregue'
+              : 'Não enviado',
+        essay_id: a.essay_id,
+      }));
+
+      setClassroom({
+        ...data,
+        assignments,
+        teacher_photo: data.teacher_image || '/images/default-avatar.png'
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao cancelar envio';
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro ao Cancelar',
+        message: errorMessage,
+      });
+    } finally {
+      setShowCancelPopup(false);
+      setEssayToCancel(null);
+    }
+  };
 
   return (
     <RouteGuard allowedRoles={['student']}>
@@ -215,12 +303,26 @@ const ClassDetailPage: React.FC = () => {
                     {renderStatusBadge(atividade.status)}
                   </div>
                 </div>
-                <Link
-                  href={`/student/classes/${classId}/dashboard/${atividade.id}`}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  <FiEye size={18} /> Ver atividade
-                </Link>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/student/classes/${classId}/dashboard/${atividade.id}`}
+                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    <FiEye size={18} /> Ver atividade
+                  </Link>
+
+                  {/* Botão de cancelar - apenas para atividades enviadas */}
+                  {atividade.status === 'Entregue' && (
+                    <button
+                      onClick={() => handleCancelClick(atividade.id)}
+                      className="p-2 bg-red-50 hover:bg-red-100 rounded-lg transition text-red-600"
+                      title="Cancelar envio"
+                    >
+                      <FiTrash2 size={20} />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -228,6 +330,45 @@ const ClassDetailPage: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Popup de confirmação de cancelamento */}
+      {showCancelPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Cancelar Envio?</h3>
+            <p className="text-gray-600 mb-6">
+              Tem certeza que deseja cancelar o envio desta redação? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowCancelPopup(false);
+                  setEssayToCancel(null);
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              >
+                Não, manter
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+              >
+                Sim, cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup de feedback */}
+      {popupConfig && (
+        <Popup
+          type={popupConfig.type}
+          title={popupConfig.title}
+          message={popupConfig.message}
+          onClose={() => setPopupConfig(null)}
+        />
+      )}
     </RouteGuard>
   );
 };

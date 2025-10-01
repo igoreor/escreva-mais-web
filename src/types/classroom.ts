@@ -94,6 +94,7 @@ export interface StudentAssignmentStatus {
   title: string;
   due_date: string;
   status: string;
+  essay_id?: string;
 }
 
 export interface ClassroomDetailsForStudent {
