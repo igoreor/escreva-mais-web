@@ -196,17 +196,24 @@ const TextAreaWithLineNumbers: React.FC<{
   useLayoutEffect(() => {
     if (textAreaRef.current) {
       const textarea = textAreaRef.current;
+      const computedStyle = getComputedStyle(textarea);
       const lineHeight = 24;
-      const paddingTop = parseFloat(getComputedStyle(textarea).paddingTop);
-      const paddingBottom = parseFloat(getComputedStyle(textarea).paddingBottom);
+
+      const paddingTop = parseFloat(computedStyle.paddingTop);
+      const paddingBottom = parseFloat(computedStyle.paddingBottom);
       const verticalPadding = paddingTop + paddingBottom;
+
       const contentHeight = textarea.scrollHeight - verticalPadding;
       const renderedLineCount = Math.round(contentHeight / lineHeight);
+
       const newlineCount = value.split('\n').length;
+
       const lineCount = Math.max(1, renderedLineCount, newlineCount);
+
       const newNumbers = Array.from({ length: lineCount }, (_, i) =>
         String(i + 1).padStart(2, '0'),
       ).join('\n');
+
       if (newNumbers !== lineNumbers) {
         setLineNumbers(newNumbers);
       }
@@ -230,6 +237,7 @@ const TextAreaWithLineNumbers: React.FC<{
           rows={rows}
           className={`w-10 sm:w-12 text-center p-2 text-gray-400 resize-none font-mono text-xs sm:text-sm select-none border-r border-gray-200 focus:outline-none leading-6 ${disabled ? 'bg-gray-200' : 'bg-gray-100'}`}
           value={lineNumbers}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         />
         <textarea
           ref={textAreaRef}
