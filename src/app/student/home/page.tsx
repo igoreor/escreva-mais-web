@@ -6,7 +6,7 @@ import RouteGuard from "@/components/auth/RouterGuard";
 import { useAuth } from "@/hooks/userAuth";
 import Sidebar from '@/components/common/SideBar';
 import { FiUpload } from 'react-icons/fi';
-import DashboardService, { StudentEssayDashboard, RecentEssayWithScore } from "@/services/DashboardService";
+import DashboardService, { StudentEssayDashboard } from "@/services/DashboardService";
 
 import { Bar } from "react-chartjs-2";
 import {
@@ -109,7 +109,6 @@ const StudentDashboard: React.FC = () => {
   const [turmaSelecionada, setTurmaSelecionada] = useState<Turma | null>(null);
   const [viewMode, setViewMode] = useState<"cards" | "chart">("cards");
   const [dashboardData, setDashboardData] = useState<StudentEssayDashboard | null>(null);
-  const [recentEssays, setRecentEssays] = useState<RecentEssayWithScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -137,13 +136,8 @@ const StudentDashboard: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        const [dashboardData, recentEssaysData] = await Promise.all([
-          DashboardService.getDashboardData() as Promise<StudentEssayDashboard>,
-          DashboardService.getRecentEssaysWithScores()
-        ]);
-
-        setDashboardData(dashboardData);
-        setRecentEssays(recentEssaysData);
+        const dashboardResult = await DashboardService.getDashboardData() as StudentEssayDashboard;
+        setDashboardData(dashboardResult);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar dados do dashboard');
         console.error('Erro ao buscar dados do dashboard:', err);
@@ -171,13 +165,13 @@ const StudentDashboard: React.FC = () => {
     mediaGeral: Math.round(dashboardData.avg_score),
     melhorRedacao: {
       titulo: dashboardData.best_essay?.title || dashboardData.best_essay?.theme || 'Sem redações',
-      nota: Math.round(dashboardData.avg_score),
-      media: dashboardData.avg_score / 100
+      nota: dashboardData.best_essay?.score ? Math.round(dashboardData.best_essay.score) : 0,
+      media: dashboardData.best_essay?.score ? dashboardData.best_essay.score / 100 : 0
     },
     piorRedacao: {
       titulo: dashboardData.worst_essay?.title || dashboardData.worst_essay?.theme || 'Sem redações',
-      nota: Math.round(dashboardData.avg_score),
-      media: dashboardData.avg_score / 100
+      nota: dashboardData.worst_essay?.score ? Math.round(dashboardData.worst_essay.score) : 0,
+      media: dashboardData.worst_essay?.score ? dashboardData.worst_essay.score / 100 : 0
     },
     competencias: [
       { nome: 'Competência 1', pontos: Math.round(dashboardData.c1_avg_score), media: dashboardData.c1_avg_score / 100, descricao: 'Domínio da norma padrão' },
@@ -420,16 +414,16 @@ const StudentDashboard: React.FC = () => {
 
             <div className="mt-4">
                 <div className="bg-white border rounded-xl p-6 shadow border-2 border-gray-300">
-                  {recentEssays.length > 0 ? (
+                  {dashboardData?.last_essays && dashboardData.last_essays.length > 0 ? (
                     <Bar
                       data={{
-                        labels: recentEssays.map(essay =>
+                        labels: dashboardData.last_essays.map(essay =>
                           essay.title || essay.theme || 'Redação sem título'
                         ),
                         datasets: [
                           {
                             label: "Nota",
-                            data: recentEssays.map(essay => essay.score),
+                            data: dashboardData.last_essays.map(essay => essay.score || 0),
                             backgroundColor: "rgba(54, 162, 235, 0.5)",
                             borderColor: "rgba(54, 162, 235, 1)",
                             borderWidth: 1,

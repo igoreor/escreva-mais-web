@@ -10,12 +10,11 @@ import {
   FiCheckCircle,
   FiAlertCircle,
 } from 'react-icons/fi';
-import DashboardService, { TeacherEssayDashboard, ThemeStatistics } from '@/services/DashboardService';
+import DashboardService, { TeacherEssayDashboard } from '@/services/DashboardService';
 
 export default function TeacherPage() {
   const { user, logout } = useAuth();
   const [dashboardData, setDashboardData] = useState<TeacherEssayDashboard | null>(null);
-  const [themeStats, setThemeStats] = useState<ThemeStatistics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,13 +24,8 @@ export default function TeacherPage() {
         setLoading(true);
         setError(null);
 
-        const [dashboardResult, themeStatsResult] = await Promise.all([
-          DashboardService.getDashboardData() as Promise<TeacherEssayDashboard>,
-          DashboardService.getTeacherThemeStatistics()
-        ]);
-
+        const dashboardResult = await DashboardService.getDashboardData() as TeacherEssayDashboard;
         setDashboardData(dashboardResult);
-        setThemeStats(themeStatsResult);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar dados do dashboard');
         console.error('Erro ao buscar dados do dashboard de professor:', err);
@@ -151,11 +145,11 @@ export default function TeacherPage() {
               </div>
               <div className="flex items-end gap-2 mt-2">
                 <p className="text-2xl lg:text-4xl font-normal text-global-1">
-                  {dashboardData?.best_essay ? Math.round(dashboardData.avg_score) : '0'}
+                  {dashboardData?.best_essay?.score ? Math.round(dashboardData.best_essay.score) : '0'}
                 </p>
                 <span className="text-global-5 text-sm lg:text-xl">pontos</span>
                 <span className="text-global-4 text-sm lg:text-xl ml-2">
-                  / {dashboardData?.best_essay ? (dashboardData.avg_score / 100).toFixed(1) : '0.0'} <span className="text-global-5">em média</span>
+                  / {dashboardData?.best_essay?.score ? (dashboardData.best_essay.score / 100).toFixed(1) : '0.0'} <span className="text-global-5">em média</span>
                 </span>
               </div>
               <p className="text-sm lg:text-xl mt-4 text-global-4">
@@ -171,11 +165,11 @@ export default function TeacherPage() {
               </div>
               <div className="flex items-end gap-2 mt-2">
                 <p className="text-2xl lg:text-4xl font-normal text-global-1">
-                  {dashboardData?.worst_essay ? Math.round(dashboardData.avg_score) : '0'}
+                  {dashboardData?.worst_essay?.score ? Math.round(dashboardData.worst_essay.score) : '0'}
                 </p>
                 <span className="text-global-5 text-sm lg:text-xl">pontos</span>
                 <span className="text-global-4 text-sm lg:text-xl ml-2">
-                  / {dashboardData?.worst_essay ? (dashboardData.avg_score / 100).toFixed(1) : '0.0'} <span className="text-global-5">em média</span>
+                  / {dashboardData?.worst_essay?.score ? (dashboardData.worst_essay.score / 100).toFixed(1) : '0.0'} <span className="text-global-5">em média</span>
                 </span>
               </div>
               <p className="text-sm lg:text-xl mt-4 text-global-4">
@@ -184,33 +178,39 @@ export default function TeacherPage() {
             </div>
           </div>
 
-          {/* Lista de Temas */}
+          {/* Últimas Redações */}
           <h2 className="text-blue-600 sm:text-2xl md:text-lg lg:text-2xl font-semibold mt-12 mb-4">
-            Temas criados por você
+            Últimas redações enviadas
           </h2>
           <div className="bg-white border rounded-xl p-6 shadow border-2 border-gray-300">
             <div className="space-y-4">
-              {themeStats.length > 0 ? (
-                themeStats.map((theme) => (
+              {dashboardData?.last_essays && dashboardData.last_essays.length > 0 ? (
+                dashboardData.last_essays.map((essay) => (
                   <div
-                    key={theme.id}
+                    key={essay.id}
                     className="flex justify-between items-center border rounded-lg px-4 py-3 hover:bg-gray-50 transition"
                   >
                     <div>
-                      <p className="font-medium text-global-1">Tema: {theme.theme}</p>
-                      <p className="text-sm text-global-4">{theme.essays_count} redações enviadas</p>
+                      <p className="font-medium text-global-1">
+                        {essay.title || essay.theme}
+                      </p>
+                      <p className="text-sm text-global-4">
+                        {new Date(essay.created_at).toLocaleDateString('pt-BR')}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-global-4">Média da turma</p>
-                      <p className="text-lg font-semibold text-blue-600">{Math.round(theme.avg_score)}</p>
+                      <p className="text-sm text-global-4">Nota</p>
+                      <p className="text-lg font-semibold text-blue-600">
+                        {essay.score ? Math.round(essay.score) : '-'}
+                      </p>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <p className="text-lg">Nenhum tema encontrado</p>
+                  <p className="text-lg">Nenhuma redação encontrada</p>
                   <p className="text-sm mt-2">
-                    Seus temas criados aparecerão aqui após terem redações enviadas
+                    As redações enviadas pelos seus alunos aparecerão aqui
                   </p>
                 </div>
               )}

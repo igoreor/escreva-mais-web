@@ -10,6 +10,7 @@ export interface Essay {
   image_url: string | null;
   content: string;
   created_at: string;
+  score?: number;
 }
 
 export interface Assignment {
@@ -29,6 +30,8 @@ export interface StudentEssayDashboard {
   c3_avg_score: number;
   c4_avg_score: number;
   c5_avg_score: number;
+  last_essays: Essay[];
+  essay_score_range_freq: EssayScoreRangeFreq[];
 }
 
 export interface TeacherEssayDashboard {
@@ -36,6 +39,8 @@ export interface TeacherEssayDashboard {
   best_essay: Essay | null;
   worst_essay: Essay | null;
   latest_assignments: Assignment[];
+  last_essays: Essay[];
+  essay_score_range_freq: EssayScoreRangeFreq[];
 }
 
 export interface EssayRead {
@@ -57,12 +62,10 @@ export interface RecentEssayWithScore {
   score: number;
 }
 
-export interface ThemeStatistics {
-  id: string;
-  theme: string;
-  description: string;
-  essays_count: number;
-  avg_score: number;
+export interface EssayScoreRangeFreq {
+  min: number;
+  max: number;
+  count: number;
 }
 
 class DashboardService {
@@ -98,65 +101,7 @@ class DashboardService {
     }
   }
 
-  static async getRecentEssaysWithScores(): Promise<RecentEssayWithScore[]> {
-    try {
-      const essaysWithStatus = await StudentEssayService.getMyEssaysWithStatus();
 
-      const correctedEssays = essaysWithStatus
-        .filter((essay) => essay.status === 'corrected')
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 5);
-
-      const essaysWithScores: RecentEssayWithScore[] = await Promise.all(
-        correctedEssays.map(async (essay) => {
-          try {
-            const feedbackDetails = await StudentEssayService.getStudentFeedbackDetails(essay.id);
-            return {
-              id: essay.id,
-              title: essay.title,
-              theme: essay.theme,
-              created_at: essay.created_at,
-              score: feedbackDetails.total_score,
-            };
-          } catch (error) {
-            console.warn(`Erro ao buscar feedback para redação ${essay.id}:`, error);
-            return {
-              id: essay.id,
-              title: essay.title,
-              theme: essay.theme,
-              created_at: essay.created_at,
-              score: 0,
-            };
-          }
-        }),
-      );
-
-      return essaysWithScores;
-    } catch (error) {
-      console.error('Erro ao buscar redações recentes com notas:', error);
-      throw error;
-    }
-  }
-
-  static async getTeacherThemeStatistics(): Promise<ThemeStatistics[]> {
-    try {
-      const response = await fetch(`${this.API_BASE_URL}/essays/teacher/theme-statistics`, {
-        method: 'GET',
-        headers: this.getHeaders(),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Erro HTTP: ${response.status}`);
-      }
-
-      return response.json();
-    } catch (error) {
-      console.error('Erro ao buscar estatísticas dos temas:', error);
-      // Se o endpoint não existir, retorna array vazio para não quebrar a interface
-      return [];
-    }
-  }
 }
 
 export default DashboardService;
