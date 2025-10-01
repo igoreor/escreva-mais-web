@@ -364,24 +364,39 @@ const SubmitEssayPage: React.FC = () => {
       });
       return;
     }
-
-    // Disparar a chamada assíncrona sem esperar
-    SubmitEssayService.createStandAloneEssay({
-      theme: theme.trim(),
-      title: title.trim() || null,
-      content: essayText.trim() || null,
-      image: image,
-    }).then((result) => {
+    setIsLoading(true);
+    try {
+      const result = await SubmitEssayService.createStandAloneEssay({
+        theme: theme.trim(),
+        title: title.trim() || null,
+        content: essayText.trim() || null,
+        image: image,
+      });
       console.log('Redação enviada com sucesso:', result);
-    }).catch((error) => {
+
+      // Limpar localStorage após envio bem-sucedido
+      localStorage.removeItem(STORAGE_KEY);
+
+      setPopupConfig({
+        type: 'success',
+        title: 'Redação Enviada!',
+        message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
+      });
+      setTheme('');
+      setTitle('');
+      setEssayText('');
+      setImage(null);
+    } catch (error) {
       console.error('Erro ao enviar redação:', error);
-    });
-
-    // Limpar localStorage
-    localStorage.removeItem(STORAGE_KEY);
-
-    // Redirecionar imediatamente
-    router.push('/student/essays');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro no Envio',
+        message: `Não foi possível enviar sua redação: ${errorMessage}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSaveDraft = async () => {
@@ -502,6 +517,16 @@ const SubmitEssayPage: React.FC = () => {
 
   return (
     <RouteGuard allowedRoles={['student']}>
+      {/* Overlay de loading */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="text-gray-700 font-medium">Enviando redação...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row min-h-screen bg-global-2">
         <div className="w-full md:w-64 flex-shrink-0">
           <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />

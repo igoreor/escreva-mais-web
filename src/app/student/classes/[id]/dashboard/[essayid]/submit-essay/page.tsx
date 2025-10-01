@@ -376,28 +376,56 @@ const SubmitEssayPage: React.FC = () => {
       return;
     }
 
-    const essayData: CreateEssayRequest = {
-      assignment_id: essayId,
-      title: title || undefined,
-      content: essayText || undefined,
-      image: file || undefined,
-    };
+    try {
+      setLoading(true);
 
-    // Disparar a chamada assíncrona sem esperar
-    StudentClassroomService.createEssayInAssignment(essayData)
-      .then(() => {
-        console.log('Redação enviada com sucesso');
-      })
-      .catch((error) => {
-        console.error('Erro ao enviar redação:', error);
+      const essayData: CreateEssayRequest = {
+        assignment_id: essayId,
+        title: title || undefined,
+        content: essayText || undefined,
+        image: file || undefined,
+      };
+
+      await StudentClassroomService.createEssayInAssignment(essayData);
+
+      setPopupConfig({
+        type: 'success',
+        title: 'Redação Enviada!',
+        message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
       });
 
-    // Redirecionar imediatamente
-    router.push(`/student/classes/${classId}/dashboard`);
+      setTimeout(() => {
+        router.push(`/student/classes/${classId}/dashboard`);
+      }, 2000);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
+
+      setPopupConfig({
+        type: 'error',
+        title: 'Erro no Envio',
+        message: errorMessage,
+      });
+      console.error('Erro ao enviar redação:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <RouteGuard allowedRoles={['student']}>
+      {/* Overlay de loading */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="text-gray-700 font-medium">Enviando redação...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex min-h-screen bg-global-2">
         <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />
 
