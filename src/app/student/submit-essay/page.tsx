@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useLayoutEffect, Suspense } from 'react';
 import Sidebar from '@/components/common/SideBar';
 import Button from '@/components/ui/Button';
 import EditText from '@/components/ui/EditText';
@@ -342,7 +342,7 @@ const MotivationalTextsModal: React.FC<{
   );
 };
 
-const SubmitEssayPage: React.FC = () => {
+const SubmitEssayContent: React.FC = () => {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -755,6 +755,21 @@ const SubmitEssayPage: React.FC = () => {
     </RouteGuard>
   
     
+  );
+};
+
+const SubmitEssayPage: React.FC = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-global-2">
+        <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+          <p className="text-gray-700 font-medium">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <SubmitEssayContent />
+    </Suspense>
   );
 };
 
