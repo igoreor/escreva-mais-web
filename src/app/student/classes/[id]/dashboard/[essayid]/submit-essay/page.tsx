@@ -17,7 +17,6 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import StudentClassroomService, { CreateEssayRequest } from '@/services/StudentClassroomService';
 import Link from 'next/link';
-import { Toast } from '@/components/common/ToastAlert';
 
 const getMenuItems = (id: string) => [
   {
@@ -304,9 +303,6 @@ const SubmitEssayPage: React.FC = () => {
   const [essayText, setEssayText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastInfo, setToastInfo] = useState({ title: '', description: '' });
-
 
   const [popupConfig, setPopupConfig] = useState<{
     type: 'success' | 'error';
@@ -379,7 +375,7 @@ const SubmitEssayPage: React.FC = () => {
         setTitle(draft.title || '');
         setEssayText(draft.essayText || '');
       } catch (error) {
-        console.error('Erro ao carregar rascunho do localStorage:', error);
+        console.error('Erro ao carregar dados salvos do localStorage:', error);
       }
     }
   }, [STORAGE_KEY]);
@@ -393,15 +389,6 @@ const SubmitEssayPage: React.FC = () => {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
   }, [title, essayText, STORAGE_KEY]);
-
-  const handleSaveDraft = () => {
-    // TODO: Implementar salvamento de rascunho
-    setToastInfo({
-      title: 'Rascunho salvo!',
-      description: 'Seu rascunho foi salvo com sucesso.',
-    });
-    setShowToast(true);
-  };
 
   const router = useRouter();
 
@@ -595,9 +582,6 @@ const SubmitEssayPage: React.FC = () => {
 
             {/* Botões de ação */}
             <div className="flex justify-end gap-5 mt-4">
-              <Button variant="outline" size="lg" onClick={handleSaveDraft} disabled={loading}>
-                Salvar rascunho
-              </Button>
               <Button variant="primary" size="lg" onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar'}
               </Button>
@@ -612,13 +596,6 @@ const SubmitEssayPage: React.FC = () => {
           title={popupConfig.title}
           message={popupConfig.message}
           onClose={() => setPopupConfig(null)}
-        />
-      )}
-       {showToast && (
-        <Toast
-          title={toastInfo.title}
-          description={toastInfo.description}
-          onClose={() => setShowToast(false)}
         />
       )}
     </RouteGuard>

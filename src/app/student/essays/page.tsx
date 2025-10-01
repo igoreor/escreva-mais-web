@@ -50,17 +50,6 @@ const getMenuItems = (id: string) => [
 
 const EssayCard: React.FC<{ essay: EssayWithStatus }> = ({ essay }) => {
   const renderStatus = () => {
-    if (essay.status === 'draft') {
-      return (
-        <Link
-          href={`/student/submit-essay?essayId=${essay.id}`}
-          className="px-3 py-1 text-sm rounded-lg bg-yellow-600 text-white hover:bg-yellow-700 transition-colors"
-        >
-          Continuar
-        </Link>
-      );
-    }
-
     switch (essay.status) {
       case 'corrected':
         return (
@@ -157,9 +146,6 @@ const EssaysPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [isPageVisible]);
 
-  const enviadas = essays.filter((e) => e.status === 'sent' || e.status === 'corrected');
-  const rascunhos = essays.filter((e) => e.status === 'draft');
-
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-global-2">
@@ -179,25 +165,13 @@ const EssaysPage: React.FC = () => {
           {loading ? (
             <p className="text-center text-gray-500">Carregando...</p>
           ) : (
-            <>
-              <section className="mb-10">
-                <h2 className="text-lg font-semibold text-blue-700 mb-4">Enviadas</h2>
-                {enviadas.length > 0 ? (
-                  enviadas.map((essay) => <EssayCard key={essay.id} essay={essay} />)
-                ) : (
-                  <p className="text-gray-500">Nenhuma redação enviada.</p>
-                )}
-              </section>
-
-              <section>
-                <h2 className="text-lg font-semibold text-blue-700 mb-4">Rascunhos</h2>
-                {rascunhos.length > 0 ? (
-                  rascunhos.map((essay) => <EssayCard key={essay.id} essay={essay} />)
-                ) : (
-                  <p className="text-gray-500">Nenhum rascunho disponível.</p>
-                )}
-              </section>
-            </>
+            <section className="mb-10">
+              {essays.length > 0 ? (
+                essays.map((essay) => <EssayCard key={essay.id} essay={essay} />)
+              ) : (
+                <p className="text-gray-500">Nenhuma redação enviada.</p>
+              )}
+            </section>
           )}
         </main>
       </div>

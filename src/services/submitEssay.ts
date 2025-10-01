@@ -87,39 +87,6 @@ class SubmitEssayService {
     }
   }
 
-  static async saveDraft(draftData: CreateStandAloneEssayRequest): Promise<CreateEssayResponse> {
-    try {
-      const formData = new FormData();
-
-      formData.append('theme', draftData.theme);
-      formData.append('title', draftData.title?.trim() || '');
-      formData.append('content', draftData.content?.trim() || '');
-      if (draftData.image) {
-        formData.append('image', draftData.image);
-      }
-
-      const response = await fetch(`${this.API_BASE_URL}/essays/essays/create-stand-alone`, {
-        method: 'POST',
-        headers: this.getMultipartHeaders(),
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
-      }
-
-      const createdEssay: CreateEssayResponse = await response.json();
-
-      const EssayService = (await import('./EssayService')).default;
-      await EssayService.saveDraft(createdEssay.id);
-
-      return createdEssay;
-    } catch (error) {
-      console.error('Erro ao salvar rascunho:', error);
-      throw error;
-    }
-  }
 
   static validateEssayData(
     theme: string,
