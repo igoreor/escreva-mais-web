@@ -116,11 +116,6 @@ export default function CreateSchoolPage() {
         return;
       }
 
-      if (!form.imagem) {
-        setToast({ title: 'Erro', description: 'A imagem da escola é obrigatória.' });
-        return;
-      }
-
       const created = await SchoolService.createSchool(form.nome, form.imagem);
       console.log('Escola criada:', created);
 

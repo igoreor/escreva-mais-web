@@ -11,9 +11,6 @@ import {
   FiCalendar,
   FiEye,
   FiPlusSquare,
-  FiEdit,
-  FiSave,
-  FiX,
 } from 'react-icons/fi';
 import PublicarAtividadeModal from '@/components/common/PublicarAtividade';
 import ClassroomService from '@/services/ClassroomService';
@@ -76,8 +73,6 @@ const TeacherClassPage: React.FC = () => {
   const [classroom, setClassroom] = useState<ClassroomDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [abrirModal, setAbrirModal] = useState(false);
-  const [editingDescription, setEditingDescription] = useState(false);
-  const [newDescription, setNewDescription] = useState('');
 
   const fetchClassroom = async () => {
     try {
@@ -98,31 +93,6 @@ const TeacherClassPage: React.FC = () => {
 
   const handleAssignmentCreated = () => {
     fetchClassroom();
-  };
-
-  const handleEditDescription = () => {
-    setNewDescription(classroom?.description || '');
-    setEditingDescription(true);
-  };
-
-  const handleSaveDescription = async () => {
-    try {
-      if (!classId) return;
-
-      await ClassroomService.updateClassroomDescription(classId as string, {
-        description: newDescription,
-      });
-
-      await fetchClassroom();
-      setEditingDescription(false);
-    } catch (error) {
-      console.error('Erro ao atualizar descrição:', error);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingDescription(false);
-    setNewDescription('');
   };
 
   if (loading) {
@@ -176,52 +146,9 @@ const TeacherClassPage: React.FC = () => {
 
           {/* Descrição da turma */}
           <div className="bg-white border border-gray-200 rounded-lg p-4 lg:p-5 mb-8">
-            <div className="flex justify-between items-start gap-4">
-              {editingDescription ? (
-                <div className="flex-1">
-                  <textarea
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg resize-none text-sm lg:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    rows={3}
-                    placeholder="Descrição da turma..."
-                  />
-                </div>
-              ) : (
-                <p className="text-gray-700 text-sm lg:text-base flex-1">
-                  {classroom.description || 'Nenhuma descrição adicionada.'}
-                </p>
-              )}
-
-              <div className="flex gap-2">
-                {editingDescription ? (
-                  <>
-                    <button
-                      onClick={handleSaveDescription}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                      title="Salvar"
-                    >
-                      <FiSave size={18} />
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                      title="Cancelar"
-                    >
-                      <FiX size={18} />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={handleEditDescription}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                    title="Editar descrição"
-                  >
-                    <FiEdit size={18} />
-                  </button>
-                )}
-              </div>
-            </div>
+            <p className="text-gray-700 text-sm lg:text-base">
+              {classroom.description || 'Nenhuma descrição adicionada.'}
+            </p>
           </div>
 
           {/* Atividades (Temas) */}
@@ -272,7 +199,7 @@ const TeacherClassPage: React.FC = () => {
                           minute: '2-digit',
                         })}
                       </span>
-                      <span className="text-gray-600">{assignment.status} entregues</span>
+                      <span className="text-gray-600">{assignment.submission_status || assignment.status || '0 entregues'}</span>
                     </div>
                   </div>
                 </div>

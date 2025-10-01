@@ -5,7 +5,8 @@ export interface Assignment {
   id: string;
   title: string;
   due_date: string;
-  status: string;
+  status?: string;
+  submission_status?: string;
 }
 
 export interface CreateSchoolResponse {

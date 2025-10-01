@@ -31,20 +31,18 @@ const getMenuItems = (id: string) => [
     label: 'Minhas Turmas',
     icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
-    children: [
-      {
-        id: 'dashboard',
-        label: 'Painel',
-        icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`,
-      },
-      {
-        id: 'essays',
-        label: 'Minhas Redações',
-        icon:<img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10"/>,
-        href: `/student/classes/${id}/essays`,
-      },
-    ],
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <FiUpload size={28} />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
+    href: `/student/essays`,
   },
   {
     id: 'profile',
@@ -378,42 +376,24 @@ const SubmitEssayPage: React.FC = () => {
       return;
     }
 
-    try {
-      setLoading(true);
+    const essayData: CreateEssayRequest = {
+      assignment_id: essayId,
+      title: title || undefined,
+      content: essayText || undefined,
+      image: file || undefined,
+    };
 
-      const essayData: CreateEssayRequest = {
-        assignment_id: essayId,
-        title: title || undefined,
-        content: essayText || undefined,
-        image: file || undefined,
-      };
-
-      await StudentClassroomService.createEssayInAssignment(essayData);
-
-      setPopupConfig({
-        type: 'success',
-        title: 'Redação Enviada!',
-        message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
+    // Disparar a chamada assíncrona sem esperar
+    StudentClassroomService.createEssayInAssignment(essayData)
+      .then(() => {
+        console.log('Redação enviada com sucesso');
+      })
+      .catch((error) => {
+        console.error('Erro ao enviar redação:', error);
       });
 
-      setTimeout(() => {
-        router.push(`/student/classes/${classId}/dashboard`);
-      }, 2000);
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível enviar sua redação. Por favor, tente novamente mais tarde.';
-
-      setPopupConfig({
-        type: 'error',
-        title: 'Erro no Envio',
-        message: errorMessage,
-      });
-      console.error('Erro ao enviar redação:', error);
-    } finally {
-      setLoading(false);
-    }
+    // Redirecionar imediatamente
+    router.push(`/student/classes/${classId}/dashboard`);
   };
 
   return (

@@ -33,31 +33,17 @@ interface ClassroomData {
 }
 
 const getMenuItems = (id: string) => [
-  { 
-    id: 'student', 
-    label: 'Início', 
+  {
+    id: 'student',
+    label: 'Início',
     icon: <img src="/images/home.svg" alt="Início" className="w-10 h-10" />,
-    href: '/student/home' 
+    href: '/student/home'
   },
   {
     id: 'classes',
     label: 'Minhas Turmas',
     icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
-    children: [
-      {
-        id: 'dashboard',
-        label: 'Painel',
-        icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`,
-      },
-      {
-        id: 'essays',
-        label: 'Minhas Redações',
-        icon: <FiFileText size={24} />,
-        href: `/student/classes/${id}/essays`,
-      },
-    ],
   },
   {
     id: 'submit',
@@ -71,8 +57,8 @@ const getMenuItems = (id: string) => [
     icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
     href: `/student/essays`,
   },
-  { id: 'profile', 
-    label: 'Meu Perfil', 
+  { id: 'profile',
+    label: 'Meu Perfil',
     icon: <img src="/images/person.svg" alt="Meu Perfil" className="w-10 h-10" />,
     href: '/student/profile' },
 ];
@@ -146,24 +132,25 @@ const ClassDetailPage: React.FC = () => {
     fetchClassroomDetails();
   }, [classId]);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-gray-600 font-medium">Carregando dados da turma...</p>
-        </div>
-      </div>
-    );
-  if (error) return <div className="p-6 text-red-600">{error}</div>;
-  if (!classroom) return null;
-
   return (
     <RouteGuard allowedRoles={['student']}>
       <div className="flex w-full bg-gray-50">
         <Sidebar menuItems={getMenuItems(classId as string)} onLogout={logout} />
 
         <main className="ml-0 lg:ml-[270px] w-full max-h-screen overflow-y-auto pt-24 lg:pt-12 p-6 lg:p-12">
+          {loading && (
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <p className="text-gray-600 font-medium">Carregando dados da turma...</p>
+              </div>
+            </div>
+          )}
+
+          {error && <div className="p-6 text-red-600">{error}</div>}
+
+          {!loading && !error && classroom && (
+            <>
           {/* Header */}
           <div className="flex justify-between items-center bg-blue-50 p-6 rounded-lg mb-6">
             <div className="flex items-center gap-3">
@@ -237,6 +224,8 @@ const ClassDetailPage: React.FC = () => {
               </div>
             ))}
           </div>
+            </>
+          )}
         </main>
       </div>
     </RouteGuard>

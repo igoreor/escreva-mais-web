@@ -364,39 +364,24 @@ const SubmitEssayPage: React.FC = () => {
       });
       return;
     }
-    setIsLoading(true);
-    try {
-      const result = await SubmitEssayService.createStandAloneEssay({
-        theme: theme.trim(),
-        title: title.trim() || null,
-        content: essayText.trim() || null,
-        image: image,
-      });
+
+    // Disparar a chamada assíncrona sem esperar
+    SubmitEssayService.createStandAloneEssay({
+      theme: theme.trim(),
+      title: title.trim() || null,
+      content: essayText.trim() || null,
+      image: image,
+    }).then((result) => {
       console.log('Redação enviada com sucesso:', result);
-
-      // Limpar localStorage após envio bem-sucedido
-      localStorage.removeItem(STORAGE_KEY);
-
-      setPopupConfig({
-        type: 'success',
-        title: 'Redação Enviada!',
-        message: 'Sua redação foi enviada com sucesso e em breve será corrigida.',
-      });
-      setTheme('');
-      setTitle('');
-      setEssayText('');
-      setImage(null);
-    } catch (error) {
+    }).catch((error) => {
       console.error('Erro ao enviar redação:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      setPopupConfig({
-        type: 'error',
-        title: 'Erro no Envio',
-        message: `Não foi possível enviar sua redação: ${errorMessage}`,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    });
+
+    // Limpar localStorage
+    localStorage.removeItem(STORAGE_KEY);
+
+    // Redirecionar imediatamente
+    router.push('/student/essays');
   };
 
   const handleSaveDraft = async () => {
