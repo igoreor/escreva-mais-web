@@ -525,6 +525,16 @@ const SubmitEssayPage: React.FC = () => {
 
   return (
     <RouteGuard allowedRoles={['student']}>
+      {/* Overlay de loading */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"></div>
+            <p className="text-gray-700 font-medium">Enviando redação...</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row min-h-screen bg-global-2">
         <div className="w-full md:w-64 flex-shrink-0">
           <Sidebar menuItems={getMenuItems(classId)} onLogout={logout} />

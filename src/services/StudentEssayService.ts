@@ -75,6 +75,26 @@ class StudentEssayService {
       throw error;
     }
   }
+
+  static async cancelEssaySubmission(essayId: string): Promise<void> {
+    try {
+      const response = await fetch(
+        `${this.API_BASE_URL}/essays/essays/${essayId}/cancel-submission`,
+        {
+          method: 'DELETE',
+          headers: this.getHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Erro ao cancelar envio: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Erro ao cancelar envio da redação:', error);
+      throw error;
+    }
+  }
 }
 
 export default StudentEssayService;

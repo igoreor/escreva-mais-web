@@ -5,7 +5,8 @@ export interface Assignment {
   id: string;
   title: string;
   due_date: string;
-  status: string;
+  status?: string;
+  submission_status?: string;
 }
 
 export interface CreateSchoolResponse {
@@ -93,6 +94,7 @@ export interface StudentAssignmentStatus {
   title: string;
   due_date: string;
   status: string;
+  essay_id?: string;
 }
 
 export interface ClassroomDetailsForStudent {

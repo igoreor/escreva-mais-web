@@ -25,20 +25,18 @@ const getMenuItems = (id: string) => [
     label: 'Minhas Turmas',
     icon: <img src="/images/turmas.svg" alt="Minhas Turmas" className="w-10 h-10" />,
     href: '/student/classes',
-    children: [
-      {
-        id: 'dashboard',
-        label: 'Painel',
-        icon: <FiTrello size={24} />,
-        href: `/student/classes/${id}/dashboard`,
-      },
-      {
-        id: 'essays',
-        label: 'Minhas Redações',
-        icon:<img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10"/>,
-        href: `/student/classes/${id}/essays`,
-      },
-    ],
+  },
+  {
+    id: 'submit',
+    label: 'Enviar Nova Redação',
+    icon: <img src="/images/upload.svg" alt="Enviar Nova Redação" className="w-10 h-10" />,
+    href: `/student/submit-essay`,
+  },
+  {
+    id: 'essays',
+    label: 'Minhas Redações',
+    icon: <img src="/images/text_snippet.svg" alt="Minhas Redações" className="w-10 h-10" />,
+    href: `/student/essays`,
   },
   {
     id: 'profile',
