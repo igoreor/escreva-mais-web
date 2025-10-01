@@ -82,6 +82,24 @@ class ClassroomService {
     }
   }
 
+  static async getSystemThemes(): Promise<Theme[]> {
+    try {
+      const response = await fetch(`${this.API_BASE_URL}/essays/motivational-content/system/themes`, {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar temas do sistema: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar temas do sistema:', error);
+      throw error;
+    }
+  }
+
   static async createAssignment(
     assignmentData: CreateAssignmentRequest,
   ): Promise<CreateAssignmentResponse> {

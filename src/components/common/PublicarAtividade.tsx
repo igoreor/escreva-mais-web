@@ -23,24 +23,17 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
   const [descricao, setDescricao] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
   const [myThemes, setMyThemes] = useState<Theme[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [systemThemes, setSystemThemes] = useState<Theme[]>([]);
+  const [loadingMyThemes, setLoadingMyThemes] = useState(false);
+  const [loadingSystemThemes, setLoadingSystemThemes] = useState(false);
   const [creating, setCreating] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const preExistingThemes = [
-    { id: 'pre-1', theme: 'Democratização do acesso ao cinema no Brasil' },
-    {
-      id: 'pre-2',
-      theme: 'Manipulação do comportamento do usuário pelo controle de dados na internet',
-    },
-    { id: 'pre-3', theme: 'Desafios para a formação educacional de surdos no Brasil' },
-    { id: 'pre-4', theme: 'O impacto das redes sociais na sociedade moderna' },
-  ];
-
   useEffect(() => {
     if (isOpen) {
       fetchMyThemes();
+      fetchSystemThemes();
       // Resetar form
       setSelectedTheme('');
       setData('');
@@ -51,13 +44,29 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
 
   const fetchMyThemes = async () => {
     try {
-      setLoading(true);
+      setLoadingMyThemes(true);
       const themes = await ClassroomService.getMyThemes();
       setMyThemes(themes);
     } catch (error) {
       console.error('Erro ao carregar temas:', error);
+      setErrorMessage('Erro ao carregar seus temas.');
+      setShowErrorPopup(true);
     } finally {
-      setLoading(false);
+      setLoadingMyThemes(false);
+    }
+  };
+
+  const fetchSystemThemes = async () => {
+    try {
+      setLoadingSystemThemes(true);
+      const themes = await ClassroomService.getSystemThemes();
+      setSystemThemes(themes);
+    } catch (error) {
+      console.error('Erro ao carregar temas do sistema:', error);
+      setErrorMessage('Erro ao carregar temas do sistema.');
+      setShowErrorPopup(true);
+    } finally {
+      setLoadingSystemThemes(false);
     }
   };
 
@@ -94,7 +103,8 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentThemes = aba === 'original' ? myThemes : preExistingThemes;
+  const currentThemes = aba === 'original' ? myThemes : systemThemes;
+  const isLoadingCurrentTab = aba === 'original' ? loadingMyThemes : loadingSystemThemes;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -113,7 +123,10 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
         {/* Tabs */}
         <div className="flex mb-6">
           <button
-            onClick={() => setAba('original')}
+            onClick={() => {
+              setAba('original');
+              setSelectedTheme('');
+            }}
             disabled={creating}
             className={`flex items-center justify-center gap-2 flex-1 px-4 py-2 border rounded-l-lg ${
               aba === 'original'
@@ -125,7 +138,10 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
             Selecionar tema original
           </button>
           <button
-            onClick={() => setAba('existente')}
+            onClick={() => {
+              setAba('existente');
+              setSelectedTheme('');
+            }}
             disabled={creating}
             className={`flex items-center justify-center gap-2 flex-1 px-4 py-2 border rounded-r-lg ${
               aba === 'existente'
@@ -143,7 +159,7 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {aba === 'original' ? 'Tema original' : 'Tema pré-existente'}
           </label>
-          {loading ? (
+          {isLoadingCurrentTab ? (
             <div className="w-full border rounded-lg p-2 bg-gray-100 text-gray-500">
               Carregando temas...
             </div>
@@ -159,11 +175,19 @@ const PublicarAtividadeModal: React.FC<PublicarAtividadeModalProps> = ({
                   ? 'Selecione um tema criado por você'
                   : 'Selecione um de nossos temas'}
               </option>
-              {currentThemes.map((theme) => (
-                <option key={theme.id} value={theme.id}>
-                  {theme.theme}
+              {currentThemes.length === 0 ? (
+                <option disabled>
+                  {aba === 'original'
+                    ? 'Nenhum tema criado ainda'
+                    : 'Nenhum tema disponível'}
                 </option>
-              ))}
+              ) : (
+                currentThemes.map((theme) => (
+                  <option key={theme.id} value={theme.id}>
+                    {theme.theme}
+                  </option>
+                ))
+              )}
             </select>
           )}
         </div>

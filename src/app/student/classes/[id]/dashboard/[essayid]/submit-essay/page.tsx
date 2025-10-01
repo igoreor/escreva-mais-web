@@ -338,22 +338,36 @@ const SubmitEssayPage: React.FC = () => {
     setEssayText('');
   };
 
-  // Carregar dados do assignment do sessionStorage
+  // Carregar dados do assignment
   useEffect(() => {
-    const assignmentDataStr = sessionStorage.getItem('assignmentData');
-    if (assignmentDataStr) {
-      try {
-        const assignmentData = JSON.parse(assignmentDataStr);
-        setAssignmentTheme(assignmentData.theme || '');
-        setAssignmentTitle(assignmentData.title || '');
-
-        // Limpar dados do sessionStorage após uso
-        sessionStorage.removeItem('assignmentData');
-      } catch (error) {
-        console.error('Erro ao carregar dados do assignment:', error);
+    const loadAssignmentData = async () => {
+      // Tentar carregar do sessionStorage primeiro
+      const assignmentDataStr = sessionStorage.getItem('assignmentData');
+      if (assignmentDataStr) {
+        try {
+          const assignmentData = JSON.parse(assignmentDataStr);
+          setAssignmentTheme(assignmentData.theme || '');
+          setAssignmentTitle(assignmentData.title || '');
+          return;
+        } catch (error) {
+          console.error('Erro ao carregar dados do sessionStorage:', error);
+        }
       }
-    }
-  }, []);
+
+      // Se não tiver no sessionStorage, buscar da API
+      if (essayId) {
+        try {
+          const assignmentDetails = await StudentClassroomService.getAssignmentDetailsForStudent(essayId);
+          setAssignmentTheme(assignmentDetails.motivational_content?.theme || '');
+          setAssignmentTitle(assignmentDetails.title || '');
+        } catch (error) {
+          console.error('Erro ao carregar dados do assignment da API:', error);
+        }
+      }
+    };
+
+    loadAssignmentData();
+  }, [essayId]);
 
   const handleSaveDraft = () => {
     // TODO: Implementar salvamento de rascunho
