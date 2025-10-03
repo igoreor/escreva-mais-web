@@ -58,8 +58,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete={autoComplete}
-          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-sm sm:text-base text-global-1 bg-transparent outline-none peer`}
-          style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none' }}
+          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
+          style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none', fontSize: '16px' }}
         />
 
         {showToggle && value && (

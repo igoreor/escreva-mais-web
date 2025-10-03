@@ -52,12 +52,12 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
+          className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
             rightIcon && type === 'password' && value ? 'pr-10 sm:pr-12' : ''
           } ${error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
           placeholder=" "
           autoComplete={name}
-          style={{ position: 'relative', zIndex: 1, WebkitAppearance: 'none', background: 'white' }}
+          style={{ position: 'relative', zIndex: 1, WebkitAppearance: 'none', background: 'white', fontSize: '16px' }}
         />
         <label
           htmlFor={name}
