@@ -45,7 +45,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete={autoComplete}
-          className={`w-full px-5 pt-4 pb-4 ${showToggle ? 'pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
+          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-sm sm:text-base text-global-1 bg-transparent outline-none peer`}
         />
         <label
           className={`
@@ -64,14 +64,15 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           <button
             type="button"
             onClick={onToggle}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 touch-manipulation"
+            aria-label="Toggle visibility"
           >
             <Image
               src="/images/img_trailing_icon.svg"
               alt="Toggle visibility"
-              width={24}
-              height={24}
-              className="w-6 h-6"
+              width={20}
+              height={20}
+              className="w-5 h-5 sm:w-6 sm:h-6"
             />
           </button>
         )}

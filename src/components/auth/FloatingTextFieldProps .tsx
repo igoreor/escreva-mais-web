@@ -52,8 +52,8 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
-          error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'
-        }`}
+          rightIcon && type === 'password' && value ? 'pr-10 sm:pr-12' : ''
+        } ${error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
         placeholder=" "
         autoComplete={name}
       />
@@ -71,14 +71,15 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
         <button
           type="button"
           onClick={handleTogglePassword}
-          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-1"
+          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 touch-manipulation"
+          aria-label="Toggle password visibility"
         >
           <Image
             src="/images/img_trailing_icon.svg"
             alt="Toggle password visibility"
-            width={24}
-            height={24}
-            className="w-6 h-6"
+            width={20}
+            height={20}
+            className="w-5 h-5 sm:w-6 sm:h-6"
           />
         </button>
       )}
