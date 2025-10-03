@@ -43,7 +43,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="relative">
+      <div className="relative" style={{ isolation: 'isolate' }}>
         <input
           id={name}
           name={name}
@@ -52,19 +52,21 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
           onChange={(e) => onChange(e.target.value)}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 relative z-10 ${
+          className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
             rightIcon && type === 'password' && value ? 'pr-10 sm:pr-12' : ''
           } ${error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
           placeholder=" "
           autoComplete={name}
+          style={{ position: 'relative', zIndex: 1, WebkitAppearance: 'none', background: 'white' }}
         />
         <label
           htmlFor={name}
-          className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none z-20 ${
+          className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none ${
             labelIsUp
               ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
               : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
           }`}
+          style={{ zIndex: 2 }}
         >
           {placeholder}
         </label>
@@ -72,8 +74,9 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
           <button
             type="button"
             onClick={handleTogglePassword}
-            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 touch-manipulation z-20"
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 touch-manipulation active:opacity-70"
             aria-label="Toggle password visibility"
+            style={{ zIndex: 3 }}
           >
             <Image
               src="/images/img_trailing_icon.svg"
