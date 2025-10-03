@@ -45,11 +45,11 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete={autoComplete}
-          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-sm sm:text-base text-global-1 bg-transparent outline-none peer`}
+          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-sm sm:text-base text-global-1 bg-transparent outline-none peer relative z-10`}
         />
         <label
           className={`
-          absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none
+          absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none z-20
           ${
             focused || value
               ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
@@ -64,7 +64,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           <button
             type="button"
             onClick={onToggle}
-            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 touch-manipulation"
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 touch-manipulation z-20"
             aria-label="Toggle visibility"
           >
             <Image
