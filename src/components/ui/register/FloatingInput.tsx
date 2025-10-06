@@ -36,7 +36,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
 }) => {
   return (
     <div className={`w-full relative ${className}`}>
-      <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300" style={{ isolation: 'isolate' }}>
+      <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300">
         <label
           className={`
           absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none
@@ -57,7 +57,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           placeholder={focused ? placeholder : ''}
           onFocus={onFocus}
           onBlur={onBlur}
-          autoComplete={autoComplete}
+          autoComplete={type === 'password' ? 'new-password' : autoComplete}
           className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
           style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none', fontSize: '16px' }}
         />
@@ -68,7 +68,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
             onClick={onToggle}
             className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-2 touch-manipulation active:opacity-70"
             aria-label="Toggle visibility"
-            style={{ zIndex: 15 }}
+            style={{ zIndex: 15, pointerEvents: 'auto' }}
           >
             <Image
               src="/images/img_trailing_icon.svg"

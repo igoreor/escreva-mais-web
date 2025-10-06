@@ -2,10 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-input:-webkit-autofill {
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
   box-shadow: 0 0 0px 1000px white inset;
   -webkit-text-fill-color: #000 !important;
   transition: background-color 5000s ease-in-out 0s;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
 
 input:-webkit-autofill + label {
@@ -36,4 +40,20 @@ input[type='password']::-ms-clear {
 input[type='password']::-webkit-credentials-auto-fill-button,
 input[type='password']::-webkit-textfield-decoration-container {
   display: none !important;
+}
+
+/* iOS Safari specific fixes for password fields */
+input[type='password'],
+input[type='text'] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-height: 52px; /* Prevent iOS zoom on focus */
+}
+
+/* Ensure proper touch behavior on iOS */
+@supports (-webkit-touch-callout: none) {
+  input {
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
 }
