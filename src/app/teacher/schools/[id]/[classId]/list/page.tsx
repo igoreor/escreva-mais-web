@@ -30,13 +30,6 @@ const getMenuItems = (schoolId?: string, classId?: string, classroomName?: strin
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
         children: [
           {
-            id: 'class-details',
-            label: 'Dashboard',
-            icon: <FiFileMinus size={20} />,
-            href:
-              schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/dashboard` : undefined,
-          },
-          {
             id: 'class-dashboard',
             label: 'Painel',
             icon: <FiFileMinus size={20} />,
