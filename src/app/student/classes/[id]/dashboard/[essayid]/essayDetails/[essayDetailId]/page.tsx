@@ -5,7 +5,7 @@ import Link from 'next/link';
 import RouteGuard from '@/components/auth/RouterGuard';
 import { useAuth } from '@/hooks/userAuth';
 import Sidebar from '@/components/common/SideBar';
-import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiTrello } from 'react-icons/fi';
+import { FiHome, FiBookOpen, FiFileText, FiUser, FiArrowLeft, FiTrello, FiUpload } from 'react-icons/fi';
 import Image from 'next/image';
 import { CreateEssayResponse } from '@/types/essay';
 import StudentEssayService from '@/services/StudentEssayService';
@@ -26,7 +26,7 @@ const getMenuItems = (id: string) => [
   {
     id: 'submit',
     label: 'Enviar Nova Redação',
-    icon: <img src="/images/upload.svg" alt="Enviar Nova Redação" className="w-10 h-10" />,
+    icon: <FiUpload size={34} />,
     href: `/student/submit-essay`,
   },
   {

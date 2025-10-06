@@ -34,14 +34,6 @@ const getMenuItems = (schoolId?: string, classId?: string, classroomName?: strin
         label: classroomName || 'Minhas Turmas',
         icon: <FiPlusSquare size={20} />,
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
-        children: [
-          {
-            id: 'class-dashboard',
-            label: 'Painel',
-            icon: <FiFileText size={20} />,
-            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/painel` : undefined,
-          },
-        ],
       },
     ],
   },

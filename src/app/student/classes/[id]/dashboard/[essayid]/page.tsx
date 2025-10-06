@@ -9,6 +9,7 @@ import {
   FiArrowLeft,
   FiCalendar,
   FiTrello,
+  FiUpload,
 } from 'react-icons/fi';
 import StudentClassroomService from '@/services/StudentClassroomService';
 import Link from 'next/link';
@@ -29,7 +30,7 @@ const getMenuItems = (id: string) => [
   {
     id: 'submit',
     label: 'Enviar Nova Redação',
-    icon: <img src="/images/upload.svg" alt="Enviar Nova Redação" className="w-10 h-10" />,
+    icon: <FiUpload size={34} />,
     href: `/student/submit-essay`,
   },
   {

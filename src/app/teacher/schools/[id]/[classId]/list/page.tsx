@@ -28,14 +28,6 @@ const getMenuItems = (schoolId?: string, classId?: string, classroomName?: strin
         label: classroomName || 'Minhas Turmas',
         icon: <FiBookOpen size={20} />,
         href: schoolId ? `/teacher/schools/${schoolId}` : undefined,
-        children: [
-          {
-            id: 'class-dashboard',
-            label: 'Painel',
-            icon: <FiFileMinus size={20} />,
-            href: schoolId && classId ? `/teacher/schools/${schoolId}/${classId}/painel` : undefined,
-          },
-        ],
       },
     ],
   },
@@ -172,9 +164,9 @@ const TeacherStudentsPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="relative">
+        <div className="flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <div className="mt-4 text-center text-gray-600">Carregando dados da turma...</div>
+          <div className="mt-4 text-center text-gray-600 text-sm sm:text-base">Carregando dados da turma...</div>
         </div>
       </div>
     );
