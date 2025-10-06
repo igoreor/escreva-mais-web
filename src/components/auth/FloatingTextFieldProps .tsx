@@ -27,6 +27,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [hasValue, setHasValue] = useState(false);
+  const [hasAutofilledValue, setHasAutofilledValue] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +35,36 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   useEffect(() => {
     setHasValue(Boolean(value));
   }, [value]);
+
+  // Detectar autofill
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+
+    const checkAutofill = () => {
+      if (el.matches(':-webkit-autofill') || el.value) {
+        setHasAutofilledValue(true);
+      }
+    };
+
+    checkAutofill();
+    const timer = setTimeout(checkAutofill, 100);
+    const timer2 = setTimeout(checkAutofill, 500);
+
+    const handleAnimationStart = (e: AnimationEvent) => {
+      if (e.animationName === 'onAutoFillStart') {
+        setHasAutofilledValue(true);
+      }
+    };
+
+    el.addEventListener('animationstart', handleAnimationStart as EventListener);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+      el.removeEventListener('animationstart', handleAnimationStart as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -49,8 +80,11 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
                 el.readOnly = false;
                 el.disabled = false;
                 el.focus();
-                const len = el.value?.length ?? 0;
-                el.setSelectionRange(len, len);
+                // setSelectionRange só funciona em password/text, não em email
+                if (el.type === 'password' || el.type === 'text') {
+                  const len = el.value?.length ?? 0;
+                  el.setSelectionRange(len, len);
+                }
               } catch (e) {
                 // swallow error
               }
@@ -68,8 +102,11 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
         el.disabled = false;
         setTimeout(() => {
           el.focus();
-          const len = el.value?.length ?? 0;
-          el.setSelectionRange(len, len);
+          // setSelectionRange só funciona em password/text, não em email
+          if (el.type === 'password' || el.type === 'text') {
+            const len = el.value?.length ?? 0;
+            el.setSelectionRange(len, len);
+          }
         }, 0);
       } catch (err) {
         // swallow error
@@ -98,7 +135,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
     };
   }, [type]);
 
-  const labelIsUp = isFocused || hasValue;
+  const labelIsUp = isFocused || hasValue || hasAutofilledValue;
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);

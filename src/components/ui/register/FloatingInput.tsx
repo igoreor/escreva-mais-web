@@ -36,10 +36,53 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [hasAutofilledValue, setHasAutofilledValue] = React.useState(false);
 
+  // Detectar autofill
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
+
+    const checkAutofill = () => {
+      // Verifica se o campo foi preenchido automaticamente
+      if (el.matches(':-webkit-autofill') || el.value) {
+        setHasAutofilledValue(true);
+      }
+    };
+
+    // Verifica imediatamente e após um delay (para pegar autofill)
+    checkAutofill();
+    const timer = setTimeout(checkAutofill, 100);
+    const timer2 = setTimeout(checkAutofill, 500);
+
+    // Listener para animationstart (detecta quando o autofill acontece)
+    const handleAnimationStart = (e: AnimationEvent) => {
+      if (e.animationName === 'onAutoFillStart') {
+        setHasAutofilledValue(true);
+      }
+    };
+
+    el.addEventListener('animationstart', handleAnimationStart as EventListener);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+      el.removeEventListener('animationstart', handleAnimationStart as EventListener);
+    };
+  }, []);
+
+  // Atualizar quando value mudar
+  useEffect(() => {
+    if (value) {
+      setHasAutofilledValue(true);
+    } else {
+      setHasAutofilledValue(false);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el || type === 'email') return; // Não aplicar rescue em campos email
 
     // MutationObserver para detectar quando o Safari/iOS altera atributos
     const mo = new MutationObserver((mutations) => {
@@ -53,8 +96,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
                 el.disabled = false;
                 // tenta re-focar e colocar cursor no fim
                 el.focus();
-                const len = el.value?.length ?? 0;
-                el.setSelectionRange(len, len);
+                if (type === 'password' || type === 'text') {
+                  const len = el.value?.length ?? 0;
+                  el.setSelectionRange(len, len);
+                }
               } catch (e) {
                 // swallow error
               }
@@ -74,8 +119,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
         // garantir focus e cursor
         setTimeout(() => {
           el.focus();
-          const len = el.value?.length ?? 0;
-          el.setSelectionRange(len, len);
+          if (type === 'password' || type === 'text') {
+            const len = el.value?.length ?? 0;
+            el.setSelectionRange(len, len);
+          }
         }, 0);
       } catch (err) {
         // swallow error
@@ -103,7 +150,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
       el.removeEventListener('touchstart', onTouch);
       el.removeEventListener('pointerdown', onTouch);
     };
-  }, []);
+  }, [type]);
 
   return (
     <div ref={wrapperRef} className={`w-full relative ${className}`}>
@@ -112,7 +159,7 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           className={`
           absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none
           ${
-            focused || value
+            focused || value || hasAutofilledValue
               ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
               : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
           }

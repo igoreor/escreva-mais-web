@@ -37,8 +37,11 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
                 el.readOnly = false;
                 el.disabled = false;
                 el.focus();
-                const len = el.value?.length ?? 0;
-                el.setSelectionRange(len, len);
+                // setSelectionRange só funciona em password/text
+                if (el.type === 'password' || el.type === 'text') {
+                  const len = el.value?.length ?? 0;
+                  el.setSelectionRange(len, len);
+                }
               } catch (e) {
                 // swallow error
               }
@@ -56,8 +59,11 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         el.disabled = false;
         setTimeout(() => {
           el.focus();
-          const len = el.value?.length ?? 0;
-          el.setSelectionRange(len, len);
+          // setSelectionRange só funciona em password/text
+          if (el.type === 'password' || el.type === 'text') {
+            const len = el.value?.length ?? 0;
+            el.setSelectionRange(len, len);
+          }
         }, 0);
       } catch (err) {
         // swallow error
