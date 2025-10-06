@@ -16,7 +16,6 @@ interface FloatingInputProps {
   onToggle?: () => void;
   autoComplete?: string;
   className?: string;
-  name?: string;
 }
 
 const FloatingInput: React.FC<FloatingInputProps> = ({
@@ -34,11 +33,10 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   onToggle,
   autoComplete = 'off',
   className = '',
-  name,
 }) => {
   return (
     <div className={`w-full relative ${className}`}>
-      <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300">
+      <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300" style={{ isolation: 'isolate' }}>
         <label
           className={`
           absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none
@@ -54,7 +52,6 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
         </label>
         <input
           type={type}
-          name={name}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={focused ? placeholder : ''}
