@@ -26,45 +26,9 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [hasValue, setHasValue] = useState(false);
-  const [hasAutofilledValue, setHasAutofilledValue] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    setHasValue(Boolean(value));
-  }, [value]);
-
-  // Detectar autofill
-  useEffect(() => {
-    const el = inputRef.current;
-    if (!el) return;
-
-    const checkAutofill = () => {
-      if (el.matches(':-webkit-autofill') || el.value) {
-        setHasAutofilledValue(true);
-      }
-    };
-
-    checkAutofill();
-    const timer = setTimeout(checkAutofill, 100);
-    const timer2 = setTimeout(checkAutofill, 500);
-
-    const handleAnimationStart = (e: AnimationEvent) => {
-      if (e.animationName === 'onAutoFillStart') {
-        setHasAutofilledValue(true);
-      }
-    };
-
-    el.addEventListener('animationstart', handleAnimationStart as EventListener);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(timer2);
-      el.removeEventListener('animationstart', handleAnimationStart as EventListener);
-    };
-  }, []);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -135,8 +99,6 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
     };
   }, [type]);
 
-  const labelIsUp = isFocused || hasValue || hasAutofilledValue;
-
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
@@ -144,7 +106,13 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   const inputType = type === 'password' ? (showPassword ? 'text' : 'password') : type;
 
   return (
-    <div ref={wrapperRef} className={`relative ${className}`}>
+    <div ref={wrapperRef} className={`${className}`}>
+      <label
+        htmlFor={name}
+        className="block text-sm sm:text-base font-medium text-global-2 mb-1 sm:mb-2"
+      >
+        {placeholder}
+      </label>
       <div className="relative" style={{ isolation: 'isolate' }}>
         <input
           ref={inputRef}
@@ -158,21 +126,9 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
           className={`w-full px-4 sm:px-5 py-3 sm:py-4 text-base bg-white border-2 rounded focus:outline-none focus:ring-2 transition-all duration-200 ${
             rightIcon && type === 'password' && value ? 'pr-10 sm:pr-12' : ''
           } ${error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
-          placeholder=" "
           autoComplete={type === 'password' ? 'new-password' : name}
           style={{ position: 'relative', zIndex: 1, WebkitAppearance: 'none', background: 'white', fontSize: '16px' }}
         />
-        <label
-          htmlFor={name}
-          className={`absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none ${
-            labelIsUp
-              ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
-              : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
-          }`}
-          style={{ zIndex: 2 }}
-        >
-          {placeholder}
-        </label>
         {rightIcon && type === 'password' && value && (
           <button
             type="button"

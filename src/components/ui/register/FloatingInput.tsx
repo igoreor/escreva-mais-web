@@ -36,49 +36,6 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const [hasAutofilledValue, setHasAutofilledValue] = React.useState(false);
-
-  // Detectar autofill
-  useEffect(() => {
-    const el = inputRef.current;
-    if (!el) return;
-
-    const checkAutofill = () => {
-      // Verifica se o campo foi preenchido automaticamente
-      if (el.matches(':-webkit-autofill') || el.value) {
-        setHasAutofilledValue(true);
-      }
-    };
-
-    // Verifica imediatamente e após um delay (para pegar autofill)
-    checkAutofill();
-    const timer = setTimeout(checkAutofill, 100);
-    const timer2 = setTimeout(checkAutofill, 500);
-
-    // Listener para animationstart (detecta quando o autofill acontece)
-    const handleAnimationStart = (e: AnimationEvent) => {
-      if (e.animationName === 'onAutoFillStart') {
-        setHasAutofilledValue(true);
-      }
-    };
-
-    el.addEventListener('animationstart', handleAnimationStart as EventListener);
-
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(timer2);
-      el.removeEventListener('animationstart', handleAnimationStart as EventListener);
-    };
-  }, []);
-
-  // Atualizar quando value mudar
-  useEffect(() => {
-    if (value) {
-      setHasAutofilledValue(true);
-    } else {
-      setHasAutofilledValue(false);
-    }
-  }, [value]);
 
   useEffect(() => {
     const el = inputRef.current;
@@ -153,31 +110,23 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   }, [type]);
 
   return (
-    <div ref={wrapperRef} className={`w-full relative ${className}`}>
+    <div ref={wrapperRef} className={`w-full ${className}`}>
+      <label
+        className="block text-sm sm:text-base font-medium text-global-2 mb-1 sm:mb-2"
+      >
+        {label}
+      </label>
       <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300" style={{ isolation: 'isolate' }}>
-        <label
-          className={`
-          absolute left-4 sm:left-5 transition-all duration-200 pointer-events-none select-none
-          ${
-            focused || value || hasAutofilledValue
-              ? '-top-2 sm:-top-2.5 text-xs sm:text-sm bg-white px-1 sm:px-2 text-global-2'
-              : 'top-3 sm:top-4 text-sm sm:text-base text-global-1'
-          }
-        `}
-          style={{ zIndex: 5 }}
-        >
-          {label}
-        </label>
         <input
           ref={inputRef}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={focused ? placeholder : ''}
+          placeholder={placeholder}
           onFocus={onFocus}
           onBlur={onBlur}
           autoComplete={type === 'password' ? 'new-password' : autoComplete}
-          className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
+          className={`w-full px-4 sm:px-5 py-3 sm:py-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none`}
           style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none', fontSize: '16px' }}
         />
 
