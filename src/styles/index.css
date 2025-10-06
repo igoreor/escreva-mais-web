@@ -50,6 +50,11 @@ input[type='text'] {
   min-height: 52px; /* Prevent iOS zoom on focus */
 }
 
+/* Ensure password bullets are visible on iOS */
+input[type='password'] {
+  -webkit-text-security: disc;
+}
+
 /* Ensure proper touch behavior on iOS */
 @supports (-webkit-touch-callout: none) {
   input {

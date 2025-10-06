@@ -1,6 +1,6 @@
 // components/ui/FloatingTextField.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 interface FloatingTextFieldProps {
@@ -26,12 +26,77 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const [hasValue, setHasValue] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setHasValue(Boolean(value));
   }, [value]);
+
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el || type !== 'password') return;
+
+    // MutationObserver para detectar quando o Safari/iOS altera atributos
+    const mo = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && (m.attributeName === 'readonly' || m.attributeName === 'disabled')) {
+          if (el.readOnly || el.disabled) {
+            setTimeout(() => {
+              try {
+                el.readOnly = false;
+                el.disabled = false;
+                el.focus();
+                const len = el.value?.length ?? 0;
+                el.setSelectionRange(len, len);
+              } catch (e) {
+                // swallow error
+              }
+            }, 50);
+          }
+        }
+      }
+    });
+    mo.observe(el, { attributes: true, attributeOldValue: true });
+
+    const wrapper = wrapperRef.current;
+    const handleWrapperClick = () => {
+      try {
+        el.readOnly = false;
+        el.disabled = false;
+        setTimeout(() => {
+          el.focus();
+          const len = el.value?.length ?? 0;
+          el.setSelectionRange(len, len);
+        }, 0);
+      } catch (err) {
+        // swallow error
+      }
+    };
+
+    const onTouch = () => {
+      try {
+        el.readOnly = false;
+        el.disabled = false;
+        setTimeout(() => el.focus(), 0);
+      } catch (err) {
+        // swallow error
+      }
+    };
+
+    wrapper?.addEventListener('click', handleWrapperClick);
+    el.addEventListener('touchstart', onTouch, { passive: true } as AddEventListenerOptions);
+    el.addEventListener('pointerdown', onTouch, { passive: true } as AddEventListenerOptions);
+
+    return () => {
+      mo.disconnect();
+      wrapper?.removeEventListener('click', handleWrapperClick);
+      el.removeEventListener('touchstart', onTouch);
+      el.removeEventListener('pointerdown', onTouch);
+    };
+  }, [type]);
 
   const labelIsUp = isFocused || hasValue;
 
@@ -42,9 +107,10 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
   const inputType = type === 'password' ? (showPassword ? 'text' : 'password') : type;
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={wrapperRef} className={`relative ${className}`}>
       <div className="relative" style={{ isolation: 'isolate' }}>
         <input
+          ref={inputRef}
           id={name}
           name={name}
           type={inputType}
@@ -56,7 +122,7 @@ const FloatingTextField: React.FC<FloatingTextFieldProps> = ({
             rightIcon && type === 'password' && value ? 'pr-10 sm:pr-12' : ''
           } ${error ? 'border-red-300 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-300'}`}
           placeholder=" "
-          autoComplete={name}
+          autoComplete={type === 'password' ? 'new-password' : name}
           style={{ position: 'relative', zIndex: 1, WebkitAppearance: 'none', background: 'white', fontSize: '16px' }}
         />
         <label

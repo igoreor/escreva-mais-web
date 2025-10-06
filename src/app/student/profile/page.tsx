@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/userAuth';
 import AuthService from '@/services/authService';
 import { User } from '@/types/user';
 import { X } from 'lucide-react';
+import PasswordInput from '@/components/ui/PasswordInput';
 import Sidebar, { SidebarItem } from '@/components/common/SideBar';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
@@ -500,13 +501,14 @@ const ProfilePage = () => {
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
                     <label className="text-sm text-gray-600 font-medium">Senha atual *</label>
-                    <input
-                      type={showOldPassword ? 'text' : 'password'}
+                    <PasswordInput
                       value={passwordForm.oldPassword}
-                      onChange={(e) => handlePasswordChange('oldPassword', e.target.value)}
+                      onChange={(value) => handlePasswordChange('oldPassword', value)}
+                      showPassword={showOldPassword}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                       placeholder="Digite sua senha atual"
+                      autoComplete="current-password"
                     />
                   </div>
                   <button
@@ -521,10 +523,10 @@ const ProfilePage = () => {
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
                     <label className="text-sm text-gray-600 font-medium">Nova senha *</label>
-                    <input
-                      type={showNewPassword ? 'text' : 'password'}
+                    <PasswordInput
                       value={passwordForm.newPassword}
-                      onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                      onChange={(value) => handlePasswordChange('newPassword', value)}
+                      showPassword={showNewPassword}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                       placeholder="Digite sua nova senha"
@@ -544,10 +546,10 @@ const ProfilePage = () => {
                     <label className="text-sm text-gray-600 font-medium">
                       Confirmar nova senha *
                     </label>
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                    <PasswordInput
                       value={passwordForm.confirmNewPassword}
-                      onChange={(e) => handlePasswordChange('confirmNewPassword', e.target.value)}
+                      onChange={(value) => handlePasswordChange('confirmNewPassword', value)}
+                      showPassword={showConfirmPassword}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                       required
                       placeholder="Confirme sua nova senha"
