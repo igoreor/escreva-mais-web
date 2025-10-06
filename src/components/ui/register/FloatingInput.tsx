@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 
 interface FloatingInputProps {
@@ -16,6 +16,7 @@ interface FloatingInputProps {
   onToggle?: () => void;
   autoComplete?: string;
   className?: string;
+  name?: string;
 }
 
 const FloatingInput: React.FC<FloatingInputProps> = ({
@@ -33,35 +34,8 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
   onToggle,
   autoComplete = 'off',
   className = '',
+  name,
 }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [isReadonly, setIsReadonly] = useState(type === 'password');
-
-  useEffect(() => {
-    setIsReadonly(type === 'password');
-  }, [type]);
-
-  const unlockAndFocus = () => {
-    if (!inputRef.current) return;
-    if (isReadonly) {
-      setIsReadonly(false);
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  };
-
-  const handleTouchStart = () => {
-    unlockAndFocus();
-  };
-
-  const handleFocusInternal = () => {
-    unlockAndFocus();
-    if (onFocus) onFocus();
-  };
-
-  const handleBlurInternal = () => {
-    if (onBlur) onBlur();
-  };
-
   return (
     <div className={`w-full relative ${className}`}>
       <div className="relative border-2 border-gray-300 rounded bg-white transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-300">
@@ -79,16 +53,14 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           {label}
         </label>
         <input
-          ref={inputRef}
           type={type}
+          name={name}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={focused ? placeholder : ''}
-          onFocus={handleFocusInternal}
-          onBlur={handleBlurInternal}
-          onTouchStart={handleTouchStart}
-          readOnly={isReadonly}
-          autoComplete={type === 'password' ? 'new-password' : autoComplete}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          autoComplete={autoComplete}
           className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
           style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none', fontSize: '16px' }}
         />

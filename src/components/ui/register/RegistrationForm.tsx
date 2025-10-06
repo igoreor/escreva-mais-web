@@ -108,7 +108,7 @@ const RegistrationForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-[570px] flex flex-col items-center gap-6 sm:gap-8">
+    <form autoComplete="on" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="w-full max-w-[570px] flex flex-col items-center gap-6 sm:gap-8">
       {submitError && <ErrorPopup message={submitError} onClose={() => setSubmitError('')} />}
       {/* User Type Selection */}
       <UserTypeSelector
@@ -120,6 +120,7 @@ const RegistrationForm: React.FC = () => {
       <div className="w-full flex flex-col sm:flex-row gap-5">
         <FloatingInput
           label="Nome"
+          name="firstName"
           value={formData.fullName}
           onChange={(value) => handleInputChange('fullName', value)}
           onFocus={() => handleFocus('fullName')}
@@ -128,10 +129,12 @@ const RegistrationForm: React.FC = () => {
           error={errors.fullName}
           errorMessage={errors.fullName ? getErrorMessage('fullName') : ''}
           placeholder="Insira seu nome aqui"
+          autoComplete="given-name"
         />
 
         <FloatingInput
           label="Sobrenome"
+          name="lastName"
           value={formData.lastName}
           onChange={(value) => handleInputChange('lastName', value)}
           onFocus={() => handleFocus('lastName')}
@@ -140,6 +143,7 @@ const RegistrationForm: React.FC = () => {
           error={errors.lastName}
           errorMessage={errors.lastName ? getErrorMessage('lastName') : ''}
           placeholder="Insira seu sobrenome aqui"
+          autoComplete="family-name"
         />
       </div>
 
@@ -147,6 +151,7 @@ const RegistrationForm: React.FC = () => {
       <FloatingInput
         label="E-mail"
         type="email"
+        name="email"
         value={formData.email}
         onChange={(value) => handleInputChange('email', value)}
         onFocus={() => handleFocus('email')}
@@ -168,6 +173,7 @@ const RegistrationForm: React.FC = () => {
         <FloatingInput
           label="Senha"
           type={showPassword ? 'text' : 'password'}
+          name="password"
           value={formData.password}
           onChange={(value) => handleInputChange('password', value)}
           onFocus={() => handleFocus('password')}
@@ -177,12 +183,14 @@ const RegistrationForm: React.FC = () => {
           errorMessage={errors.passwordStrength ? getErrorMessage('password') : ''}
           showToggle={!!formData.password}
           onToggle={() => setShowPassword(!showPassword)}
+          autoComplete="new-password"
           className="flex-1"
         />
 
         <FloatingInput
           label="Confirmar senha"
           type={showConfirmPassword ? 'text' : 'password'}
+          name="confirmPassword"
           value={formData.confirmPassword}
           onChange={(value) => handleInputChange('confirmPassword', value)}
           onFocus={() => handleFocus('confirmPassword')}
@@ -192,6 +200,7 @@ const RegistrationForm: React.FC = () => {
           errorMessage={errors.confirmPassword ? getErrorMessage('confirmPassword') : ''}
           showToggle={!!formData.confirmPassword}
           onToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+          autoComplete="new-password"
           className="flex-1"
         />
       </div>
@@ -208,7 +217,7 @@ const RegistrationForm: React.FC = () => {
       >
         Confirmar cadastro
       </Button>
-    </div>
+    </form>
   );
 };
 
