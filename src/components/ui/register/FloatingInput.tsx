@@ -57,7 +57,9 @@ const FloatingInput: React.FC<FloatingInputProps> = ({
           placeholder={focused ? placeholder : ''}
           onFocus={onFocus}
           onBlur={onBlur}
-          autoComplete={type === 'password' ? 'new-password' : autoComplete}
+          autoComplete={type === 'password' ? 'off' : autoComplete}
+          data-form-type="other"
+          name={type === 'password' ? `password-${Math.random()}` : undefined}
           className={`w-full px-4 sm:px-5 pt-4 pb-4 ${showToggle ? 'pr-10 sm:pr-12' : ''} text-base text-global-1 bg-transparent outline-none peer`}
           style={{ position: 'relative', zIndex: 10, WebkitAppearance: 'none', fontSize: '16px' }}
         />

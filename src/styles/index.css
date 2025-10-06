@@ -51,9 +51,26 @@ input[type='text'] {
   min-height: 52px; /* Prevent iOS zoom on focus */
 }
 
+/* Disable iOS password autofill and strong password suggestions */
+input[type='password'] {
+  -webkit-text-security: disc !important;
+}
+
+input[type='password']::-webkit-contacts-auto-fill-button,
+input[type='password']::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
 /* Ensure proper touch behavior on iOS */
 @supports (-webkit-touch-callout: none) {
   input {
     font-size: 16px !important; /* Prevent iOS zoom */
+  }
+
+  input[type='password'] {
+    -webkit-user-modify: read-write-plaintext-only;
   }
 }
