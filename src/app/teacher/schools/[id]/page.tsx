@@ -208,7 +208,6 @@ export default function SchoolDetailsPage() {
     const fetchSchool = async () => {
       try {
         const data: School = await SchoolService.getSchoolWithClassroomsById(id as string);
-        console.log('Dados da escola recebidos:', data);
         setSchool(data);
       } catch (error: unknown) {
         console.error('Erro ao buscar escola:', error);

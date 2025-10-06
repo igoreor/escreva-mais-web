@@ -62,7 +62,6 @@ class SubmitEssayService {
 
       try {
         const evaluationResult = await this.evaluateEssay(createdEssay.id);
-        console.log('Feedback gerado:', evaluationResult);
       } catch (err) {
         console.error('Erro ao avaliar redação:', err);
       }
@@ -95,7 +94,6 @@ class SubmitEssayService {
       throw error;
     }
   }
-
 
   static validateEssayData(
     theme: string,

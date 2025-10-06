@@ -117,7 +117,6 @@ export default function CreateSchoolPage() {
       }
 
       const created = await SchoolService.createSchool(form.nome, form.imagem);
-      console.log('Escola criada:', created);
 
       setToast({
         title: 'Escola cadastrada com sucesso!',

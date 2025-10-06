@@ -166,12 +166,14 @@ export default function TemaDetalhesPage() {
           {tema && !loading && !error && (
             <>
               {/* Voltar */}
-              <Link
-                href="/teacher/themes"
+              <div className="flex justify-end mb-4">
+                <Link
+                  href="/teacher/themes"
                 className="flex items-center text-blue-600 mb-4 hover:underline transition"
-              >
+                >
                 <FiArrowLeft className="mr-1" /> Voltar
-              </Link>
+                </Link>
+              </div>
 
               {/* Título */}
               <div className="bg-white rounded-lg shadow-sm border p-6">

@@ -114,10 +114,8 @@ const ClassDetailPage: React.FC = () => {
 
         const data = await StudentClassroomService.getClassroomDetailsForStudent(classId as string);
 
-        console.log('Assignments data from API:', data.assignments);
 
         const assignments: Atividade[] = data.assignments.map((a) => {
-          console.log('Assignment:', a.title, 'Status:', a.status, 'Essay ID:', a.essay_id);
           return {
             id: a.id,
             titulo: a.title,

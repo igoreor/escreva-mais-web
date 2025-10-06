@@ -68,7 +68,6 @@ class StudentEssayService {
       }
 
       const essay: CreateEssayResponse = await response.json();
-      console.log('Fetched essay:', essay);
       return essay;
     } catch (error) {
       console.error('Erro ao buscar ensaio:', error);

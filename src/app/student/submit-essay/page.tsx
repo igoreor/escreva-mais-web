@@ -454,7 +454,6 @@ const SubmitEssayContent: React.FC = () => {
         content: essayText.trim() || null,
         image: image,
       });
-      console.log('Redação enviada com sucesso:', result);
 
       // Limpar localStorage após envio bem-sucedido
       localStorage.removeItem(STORAGE_KEY);
